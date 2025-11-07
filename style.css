@@ -1,0 +1,371 @@
+/* RESET Y CONFIGURACIÓN GENERAL */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR ESTILO UV */
+.sidebar {
+  width: 280px;
+  background: #488B49;
+  color: white;
+  padding: 2rem 1.5rem;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+}
+
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+}
+
+.logo-uv {
+  width: 140px;  /* Aumenté el ancho */
+  height: 140px; /* Aumenté la altura */
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: block;
+  object-fit: contain;
+  background: white;
+  padding: 5px;  /* Reducí el padding */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.sidebar h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar h2 {
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
+}
+
+/* MENÚ DE NAVEGACIÓN */
+.sidebar-nav {
+  list-style: none;
+  margin-top: 2rem;
+}
+
+.sidebar-nav li {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.sidebar-nav a:hover {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  transform: translateX(5px);
+}
+
+.sidebar-nav a.active {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-weight: 600;
+}
+
+.sidebar-nav .icon {
+  margin-right: 0.8rem;
+  font-size: 1.1rem;
+}
+
+/* CONTENIDO PRINCIPAL */
+.main-content {
+  margin-left: 280px;
+  padding: 2rem;
+  width: calc(100% - 280px);
+  background: white;
+  min-height: 100vh;
+}
+
+/* ENCABEZADO PRINCIPAL */
+.main-header {
+  background: #488B49;
+  color: white;
+  padding: 3rem 2rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 25px rgba(72, 139, 73, 0.3);
+  text-align: center;
+}
+
+.main-header h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.main-header h2 {
+  font-size: 1.4rem;
+  font-weight: 400;
+  opacity: 0.95;
+  margin-bottom: 0.5rem;
+}
+
+.main-header h3 {
+  font-size: 1.1rem;
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+.main-header h4 {
+  font-size: 1rem;
+  font-weight: 300;
+  opacity: 0.8;
+  margin-top: 1rem;
+}
+
+/* TARJETAS DE CONTENIDO */
+/* TARJETAS DE CONTENIDO INTERACTIVAS */
+.content-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid #488B49;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.content-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(72, 139, 73, 0.1), transparent);
+  transition: left 0.6s;
+}
+
+.content-card:hover::before {
+  left: 100%;
+}
+
+.content-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(72, 139, 73, 0.25);
+  border-left: 5px solid #2d5534;
+}
+
+.content-card h2 {
+  color: #488B49;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.content-card:hover h2 {
+  color: #2d5534;
+  transform: translateX(5px);
+}
+
+/* Efecto para los párrafos dentro de las tarjetas */
+.content-card p {
+  transition: transform 0.3s ease;
+}
+
+.content-card:hover p {
+  transform: translateX(3px);
+}
+
+/* CONTENEDORES DE CÓDIGO (OCULTOS INICIALMENTE) */
+.code-container {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0;
+  margin: 1rem 0;
+  display: none;
+  overflow: hidden;
+}
+
+.code-content {
+  padding: 1.5rem;
+  background: #2d3748;
+  color: #e2e8f0;
+  font-family: 'Courier New', monospace;
+  border-left: 4px solid #488B49;
+  margin: 0;
+}
+
+/* BOTÓN FLOTANTE ELEGANTE */
+.floating-code-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #488B49;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.floating-code-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(72, 139, 73, 0.6);
+}
+
+.floating-code-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* GRÁFICOS Y TABLAS */
+.plot-container {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border: 1px solid #e9ecef;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+  
+  .main-header h1 {
+    font-size: 2rem;
+  }
+  
+  .floating-code-btn {
+    bottom: 20px;
+    right: 20px;
+    padding: 14px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  margin-top: 3rem;
+  border-top: 1px solid #e9ecef;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Estilos automáticos para TODOS los gráficos ggplot2 */
+.ggplot-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+  border-radius: 12px !important;
+  padding: 2rem !important;
+  margin: 2rem 0 !important;
+  border: 1px solid #e9ecef !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Estilos automáticos para TODAS las tablas kable */
+table {
+  border-collapse: collapse !important;
+  margin: 1.5rem auto !important;
+}
+
+/* Asegurar que las tablas kable tengan nuestros estilos */
+.kable-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 1.5rem 0 !important;
+  font-size: 0.95rem !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+  background: white !important;
+}
+
+.kable-table thead {
+  background: linear-gradient(135deg, #488B49 0%, #3a6e3a 100%) !important;
+  color: white !important;
+}
+
+.kable-table th {
+  padding: 1rem 1.2rem !important;
+  text-align: left !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  border: none !important;
+}
+
+.kable-table td {
+  padding: 1rem 1.2rem !important;
+  border-bottom: 1px solid #e9ecef !important;
+}
+
+.kable-table tbody tr:hover {
+  background-color: rgba(72, 139, 73, 0.05) !important;
+}
+
+/* Estilos para gráficos plotly automáticamente */
+.js-plotly-plot .plotly {
+  border-radius: 12px !important;
+  background: #f8f9fa !important;
+  padding: 1rem !important;
+}
+
+/* Contenedor automático para cualquier gráfico */
+.figure {
+  background: white !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+  border-left: 4px solid #488B49 !important;
+}
