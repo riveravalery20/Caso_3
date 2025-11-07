@@ -1,0 +1,422 @@
+Time,"Country Name","Agricultural land (% of land area)","Aquaculture production (metric tons)","Energy imports, net (% of energy use)","Fertilizer consumption (% of fertilizer production)"
+2022,"Afghanistan","58.7415482268525","11150","NA","248.022811305383"
+2022,"Albania","41.4452554744526","8908","32.276396797251","NA"
+2022,"Algeria","17.351348174024","5208","-127.243586824875","14.4756415024173"
+2022,"American Samoa","14.5","18","NA","NA"
+2022,"Andorra","39.9068085106383","0","NA","NA"
+2022,"Angola","36.9471404507901","2336","-353.971819384273","NA"
+2022,"Antigua and Barbuda","20.4545454545455","20","NA","NA"
+2022,"Argentina","43.4276443440799","6022.03","1.95855821220972","464.863734066567"
+2022,"Armenia","58.6134209413894","24000","76.8721086405015","NA"
+2022,"Aruba","11.1111111111111","1.5","NA","NA"
+2022,"Australia","47.2592374954823","125280.531","-234.279345921201","337.180374722401"
+2022,"Austria","31.4765838584586","4718.718","76.8111846576124","NA"
+2022,"Azerbaijan","57.8402903811252","3348.35","-263.127536733691","31.2436208749483"
+2022,"Bahamas, The","1.2987012987013","1","NA","NA"
+2022,"Bahrain","10.253164556962","56","-45.4751316679306","0.0616133354606148"
+2022,"Bangladesh","72.3706433287272","2731563","44.3070258449266","665.640670932042"
+2022,"Barbados","23.2558139534884","5.5","NA","NA"
+2022,"Belarus","39.8738854130745","7164.4","77.0799482437318","12.539581390488"
+2022,"Belgium","44.5661441595068","243","86.7619440824458","17.891934321776"
+2022,"Belize","7.97895659798334","730","NA","NA"
+2022,"Benin","43.0623652004257","3050","40.9031703802238","NA"
+2022,"Bermuda","5.55555555555556","0","NA","NA"
+2022,"Bhutan","13.7257472469848","95","NA","NA"
+2022,"Bolivia","35.8307014677375","21483","-67.3339047798362","21.3743427375577"
+2022,"Bosnia and Herzegovina","21.81640625","3959.9","26.3680612308532","265.456505791471"
+2022,"Botswana","45.63372328975","171","23.6817784648472","NA"
+2022,"Brazil","28.3267329812614","738981","-7.28721052757992","663.029699700089"
+2022,"British Virgin Islands","46.6666666666667","1","NA","NA"
+2022,"Brunei Darussalam","2.5426944971537","5018.305","-172.552632157863","NA"
+2022,"Bulgaria","46.2601326455416","9005.957","37.9626610649135","80.2748273501921"
+2022,"Burkina Faso","53.3497394005848","894","NA","NA"
+2022,"Burundi","82.8079633956386","540","NA","NA"
+2022,"Cabo Verde","19.6029776674938","35","NA","NA"
+2022,"Cambodia","34.8115777249037","330600","NA","NA"
+2022,"Cameroon","20.8921205390197","8224","-28.7126841321204","NA"
+2022,"Canada","6.49436207857817","167770","-89.4880948333503","26.4753457191702"
+2022,"Cayman Islands","11.25","88","NA","NA"
+2022,"Central African Republic","9.04218433978619","350","NA","NA"
+2022,"Chad","39.9761753494282","120","-177.762640714933","NA"
+2022,"Channel Islands","NA","1190","NA","NA"
+2022,"Chile","14.3199327104591","1524149","66.2732116154234","27.5316037582021"
+2022,"China","55.4326117545304","75434999","20.6245589248584","88.9596042512191"
+2022,"Colombia","37.6412798557909","204941.99","-139.124198035696","411.627589063795"
+2022,"Comoros","71.4669532509404","0","NA","NA"
+2022,"Congo, Dem. Rep.","15.3036258573918","5295","1.59626553466334","NA"
+2022,"Congo, Rep.","31.1897510980966","976.6","-347.419865428152","NA"
+2022,"Costa Rica","33.1439992166079","16772.41","53.0802332296344","NA"
+2022,"Cote d'Ivoire","84.1568125786164","7957","14.3786092266282","NA"
+2022,"Croatia","25.8756254467477","27217.793","61.8955356886193","211.217319780829"
+2022,"Cuba","61.6666666666667","15542.4","62.8133332274217","763.22740203604"
+2022,"Curacao","NA","0","NA","NA"
+2022,"Cyprus","13.3160497835498","7605.4","117.037858353679","NA"
+2022,"Czechia","45.7476202749375","19259","42.0233637396692","290.185283984277"
+2022,"Denmark","65.6","37922.2","47.3957198205642","NA"
+2022,"Djibouti","73.5030198446937","0","NA","NA"
+2022,"Dominica","33.3333333333333","2.5","NA","NA"
+2022,"Dominican Republic","54.6941243644449","3750","94.4206892076641","NA"
+2022,"Ecuador","21.5332581736189","1123048","-69.401314941725","NA"
+2022,"Egypt, Arab Rep.","4.07654829474107","1552430","9.78510684497825","45.2683461117196"
+2022,"El Salvador","57.707528957529","12919","59.5054447583379","NA"
+2022,"Equatorial Guinea","3.74046345811052","19","-422.769233942919","NA"
+2022,"Eritrea","62.6515330315189","4","NA","NA"
+2022,"Estonia","23.075122864498","800.819","6.83363931718332","22973.7101295553"
+2022,"Eswatini","69.4767441860465","60","20.5529558411835","NA"
+2022,"Ethiopia","34.0779564851996","1070","10.7924961213427","NA"
+2022,"Faroe Islands","70.0729927007299","108745","NA","NA"
+2022,"Fiji","17.0552818828681","211","NA","NA"
+2022,"Finland","7.45522996225995","16280.6","42.3818916396541","119.736763543406"
+2022,"France","52.6738892290565","200633.991","54.3201739791286","7180.74062138113"
+2022,"French Polynesia","8.80308268510516","1756.989","NA","NA"
+2022,"Gabon","8.35656459812939","87","-187.597030037125","NA"
+2022,"Gambia, The","62.6482213438735","69","NA","NA"
+2022,"Georgia","34.3056554899986","2743.2","79.5842068629208","29.6415228517434"
+2022,"Germany","47.5011449507671","26545","71.7534093856193","39.2476534060068"
+2022,"Ghana","55.393019913595","92135","-22.3656522253718","NA"
+2022,"Gibraltar","NA","0","NA","NA"
+2022,"Greece","41.6760170674942","141997.591","92.9081404835987","73.0352133328093"
+2022,"Greenland","0.592301132902911","20","NA","NA"
+2022,"Grenada","23.5294117647059","26","NA","NA"
+2022,"Guam","29.6296296296296","108","NA","NA"
+2022,"Guatemala","43.0384471817842","42313.4","38.364016749015","NA"
+2022,"Guinea","71.948919501872","3950","NA","NA"
+2022,"Guinea-Bissau","29.6239118065434","15","NA","NA"
+2022,"Guyana","3.41005967604433","953.4","NA","NA"
+2022,"Haiti","65.1306240928882","1685","NA","NA"
+2022,"Honduras","31.9599606756636","73193","55.5117185478317","NA"
+2022,"Hong Kong SAR, China","3.80952380952381","3361.2","175.706507863695","NA"
+2022,"Hungary","55.6214332675871","18557.112","64.4447152754582","106.243453891809"
+2022,"Iceland","18.565903005058","51362","NA","NA"
+2022,"India","60.0555856504293","10235300","36.529412379469","143.843295272156"
+2022,"Indonesia","29.0073830174182","14776056.934","-82.9192756077432","121.854810385847"
+2022,"Iran, Islamic Rep.","29.008936825886","548055","-32.4944592767049","58.6934622746046"
+2022,"Iraq","21.7784995277912","23000","-274.87736059498","231.138219847255"
+2022,"Ireland","63.115111046596","44014","85.9815290922962","NA"
+2022,"Isle of Man","71.4035087719298","0","NA","NA"
+2022,"Israel","24.7042513863216","13840","26.0915608340862","2.31745320607844"
+2022,"Italy","43.9631475720276","130496.845","83.6290340580981","125.600204179136"
+2022,"Jamaica","38.5041551246537","963.2","112.575323434922","NA"
+2022,"Japan","12.716049382716","943494.827","89.9707516343257","122.204177213785"
+2022,"Jordan","11.7462891636822","2582","96.3523279332296","2.12641252871946"
+2022,"Kazakhstan","79.3664851650183","13297.232","-119.310636509706","84.7436125884903"
+2022,"Kenya","49.4830453575056","28938","22.4376210703247","NA"
+2022,"Kiribati","41.9753086419753","2","NA","NA"
+2022,"Korea, Dem. People's Rep.","21.5530271572129","680700","4.89532080752115","NA"
+2022,"Korea, Rep.","16.2295081967213","2313068.64","85.4997854961215","56.3401931377474"
+2022,"Kosovo","NA","NA","NA","NA"
+2022,"Kuwait","8.41750841750842","464","-283.096624591869","NA"
+2022,"Kyrgyz Republic","55.2526068821689","20698.3","33.7815670306686","NA"
+2022,"Lao PDR","9.79116117850953","137788","-49.0213561069782","10.2242002359276"
+2022,"Latvia","31.6567571910654","869.91","40.3971271651881","NA"
+2022,"Lebanon","66.1275659824047","938","96.923460215068","38.5593607305936"
+2022,"Lesotho","74.9472990777339","1832.26","NA","NA"
+2022,"Liberia","19.9651162790698","1375","NA","NA"
+2022,"Libya","8.72387101174171","10","-249.727007920872","187.14"
+2022,"Liechtenstein","32.3125","0","NA","NA"
+2022,"Lithuania","46.503418311929","4859.01","76.1661860191737","41.6712820809743"
+2022,"Luxembourg","51.4711434630952","0","110.298331240177","NA"
+2022,"Macao SAR, China","NA","0","NA","NA"
+2022,"Madagascar","70.2904778274321","25187.6","NA","NA"
+2022,"Malawi","64.1705557912601","7148","NA","NA"
+2022,"Malaysia","26.0873535230558","574182.27","-0.578726686040022","148.624441465594"
+2022,"Maldives","19.6666666666667","6","NA","NA"
+2022,"Mali","35.466125849253","8830","NA","NA"
+2022,"Malta","27.34375","18050.539","389.552837996418","NA"
+2022,"Marshall Islands","38.8888888888889","25.84","NA","NA"
+2022,"Mauritania","38.5272145144077","0","NA","NA"
+2022,"Mauritius","43.064596895343","1545.3","NA","NA"
+2022,"Mexico","50.8701226883407","289618.536","21.1050764879457","372.000457438816"
+2022,"Micronesia, Fed. Sts.","7.14285714285714","0.5","NA","NA"
+2022,"Moldova","74.9695863746959","12910","86.56366606026","NA"
+2022,"Monaco","NA","0","NA","NA"
+2022,"Mongolia","71.9096506603489","0","-226.427034086937","NA"
+2022,"Montenegro","18.8847583643123","1087","29.6231897320918","NA"
+2022,"Morocco","65.8091218911046","2385.93","94.0020118503931","5.66780991093986"
+2022,"Mozambique","52.7726188356774","5547","-106.352427255745","NA"
+2022,"Myanmar","19.8875388787596","1197078.002","-19.025954239222","NA"
+2022,"Namibia","47.142562159142","340","60.4998985401718","NA"
+2022,"Nauru","20","0.5","NA","NA"
+2022,"Nepal","26.1213812347401","87385","27.4137248718471","NA"
+2022,"Netherlands","53.5788535788536","38477","99.3587652735443","14.6428918295496"
+2022,"New Caledonia","10.0672866520788","1479","NA","NA"
+2022,"New Zealand","37.0172040560556","106152","28.8214208572688","305.159481247809"
+2022,"Nicaragua","42.3051354495596","31568.5","46.4910182435548","NA"
+2022,"Niger","36.7877950580248","500","5.40557852442787","NA"
+2022,"Nigeria","75.9658687703811","259106","-66.2881011856041","21.1223448035578"
+2022,"North Macedonia","49.8413957176844","1814.2","63.8796872929643","NA"
+2022,"Northern Mariana Islands","1.17391304347826","41","NA","NA"
+2022,"Norway","2.70403821341313","1661740.372","-746.719365580602","18.1388529654464"
+2022,"Oman","4.73738287560582","3471","-213.629416330893","3.02980299893009"
+2022,"Pakistan","46.6311228725612","166200","39.7925509388676","107.061666612428"
+2022,"Palau","9.34782608695652","10","NA","NA"
+2022,"Panama","29.4057158263683","11847.21","171.186492615064","NA"
+2022,"Papua New Guinea","3.10250408514773","2462","NA","NA"
+2022,"Paraguay","54.1069405157129","20000","5.65149773480291","NA"
+2022,"Peru","19.05121875","140930.627","12.185965103062","NA"
+2022,"Philippines","42.3925948284536","2349252.015","54.4250767667774","198.603760150964"
+2022,"Poland","46.3131758633082","42201.499","46.8418755101648","74.6984580639359"
+2022,"Portugal","42.7894964936641","18896","81.5127954385107","101.517748732838"
+2022,"Puerto Rico (US)","19.0417136414882","11","NA","NA"
+2022,"Qatar","6.44038294168842","97.845","-396.072574936239","0.194742530687872"
+2022,"Romania","55.1025730180807","11210.78","32.4641501715792","455.999219855778"
+2022,"Russian Federation","13.1584362579663","348187","-75.1375358449974","14.5647361876753"
+2022,"Rwanda","80.0367774625051","6202","10.5793226381462","NA"
+2022,"Samoa","17.773381294964","10","NA","NA"
+2022,"San Marino","38.3333333333333","0","NA","NA"
+2022,"Sao Tome and Principe","44.7916666666667","0","NA","NA"
+2022,"Saudi Arabia","80.7732356758416","119844.7","-178.200448812201","7.90566149976205"
+2022,"Senegal","49.4000934919233","1739.1","69.3863916678086","438.172456407872"
+2022,"Serbia","41.2534189558806","5776.47","45.3074666486561","212.859388107426"
+2022,"Seychelles","3.3695652173913","0","NA","NA"
+2022,"Sierra Leone","54.7104461069548","160","NA","NA"
+2022,"Singapore","0.919220055710306","4745.21","258.425380474946","NA"
+2022,"Sint Maarten (Dutch part)","NA","0","NA","NA"
+2022,"Slovak Republic","38.4567387687188","2614","68.8872819822269","64.1346679623956"
+2022,"Slovenia","30.3291551617965","1643.7","53.5470840696794","NA"
+2022,"Solomon Islands","3.8335119685602","11879.3","NA","NA"
+2022,"Somalia, Fed. Rep.","70.3430356744349","0","NA","NA"
+2022,"South Africa","79.4178502831612","11355.02","-14.1484249128245","328.425194494315"
+2022,"South Sudan","44.7085911414239","47","-859.502809253272","NA"
+2022,"Spain","53.3572810066811","273065.807","82.8674923431858","84.7979504410811"
+2022,"Sri Lanka","45.4574846427417","59080.29","60.0395802943756","1461.39602854664"
+2022,"St. Kitts and Nevis","23.0769230769231","4","NA","NA"
+2022,"St. Lucia","16.2950819672131","209.43","NA","NA"
+2022,"St. Martin (French part)","NA","0","NA","NA"
+2022,"St. Vincent and the Grenadines","17.9487179487179","13","NA","NA"
+2022,"Sudan","60.3131691648822","6500","18.8568106273271","NA"
+2022,"Suriname","0.448576861869665","45","17.1005356316264","NA"
+2022,"Sweden","7.35366332744058","11327.2","28.6998914864254","NA"
+2022,"Switzerland","37.8712936567617","2500","51.7338476414653","NA"
+2022,"Syrian Arab Republic","74.0946468441976","1755","61.2715018609797","NA"
+2022,"Tajikistan","28.0726277109302","2248","28.045014066896","NA"
+2022,"Tanzania","44.6163919620682","75896.046","12.9338562520213","1798.72938596606"
+2022,"Thailand","45.9981600735971","1001024","57.1245185678327","368.28533224066"
+2022,"Timor-Leste","22.9589778076664","1125","NA","NA"
+2022,"Togo","70.2334988049274","1151","NA","NA"
+2022,"Tonga","48.6111111111111","100","NA","NA"
+2022,"Trinidad and Tobago","10.5263157894737","7.4","-75.4573322877313","0.734843845682792"
+2022,"Tunisia","62.4388516992791","20926.057","53.1400289008402","41.8891720667467"
+2022,"Turkiye","50.0253368501748","514823","72.704129716299","133.832873763079"
+2022,"Turkmenistan","84.5536569276275","175","-109.777211443604","67.6729019217514"
+2022,"Turks and Caicos Islands","1.05263157894737","0","NA","NA"
+2022,"Tuvalu","60","0","NA","NA"
+2022,"Uganda","71.8880909634949","101422","20.4895150227516","NA"
+2022,"Ukraine","71.2996202968588","14630","23.3690635612636","NA"
+2022,"United Arab Emirates","5.51339763446916","3524.96","-171.482371329992","1.76486347464529"
+2022,"United Kingdom","71.9816417972141","201355.112","39.1791428970385","215.658409181816"
+2022,"United States","46.0829793974695","479039.932","-6.49503863234049","100.791156541127"
+2022,"Uruguay","80.8735287395726","73.6","46.2068935643027","NA"
+2022,"Uzbekistan","58.4792534698583","130274","1.54758954098202","68.6399476972042"
+2022,"Vanuatu","15.3404429860541","4","NA","NA"
+2022,"Venezuela, RB","24.3750354288306","67531","-73.9084713357919","67.917864476386"
+2022,"Viet Nam","39.2911951351024","5113494.28","33.9991947830939","115.871912209404"
+2022,"Virgin Islands (U.S.)","9.42857142857143","8","NA","NA"
+2022,"West Bank and Gaza","64.9294605809129","731","NA","NA"
+2022,"Yemen, Rep.","44.4191904843078","10","-11.0466644311721","NA"
+2022,"Zambia","32.0679589448338","75648","9.03001865064098","NA"
+2022,"Zimbabwe","41.7977107405971","8353.01","16.9757127922617","253.259713701432"
+,"","","","",""
+,"","","","",""
+,"","","","",""
+Data from database: World Development Indicators,"","","","",""
+Last Updated: 10/07/2025,"","","","",""
+Code,"License Type","Indicator Name","Short definition","Long definition","Source","Topic","Dataset","Unit of measure","Periodicity","Reference period","Aggregation method","Statistical concept and methodology","Development relevance","Limitations and exceptions","Other notes","License URL"
+AG.LND.AGRI.ZS,"CC BY-4.0","Agricultural land (% of land area)","Agricultural land refers to the share of land area that is arable, under permanent crops, and under permanent pastures. Arable land includes land defined by the FAO as land under temporary crops (double-cropped areas are counted once), temporary meadows for mowing or for pasture, land under market or kitchen gardens, and land temporarily fallow. Land abandoned as a result of shifting cultivation is excluded. Land under permanent crops is land cultivated with crops that occupy the land for long periods and need not be replanted after each harvest, such as cocoa, coffee, and rubber. This category includes land under flowering shrubs, fruit trees, nut trees, and vines, but excludes land under trees grown for wood or timber. Permanent pasture is land used for five or more years for forage, including natural and cultivated crops.","Agricultural land refers to the share of land area that is arable, under permanent crops, and under permanent pastures. Arable land includes land defined by the FAO as land under temporary crops (double-cropped areas are counted once), temporary meadows for mowing or for pasture, land under market or kitchen gardens, and land temporarily fallow. Land abandoned as a result of shifting cultivation is excluded. Land under permanent crops is land cultivated with crops that occupy the land for long periods and need not be replanted after each harvest, such as cocoa, coffee, and rubber. This category includes land under flowering shrubs, fruit trees, nut trees, and vines, but excludes land under trees grown for wood or timber. Permanent pasture is land used for five or more years for forage, including natural and cultivated crops.","FAO electronic files and web site, Food and Agriculture Organization of the United Nations (FAO), publisher: Food and Agriculture Organization of the United Nations (FAO)","Environment: Land use","WDI","% (share) of land area","Annual","1961-2022","Weighted average","Methodology: Agriculture is still a major sector in many economies, and agricultural activities provide developing countries with food and revenue. But agricultural activities also can degrade natural resources. Poor farming practices can cause soil erosion and loss of soil fertility. Efforts to increase productivity by using chemical fertilizers, pesticides, and intensive irrigation have environmental costs and health impacts. Excessive use of chemical fertilizers can alter the chemistry of soil. Pesticide poisoning is common in developing countries. And salinization of irrigated land diminishes soil fertility. Thus, inappropriate use of inputs for agricultural production has far-reaching effects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Agricultural land is also sometimes classified as irrigated and non-irrigated land. In arid and semi-arid countries agriculture is often confined to irrigated land, with very little farming possible in non-irrigated areas. Land abandoned as a result of shifting cultivation is excluded from Arable land.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Data on agricultural land are valuable for conducting studies on a various perspectives concerning agricultural production, food security and for deriving cropping intensity among others uses. Agricultural land indicator, along with land-use indicators, can also elucidate the environmental sustainability of countries' agricultural practices.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Total land area does not include inland water bodies such as major rivers and lakes. Variations from year to year may be due to updated or revised data rather than to change in area.","Agricultural land covers more than one-third of the world's land area, with arable land representing less than one-third of agricultural land (about 10 percent of the world's land area). Agricultural land constitutes only a part of any country's total area, which can include areas not suitable for agriculture, such as forests, mountains, and inland water bodies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+In many industrialized countries, agricultural land is subject to zoning regulations. In the context of zoning, agricultural land (or more properly agriculturally zoned land) refers to plots that may be used for agricultural activities, regardless of the physical type or quality of land.
+
+
+
+
+
+
+
+
+
+
+
+
+
+FAO's agricultural land data contains a wide range of information on variables that are significant for: understanding the structure of a country's agricultural sector; making economic plans and policies for food security; deriving environmental indicators, including those related to investment in agriculture and data on gross crop area and net crop area which are useful for policy formulation and monitoring.
+
+
+
+
+
+
+
+
+
+
+
+
+
+There is no single correct mix of inputs to the agricultural land, as it is dependent on local climate, land quality, and economic development; appropriate levels and application rates vary by country and over time and depend on the type of crops, the climate and soils, and the production process used.","The data are collected by the Food and Agriculture Organization of the United Nations (FAO) from official national sources through annual questionnaires and are supplemented with information from official secondary data sources. The secondary sources cover official country data from websites of national ministries, national publications and related country data reported by various international organizations.. The FAO tries to impose standard definitions and reporting methods, but complete consistency across countries and over time is not possible. Thus, data on agricultural land in different climates may not be comparable. For example, permanent pastures are quite different in nature and intensity in African countries and dry Middle Eastern countries. Data on agricultural employment, in particular, should be used with caution. In many countries much agricultural employment is informal and unrecorded, including substantial work performed by women and children. To address some of these concerns, this indicator is heavily footnoted in the database in sources, definition, and coverage.","Areas of former states are included in the successor states.","https://datacatalog.worldbank.org/public-licenses#cc-by"
+ER.FSH.AQUA.MT,"CC BY-4.0","Aquaculture production (metric tons)","Aquaculture is understood to mean the farming of aquatic organisms including fish, molluscs, crustaceans and aquatic plants. Aquaculture production specifically refers to output from aquaculture activities, which are designated for final harvest for consumption.","Aquaculture is understood to mean the farming of aquatic organisms including fish, molluscs, crustaceans and aquatic plants. Aquaculture production specifically refers to output from aquaculture activities, which are designated for final harvest for consumption.","Food and Agriculture Organization of the United Nations (FAO), publisher: Food and Agriculture Organization of the United Nations (FAO)","Environment: Agricultural production","WDI","metric tons","Annual","1960-2022","Sum","Methodology: Aquaculture production specifically refers to output from aquaculture activities, which are designated for final harvest for consumption. At this time, harvest for ornamental purposes is not included.","Aquaculture is understood to mean the farming of aquatic organisms including fish, molluscs, crustaceans and aquatic plants. Farming implies some form of intervention in the rearing process to enhance production, such as regular stocking, feeding, protection from predators, etc. Farming also implies individual or corporate ownership of the stock being cultivated. For statistical purposes, aquatic organisms which are harvested by an individual of corporate body which has owned them throughout their rearing period contribute to aquaculture while aquatic organisms which are exploitable by public as a common property resource, with or without appropriate licences, are the harvest of fisheries.","","","https://datacatalog.worldbank.org/public-licenses#cc-by"
+EG.IMP.CONS.ZS,"CC BY-4.0","Energy imports, net (% of energy use)","Net energy imports are estimated as gross imports less gross exports, both measured in tons of oil equivalents (toe). A negative value indicates that the country is a net exporter. Energy use refers to use of primary energy before transformation to other end-use fuels, which is equal to indigenous production plus imports and stock changes, minus exports and fuels supplied to ships and aircraft engaged in international transport.","Net energy imports are estimated as gross imports less gross exports, both measured in tons of oil equivalents (toe). A negative value indicates that the country is a net exporter. Energy use refers to use of primary energy before transformation to other end-use fuels, which is equal to indigenous production plus imports and stock changes, minus exports and fuels supplied to ships and aircraft engaged in international transport.","IEA Energy Statistics Data Browser, International Energy Agency (IEA), uri: https://www.iea.org/data-and-statistics/data-tools/energy-statistics-data-browser, publisher: International Energy Agency (IEA), date accessed: 2025-03-25","Environment: Energy production & use","WDI","% (share) of energy use","Annual","1990-2023","Weighted average","Methodology: Energy data are compiled by the International Energy Agency (IEA). IEA data for economies that are not members of the Organisation for Economic Co-operation and Development (OECD) are based on national energy data adjusted to conform to annual questionnaires completed by OECD member governments.
+
+
+
+
+
+
+
+
+
+
+
+
+
+A negative value in energy imports indicates that the country is a net exporter. Energy use refers to use of primary energy before transformation to other end-use fuels, which is equal to indigenous production plus imports and stock changes, minus exports and fuels supplied to ships and aircraft engaged in international transport.","Modern energy services are crucial to a country's economic development. Access to modern energy is essential for the provision of clean water, sanitation and healthcare and for the provision of reliable and efficient lighting, heating, cooking, mechanical power, and transport and telecommunications services.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Governments in many countries are increasingly aware of the urgent need to make better use of the world's energy resources. Improved energy efficiency is often the most economic and readily available means of improving energy security and reducing greenhouse gas emissions.","The IEA makes these estimates in consultation with national statistical offices, oil companies, electric utilities, and national energy experts. The IEA occasionally revises its time series to reflect political changes, and energy statistics undergo continual changes in coverage or methodology as more detailed energy accounts become available. Breaks in series are therefore unavoidable.","","https://datacatalog.worldbank.org/public-licenses#cc-by"
+AG.CON.FERT.PT.ZS,"CC BY-4.0","Fertilizer consumption (% of fertilizer production)","Fertilizer consumption measures the quantity of plant nutrients used per unit of arable land. Fertilizer products cover nitrogenous, potash, and phosphate fertilizers (including ground rock phosphate). Traditional nutrients--animal and plant manures--are not included. For the purpose of data dissemination, FAO has adopted the concept of a calendar year (January to December). Some countries compile fertilizer data on a calendar year basis, while others are on a split-year basis.","Fertilizer consumption measures the quantity of plant nutrients used per unit of arable land. Fertilizer products cover nitrogenous, potash, and phosphate fertilizers (including ground rock phosphate). Traditional nutrients--animal and plant manures--are not included. For the purpose of data dissemination, FAO has adopted the concept of a calendar year (January to December). Some countries compile fertilizer data on a calendar year basis, while others are on a split-year basis.","FAO electronic files and web site, Food and Agriculture Organization of the United Nations (FAO), publisher: Food and Agriculture Organization of the United Nations (FAO)","Environment: Agricultural production","WDI","% (ratio)","Annual","1961-2022","Weighted average","Methodology: Fertilizer consumption measures the quantity of plant nutrients, and is calculated as production plus imports minus exports. Because some chemical compounds used for fertilizers have other industrial applications, the consumption data may overstate the quantity available for crops. Fertilizer consumption as a share of production shows the agriculture sector's vulnerability to import and energy price fluctuation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Most fertilizers that are commonly used in agriculture contain the three basic plant nutrients - nitrogen, phosphorus, and potassium. Some fertilizers also contain certain "micronutrients," such as zinc and other metals that are necessary for plant growth. Materials that are applied to the land primarily to enhance soil characteristics (rather than as plant food) are commonly referred to as soil amendments. Fertilizers and soil amendments are largely derived from raw material, composts and other organic matter, and wastes, such as sewage sludge and certain industrial wastes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+FAO defines arable land as land under temporary crops (double-cropped areas are counted once), temporary meadows for mowing or for pasture, land under market or kitchen gardens, and land temporarily fallow; land abandoned as a result of shifting cultivation is excluded.","Factors such as the green revolution, has led to impressive progress in increasing crop yields over the last few decades. This progress, however, is not equal across all regions. Continued progress depends on maintaining agricultural research and education. The cultivation of cereals varies widely in different countries and depends partly upon the development of the economy. Production depends on the nature of the soil, the amount of rainfall, irrigation, quality od seeds, and the techniques applied to promote growth.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Agriculture is still a major sector in many economies, and agricultural activities provide developing countries with food and revenue. But agricultural activities also can degrade natural resources. Poor farming practices can cause soil erosion and loss of soil fertility. Efforts to increase productivity by using chemical fertilizers, pesticides, and intensive irrigation have environmental costs and health impacts. Salinization of irrigated land diminishes soil fertility. Thus, inappropriate use of inputs for agricultural production has far-reaching effects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+In many developed countries, excessive nitrogen fertilizer applications have sometime lead to pest problems by increasing the birth rate, longevity and overall fitness of certain agricultural pests, such as aphids. Further, excessive use of fertilizers emits significant quantities of greenhouse gas into the atmosphere. Over-fertilization of a vital nutrient can be detrimental, as "fertilizer burn" can occur when too much fertilizer is applied, resulting in drying out of the leaves and damage or even death of the plant. In many industrialized countries, overuse of fertilizers has resulted in contamination of surface water and groundwater.
+
+
+
+
+
+
+
+
+
+
+
+
+
+There is no single correct mix of inputs to the agricultural land, as it is dependent on local climate, land quality, and economic development; appropriate levels and application rates vary by country and over time and depend on the type of crops, the climate and soils, and the production process used.","The FAO has revised the time series for fertilizer consumption and irrigation for 2002 onward. FAO collects fertilizer statistics for production, imports, exports, and consumption through the new FAO fertilizer resources questionnaire. In the previous release, the data were based on total consumption of fertilizers, but the data in the recent release are based on the nutrients in fertilizers. Some countries compile fertilizer data on a calendar year basis, while others compile on a crop year basis (July-June). Previous editions of this indicator, Fertilizer consumption (100 grams per hectare of arable land), reported data on a crop year basis, but this edition uses the calendar year, as adopted by the FAO. Caution should thus be used when comparing data over time.
+
+
+
+
+
+
+
+
+
+
+
+The data are collected by the Food and Agriculture Organization of the United Nations (FAO) through annual questionnaires. The FAO tries to impose standard definitions and reporting methods, but complete consistency across countries and over time is not possible. The secondary sources cover official country data from websites of national ministries, national publications and related country data reported by various international organizations.","The world and regional aggregate series do not include data from countries that no longer exist.","https://datacatalog.worldbank.org/public-licenses#cc-by"
