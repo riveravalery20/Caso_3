@@ -1,7 +1,6 @@
 library(FactoClass)
 library(FactoMineR)
 
-# Opción 1: Modo interactivo (si quieres confirmar visualmente)
 resultado_ACP <- FactoClass(Muertes_df, dudi.pca)
 
 # Ver los clusters asignados a cada país
