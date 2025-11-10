@@ -1,0 +1,287 @@
+---
+title: "clustering graficos"
+author: "Melany Enriquez - Santiago Posada - Sofía Potosí - Valery Rivera-"
+date: "`r Sys.Date()`"
+output: html_document
+---
+## Cargar Librerías
+
+```{r librerias}
+library(FactoClass)
+library(FactoMineR)
+library(ggplot2)
+library(plotly)
+library(RColorBrewer)
+library(gridExtra)
+library(reshape2)
+library(ggforce)
+```
+
+## Análisis de Clustering
+
+```{r analisis-clustering}
+# Realizar ACP con clustering automático
+resultado_ACP <- FactoClass(Muertes_df, dudi.pca)
+
+# Crear base de datos con clusters asignados
+NuevaBase <- data.frame(
+  Pais = row.names(Muertes_df),
+  Cluster = as.factor(resultado_ACP$cluster),
+  Muertes_df
+)
+
+# Extraer varianza explicada
+varianza <- (resultado_ACP$dudi$eig / sum(resultado_ACP$dudi$eig)) * 100
+varianza_acum <- cumsum(varianza)
+
+# Paleta de colores para los gráficos
+colores <- brewer.pal(max(3, length(unique(NuevaBase$Cluster))), "Set1")
+```
+
+## Resumen de Clusters
+
+```{r resumen-clusters}
+cat("=== RESUMEN DE CLUSTERS ===\n")
+cat("Países por cluster:\n")
+print(table(NuevaBase$Cluster))
+
+cat("\n\nPaíses en cada cluster:\n")
+for(i in unique(NuevaBase$Cluster)) {
+  cat(paste0("\nCluster ", i, ":\n"))
+  print(NuevaBase$Pais[NuevaBase$Cluster == i])
+}
+```
+
+---
+
+## 1. Scree Plot - Varianza Explicada
+
+Este gráfico muestra cuánta varianza explica cada componente principal. La línea roja indica la varianza acumulada.
+
+```{r scree-plot, fig.width=10, fig.height=6}
+# Preparar datos de varianza
+df_varianza <- data.frame(
+  Componente = paste0("CP", 1:length(varianza)),
+  Varianza = varianza,
+  Varianza_Acumulada = varianza_acum
+)
+
+# Crear gráfico
+ggplot(df_varianza[1:min(10, nrow(df_varianza)),], aes(x = Componente)) +
+  geom_bar(aes(y = Varianza), stat = "identity", fill = "#3498db", alpha = 0.8) +
+  geom_line(aes(y = Varianza_Acumulada, group = 1), color = "#e74c3c", size = 1.2) +
+  geom_point(aes(y = Varianza_Acumulada), color = "#e74c3c", size = 3) +
+  geom_hline(yintercept = 80, linetype = "dashed", color = "gray40") +
+  labs(
+    title = "Scree Plot - Varianza Explicada por Componente",
+    subtitle = "La línea roja muestra la varianza acumulada",
+    x = "Componentes Principales",
+    y = "% Varianza Explicada"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+---
+
+## 2. Círculo de Correlaciones
+
+Muestra cómo se relacionan las variables con los componentes principales. Las flechas más largas y rojizas indican mejor representación.
+
+```{r circulo-correlaciones, fig.width=10, fig.height=8}
+# Extraer coordenadas de variables
+coord_var <- as.data.frame(resultado_ACP$dudi$co[, 1:2])
+coord_var$Variable <- rownames(coord_var)
+colnames(coord_var)[1:2] <- c("Comp1", "Comp2")
+
+# Calcular calidad de representación
+coord_var$Calidad <- sqrt(coord_var$Comp1^2 + coord_var$Comp2^2)
+
+# Crear gráfico
+ggplot(coord_var, aes(x = Comp1, y = Comp2)) +
+  # Círculo de radio 1
+  geom_circle(aes(x0 = 0, y0 = 0, r = 1), inherit.aes = FALSE, 
+              color = "gray70", linetype = "dashed") +
+  # Flechas desde el origen
+  geom_segment(aes(x = 0, y = 0, xend = Comp1, yend = Comp2, color = Calidad),
+               arrow = arrow(length = unit(0.3, "cm")), size = 1) +
+  # Etiquetas de variables
+  geom_text(aes(label = Variable), hjust = -0.1, vjust = -0.1, 
+            size = 3.5, fontface = "bold") +
+  scale_color_gradient(low = "#95a5a6", high = "#e74c3c", 
+                       name = "Calidad\nRepresentación") +
+  labs(
+    title = "Círculo de Correlaciones",
+    subtitle = "Relación entre variables y componentes principales",
+    x = paste0("Componente 1 (", round(varianza[1], 1), "%)"),
+    y = paste0("Componente 2 (", round(varianza[2], 1), "%)")
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 14)) +
+  coord_fixed()
+```
+
+---
+
+## 3. Biplot de Países por Cluster
+
+Visualiza cómo se agrupan los países en el espacio de componentes principales. Las elipses muestran la región de confianza de cada cluster.
+
+```{r biplot-clusters, fig.width=12, fig.height=8}
+# Extraer coordenadas de individuos
+coord_ind <- as.data.frame(resultado_ACP$dudi$li[, 1:2])
+coord_ind$Pais <- NuevaBase$Pais
+coord_ind$Cluster <- NuevaBase$Cluster
+colnames(coord_ind)[1:2] <- c("Comp1", "Comp2")
+
+# Crear gráfico
+ggplot(coord_ind, aes(x = Comp1, y = Comp2, color = Cluster, label = Pais)) +
+  geom_point(size = 4, alpha = 0.7) +
+  geom_text(size = 3, hjust = -0.2, vjust = 0.5, check_overlap = TRUE) +
+  stat_ellipse(aes(group = Cluster), level = 0.95, size = 1, linetype = "dashed") +
+  scale_color_manual(values = colores, name = "Cluster") +
+  labs(
+    title = "Biplot de Países por Cluster",
+    subtitle = "Componentes Principales 1 y 2",
+    x = paste0("Componente 1 (", round(varianza[1], 1), "%)"),
+    y = paste0("Componente 2 (", round(varianza[2], 1), "%)")
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "right"
+  )
+```
+
+---
+
+## 4. Visualización 3D Interactiva ✨
+
+**¡Gráfico interactivo!** Puedes rotarlo con el mouse para ver los clusters desde diferentes ángulos.
+
+```{r grafico-3d-interactivo, fig.width=12, fig.height=10}
+# Verificar si hay al menos 3 componentes
+if(ncol(resultado_ACP$dudi$li) >= 3) {
+  # Coordenadas para 3 componentes
+  coord_3d <- as.data.frame(resultado_ACP$dudi$li[, 1:3])
+  coord_3d$Pais <- NuevaBase$Pais
+  coord_3d$Cluster <- as.factor(NuevaBase$Cluster)
+  colnames(coord_3d)[1:3] <- c("Comp1", "Comp2", "Comp3")
+  
+  # Crear gráfico 3D interactivo
+  plot_ly(coord_3d, x = ~Comp1, y = ~Comp2, z = ~Comp3, 
+          color = ~Cluster, colors = colores,
+          text = ~Pais, type = "scatter3d", mode = "markers+text",
+          marker = list(size = 8, opacity = 0.8),
+          textposition = "top right") %>%
+    layout(
+      title = list(text = "Visualización 3D Interactiva de Clusters", 
+                   font = list(size = 16, family = "Arial, sans-serif")),
+      scene = list(
+        xaxis = list(title = paste0("Comp 1 (", round(varianza[1], 1), "%)")),
+        yaxis = list(title = paste0("Comp 2 (", round(varianza[2], 1), "%)")),
+        zaxis = list(title = paste0("Comp 3 (", round(varianza[3], 1), "%)"))
+      )
+    )
+} else {
+  cat("No hay suficientes componentes para visualización 3D")
+}
+```
+
+---
+
+## 5. Heatmap de Perfiles por Cluster
+
+Muestra las características distintivas de cada cluster. Los valores están normalizados (Z-scores).
+
+```{r heatmap-clusters, fig.width=12, fig.height=6}
+# Calcular medias por cluster
+medias_cluster <- aggregate(. ~ Cluster, data = NuevaBase[, -1], FUN = mean)
+rownames(medias_cluster) <- paste0("Cluster ", medias_cluster$Cluster)
+medias_cluster <- medias_cluster[, -1]
+
+# Normalizar valores
+medias_norm <- scale(medias_cluster)
+
+# Convertir a formato largo
+medias_long <- melt(as.matrix(medias_norm))
+colnames(medias_long) <- c("Cluster", "Variable", "Valor_Z")
+
+# Crear heatmap
+ggplot(medias_long, aes(x = Variable, y = Cluster, fill = Valor_Z)) +
+  geom_tile(color = "white", size = 0.5) +
+  geom_text(aes(label = round(Valor_Z, 2)), color = "black", size = 3) +
+  scale_fill_gradient2(low = "#3498db", mid = "white", high = "#e74c3c", 
+                       midpoint = 0, name = "Valor\nNormalizado") +
+  labs(
+    title = "Perfil de Clusters - Heatmap",
+    subtitle = "Valores normalizados (Z-scores) de cada variable por cluster",
+    x = "Causas de Muerte",
+    y = "Cluster"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9)
+  )
+```
+
+---
+
+## 6. Distribución de Variables por Cluster
+
+Boxplots que comparan la distribución de cada variable entre clusters.
+
+```{r boxplots-clusters, fig.width=14, fig.height=10}
+# Preparar datos en formato largo
+NuevaBase_long <- melt(NuevaBase, id.vars = c("Pais", "Cluster"))
+
+# Crear boxplots
+ggplot(NuevaBase_long, aes(x = Cluster, y = value, fill = Cluster)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = 21) +
+  facet_wrap(~variable, scales = "free_y", ncol = 3) +
+  scale_fill_manual(values = colores) +
+  labs(
+    title = "Distribución de Variables por Cluster",
+    subtitle = "Boxplots comparativos",
+    x = "Cluster",
+    y = "Valor"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "none",
+    strip.text = element_text(face = "bold", size = 9)
+  )
+```
+
+---
+
+## 7. Características Significativas
+
+```{r caracteristicas-significativas}
+cat("=== CARACTERÍSTICAS SIGNIFICATIVAS DE CADA CLUSTER ===\n")
+print(resultado_ACP$carac.cont)
+```
+
+## 8. Estadísticas Descriptivas por Cluster
+
+```{r estadisticas-descriptivas}
+cat("\n=== ESTADÍSTICAS DESCRIPTIVAS POR CLUSTER ===\n")
+medias_resumen <- aggregate(. ~ Cluster, data = NuevaBase[, -1], FUN = mean)
+print(round(medias_resumen, 2))
+```
+
+---
+
+## Conclusiones
+
+Los clusters identificados muestran patrones diferenciados de mortalidad entre países. Cada grupo presenta características únicas que pueden observarse en los gráficos anteriores.
+
+---
+
+*Análisis generado el `r format(Sys.Date(), "%d/%m/%Y")`*
+
