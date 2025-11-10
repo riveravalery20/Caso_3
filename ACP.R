@@ -99,3 +99,4 @@ res.ind$cos2           # Calidad de representación
 # Visualizar contribuciones de países a los primeros componentes
 View(res.ind$contrib[,1:3]) # Miro los primeros factores
 res.ind$contrib[,1:2]
+
