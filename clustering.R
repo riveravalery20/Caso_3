@@ -12,6 +12,11 @@ library(FactoMineR)
 
 resultado_ACP <- FactoClass(Muertes_df, dudi.pca)
 
+#Cerrar dispositivos gráficos
+dev.off()
+# O cerrar TODOS si tienes varios abiertos
+while (!is.null(dev.list())) dev.off()
+# Intentar de nuevo
 NuevaBase <- data.frame(Cluster = resultado_ACP$cluster, Muertes)
 View(NuevaBase)
 
