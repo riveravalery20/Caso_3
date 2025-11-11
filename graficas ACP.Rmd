@@ -357,32 +357,97 @@ print(p3)
 ```
 
 ```{r grafico variables , include=FALSE}
+library(factoextra)
+library(plotly)
+library(dplyr)
 
-```
+# Extraer datos de las variables
+var_data <- get_pca_var(res.pca)
 
-```{r grafico biplot , include=FALSE}
-# BIPLOT SIMPLIFICADO - MENOS ELEMENTOS
-p5 <- fviz_pca_biplot(res.pca_short,
-                select.var = list(contrib = 15),  # Reducir a 15 variables
-                select.ind = list(cos2 = 20),     # Reducir a 20 países
-                col.var = "#2E9FDF",
-                col.ind = "#696969",
-                repel = TRUE,
-                labelsize = 3,
-                pointsize = 1.5,
-                arrowsize = 0.6,
-                ggtheme = theme_minimal(),
-                axes = c(1,2)) +
-  labs(
-    title = "BIPLOT - COMPONENTES PRINCIPALES",
-    subtitle = "15 Variables y 20 Países Más Representativos",
-    x = paste0("CP1 (", round(res.pca_short$sdev[1]^2/sum(res.pca_short$sdev^2)*100, 1), "%)"),
-    y = paste0("CP2 (", round(res.pca_short$sdev[2]^2/sum(res.pca_short$sdev^2)*100, 1), "%)")
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 12),
-    plot.subtitle = element_text(hjust = 0.5, color = "gray40", size = 9)
+# Crear dataframe con información completa para PC1 y PC2
+df_var <- data.frame(
+  Variable = rownames(var_data$coord),
+  PC1 = var_data$coord[,1],
+  PC2 = var_data$coord[,2],  # Cambiado: PC2 en lugar de PC3
+  Contrib = rowSums(var_data$contrib[,c(1,2)]),  # Contribución total a PC1 y PC2
+  Cos2 = rowSums(var_data$cos2[,c(1,2)])        # Calidad de representación en PC1 y PC2
+)
+
+# Crear gráfico interactivo profesional - SIN ETIQUETAS PERMANENTES
+grafico_profesional <- plot_ly(df_var, x = ~PC1, y = ~PC2,  # Cambiado: PC2 en lugar de PC3
+        type = 'scatter',
+        mode = 'markers',  # Solo markers, sin text
+        marker = list(
+          size = 12,
+          color = ~Contrib,
+          colorscale = list(
+            c(0, "#00AFBB"),
+            c(0.3, "#00AFBB"),
+            c(0.5, "#E7B800"),
+            c(1, "#FC4E07")
+          ),
+          showscale = TRUE,
+          colorbar = list(
+            title = "Contribución",
+            thickness = 15,
+            len = 0.5
+          ),
+          opacity = 0.8,
+          line = list(
+            width = 2,
+            color = 'darkgray'
+          )
+        ),
+        hoverinfo = 'text',
+        hovertext = ~paste(
+          '<b>Variable:</b>', Variable,
+          '<br><b>PC1:</b>', round(PC1, 3),
+          '<br><b>PC2:</b>', round(PC2, 3),  # Cambiado: PC2 en lugar de PC3
+          '<br><b>Contribución:</b>', round(Contrib, 1), '%',
+          '<br><b>Calidad (cos2):</b>', round(Cos2, 3)
+        ),
+        hoverlabel = list(
+          bgcolor = "white",
+          bordercolor = "black",
+          font = list(color = "black", size = 12)
+        )
+) %>%
+  layout(
+    title = list(
+      text = "<b>Análisis PCA - Contribución de Variables (PC1 vs PC2)</b>",  # Cambiado el título
+      font = list(size = 16, family = "Arial"),
+      x = 0.05
+    ),
+    xaxis = list(
+      title = list(
+        text = "PC1",
+        font = list(size = 14, family = "Arial")
+      ),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1,
+      showgrid = TRUE
+    ),
+    yaxis = list(
+      title = list(
+        text = "PC2",  # Cambiado: PC2 en lugar de PC3
+        font = list(size = 14, family = "Arial")
+      ),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1,
+      showgrid = TRUE
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    margin = list(l = 80, r = 80, b = 80, t = 80),
+    showlegend = FALSE,
+    font = list(family = "Arial")
   )
 
-print(p5)
+# Mostrar el gráfico
+grafico_profesional
 ```
+
