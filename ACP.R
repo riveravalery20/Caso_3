@@ -6,8 +6,6 @@ Muertes_df <- Muertes %>%
 
 rownames(Muertes_df) <- Muertes$Pais
 
-# Visualizar la base preparada
-View(Muertes_df)
 
 # ============================================================================
 # EQUIVALENTE A: decathlon2.train <- decathlon2[1:23, 1:10]
