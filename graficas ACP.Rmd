@@ -265,31 +265,23 @@ print(p2)
 ```
 
 ```{r grafico individuos , include=FALSE}
+library(factoextra)
+library(plotly)
 
-# Calcular cos2 para cada país
-cos2_values <- res.pca$ind$cos2[, 1] + res.pca$ind$cos2[, 2]
+# Crear el gráfico PCA base
+p3 <- fviz_pca_ind(res.pca,
+                 col.ind = "cos2",
+                 gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+                 repel = FALSE,  # Important: desactivar repel para plotly
+                 geom = "point") # Solo puntos, sin texto
 
-# Seleccionar top 20 países con mejor representación
-top_countries <- names(sort(cos2_values, decreasing = TRUE))[1:20]
-
-# Gráfico solo con países destacados
-p3  <- fviz_pca_ind(res.pca,
-             col.ind = "cos2",
-             select.ind = list(cos2 = 20),  # Solo top 20
-             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-             repel = TRUE,
-             geom = c("point", "text"),  # Puntos y texto
-             pointsize = 2,
-             labelsize = 3,
-             alpha.ind = 0.8,
-             ggtheme = theme_minimal()) +
-  labs(title = "PAÍSES CON MEJOR REPRESENTACIÓN EN EL PLANO FACTORIAL",
-       subtitle = "Top 20 países por calidad de representación (cos2)",
-       caption = "Los países con cos2 bajo tienen representación menos fiable") +
-  theme(
-    plot.title = element_text(face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(hjust = 0.5, color = "gray40"),
-    legend.position = "bottom"
+# Convertir a interactivo con plotly
+ggplotly(p, tooltip = "all") %>%
+  layout(
+    hoverlabel = list(
+      bgcolor = "white",
+      font = list(color = "black")
+    )
   )
 print(p3)
 ```
