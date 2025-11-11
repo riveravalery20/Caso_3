@@ -29,6 +29,11 @@ library(FactoMineR)
 library(factoextra)
 library(reactable)
 library(htmltools)
+library(ggplot2)
+library(plotly)
+library(ggrepel)
+library(dendextend)
+library(viridis)
 ```
 
 # Cargar y Preparar Datos
