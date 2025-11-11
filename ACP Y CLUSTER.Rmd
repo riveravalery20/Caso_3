@@ -1,0 +1,589 @@
+---
+title: "Análisis de Componentes Principales - Mortalidad Global"
+author: "Tu Nombre"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 10,
+  fig.height = 7
+)
+```
+
+# Cargar Librerías
+
+```{r librerias}
+library(readr)
+library(tidyverse)
+library(FactoMineR)
+library(factoextra)
+library(reactable)
+library(htmltools)
+```
+
+# Cargar y Preparar Datos
+
+```{r cargar-datos}
+# Leer la base
+Muertes_ans <- read_csv("Muertes ans.csv", locale = locale(encoding = "UTF-8"))
+Muertes <- data.frame(Muertes_ans)
+
+# Limpieza y selección de variables
+Muertes <- Muertes[-(218:245), ]
+Muertes <- na.omit(Muertes)
+```
+
+```{r renombrar-columnas}
+# Renombrar columnas
+colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", 
+                       "Accidentes_de_transito", "Enfermedades_cardiacas_cancer_diabetes_mujeres", 
+                       "Enfermedades_cardiacas_cancer_diabetes_hombres", "Polucion_del_aire_mujeres", 
+                       "Polucion_del_aire_hombres", "Envenenamiento_accidental_mujeres", 
+                       "Envenenamiento_accidental_hombres", "Tasa_de_mortalidad_mujeres_adultas",
+                       "Tasa_de_mortalidad_hombres_adultos", "Tasa_de_mortalidad_infantil_mujeres", 
+                       "Tasa_de_mortalidad_infantil_varones", "Tasa_de_mortalidad_neonatal",
+                       "Tasa_de_mortalidad_infantil_temprana_mujeres", 
+                       "Tasa_de_mortalidad_infantil_temprana_hombres", "Numero_de_muertes_infantiles",
+                       "Numero_de_muertes_neonatales", "Tasa_de_suicidios_mujeres",
+                       "Tasa_de_suicidios_hombres", "Supervivencia_hasta_los_65_anos_mujeres",
+                       "Supervivencia_hasta_los_65_anos_hombres")
+
+# Eliminar filas con valores NA
+Muertes <- Muertes %>%
+  filter(complete.cases(.))
+```
+
+```{r traducir-paises}
+# Traducir nombres de países al español
+Muertes <- Muertes %>%
+  mutate(Pais = case_when(
+    Pais == "Faroe Islands" ~ "Islas Feroe",
+    Pais == "Fiji" ~ "Fiyi",
+    Pais == "Finland" ~ "Finlandia",
+    Pais == "France" ~ "Francia",
+    Pais == "French Polynesia" ~ "Polinesia Francesa",
+    Pais == "Gabon" ~ "Gabon",
+    Pais == "Gambia, The" ~ "Gambia",
+    Pais == "Georgia" ~ "Georgia",
+    Pais == "Germany" ~ "Alemania",
+    Pais == "Ghana" ~ "Ghana",
+    Pais == "Gibraltar" ~ "Gibraltar",
+    Pais == "Greece" ~ "Grecia",
+    Pais == "Greenland" ~ "Groenlandia",
+    Pais == "Grenada" ~ "Granada",
+    Pais == "Guam" ~ "Guam",
+    Pais == "Guatemala" ~ "Guatemala",
+    Pais == "Guinea" ~ "Guinea",
+    Pais == "Guinea-Bissau" ~ "Guinea-Bisau",
+    Pais == "Guyana" ~ "Guyana",
+    Pais == "Haiti" ~ "Haiti",
+    Pais == "Honduras" ~ "Honduras",
+    Pais == "Hong Kong SAR, China" ~ "Hong Kong",
+    Pais == "Hungary" ~ "Hungria",
+    Pais == "Iceland" ~ "Islandia",
+    Pais == "India" ~ "India",
+    Pais == "Indonesia" ~ "Indonesia",
+    Pais == "Iran, Islamic Rep." ~ "Iran",
+    Pais == "Iraq" ~ "Irak",
+    Pais == "Ireland" ~ "Irlanda",
+    Pais == "Isle of Man" ~ "Isla de Man",
+    Pais == "Israel" ~ "Israel",
+    Pais == "Italy" ~ "Italia",
+    Pais == "Jamaica" ~ "Jamaica",
+    Pais == "Japan" ~ "Japon",
+    Pais == "Jordan" ~ "Jordania",
+    Pais == "Kazakhstan" ~ "Kazajistan",
+    Pais == "Kenya" ~ "Kenia",
+    Pais == "Kiribati" ~ "Kiribati",
+    Pais == "Korea, Dem. People's Rep." ~ "Corea del Norte",
+    Pais == "Korea, Rep." ~ "Corea del Sur",
+    Pais == "Kosovo" ~ "Kosovo",
+    Pais == "Kuwait" ~ "Kuwait",
+    Pais == "Kyrgyz Republic" ~ "Kirguistan",
+    Pais == "Lao PDR" ~ "Laos",
+    Pais == "Latvia" ~ "Letonia",
+    Pais == "Lebanon" ~ "Libano",
+    Pais == "Lesotho" ~ "Lesoto",
+    Pais == "Liberia" ~ "Liberia",
+    Pais == "Libya" ~ "Libia",
+    Pais == "Liechtenstein" ~ "Liechtenstein",
+    Pais == "Lithuania" ~ "Lituania",
+    Pais == "Luxembourg" ~ "Luxemburgo",
+    Pais == "Macao SAR, China" ~ "Macao",
+    Pais == "Madagascar" ~ "Madagascar",
+    Pais == "Malawi" ~ "Malaui",
+    Pais == "Malaysia" ~ "Malasia",
+    Pais == "Maldives" ~ "Maldivas",
+    Pais == "Mali" ~ "Mali",
+    Pais == "Malta" ~ "Malta",
+    Pais == "Marshall Islands" ~ "Islas Marshall",
+    Pais == "Mauritania" ~ "Mauritania",
+    Pais == "Mauritius" ~ "Mauricio",
+    Pais == "Mexico" ~ "Mexico",
+    Pais == "Micronesia, Fed. Sts." ~ "Micronesia",
+    Pais == "Moldova" ~ "Moldavia",
+    Pais == "Monaco" ~ "Monaco",
+    Pais == "Mongolia" ~ "Mongolia",
+    Pais == "Montenegro" ~ "Montenegro",
+    Pais == "Morocco" ~ "Marruecos",
+    Pais == "Mozambique" ~ "Mozambique",
+    Pais == "Myanmar" ~ "Myanmar",
+    Pais == "Namibia" ~ "Namibia",
+    Pais == "Nauru" ~ "Nauru",
+    Pais == "Nepal" ~ "Nepal",
+    Pais == "Netherlands" ~ "Paises Bajos",
+    Pais == "New Caledonia" ~ "Nueva Caledonia",
+    Pais == "New Zealand" ~ "Nueva Zelanda",
+    Pais == "Nicaragua" ~ "Nicaragua",
+    Pais == "Niger" ~ "Niger",
+    Pais == "Nigeria" ~ "Nigeria",
+    Pais == "North Macedonia" ~ "Macedonia del Norte",
+    Pais == "Northern Mariana Islands" ~ "Islas Marianas del Norte",
+    Pais == "Norway" ~ "Noruega",
+    Pais == "Oman" ~ "Oman",
+    Pais == "Pakistan" ~ "Pakistan",
+    Pais == "Palau" ~ "Palaos",
+    Pais == "Panama" ~ "Panama",
+    Pais == "Papua New Guinea" ~ "Papua Nueva Guinea",
+    Pais == "Paraguay" ~ "Paraguay",
+    Pais == "Peru" ~ "Peru",
+    Pais == "Philippines" ~ "Filipinas",
+    Pais == "Poland" ~ "Polonia",
+    Pais == "Portugal" ~ "Portugal",
+    Pais == "Puerto Rico (US)" ~ "Puerto Rico",
+    Pais == "Qatar" ~ "Catar",
+    Pais == "Romania" ~ "Rumania",
+    Pais == "Russian Federation" ~ "Rusia",
+    Pais == "Rwanda" ~ "Ruanda",
+    Pais == "Samoa" ~ "Samoa",
+    Pais == "San Marino" ~ "San Marino",
+    Pais == "Sao Tome and Principe" ~ "Santo Tome y Principe",
+    Pais == "Saudi Arabia" ~ "Arabia Saudita",
+    Pais == "Senegal" ~ "Senegal",
+    Pais == "Serbia" ~ "Serbia",
+    Pais == "Seychelles" ~ "Seychelles",
+    Pais == "Sierra Leone" ~ "Sierra Leona",
+    Pais == "Singapore" ~ "Singapur",
+    Pais == "Sint Maarten (Dutch part)" ~ "Sint Maarten",
+    Pais == "Slovak Republic" ~ "Eslovaquia",
+    Pais == "Slovenia" ~ "Eslovenia",
+    Pais == "Solomon Islands" ~ "Islas Salomon",
+    Pais == "Somalia, Fed. Rep." ~ "Somalia",
+    Pais == "South Africa" ~ "Sudafrica",
+    Pais == "South Sudan" ~ "Sudan del Sur",
+    Pais == "Spain" ~ "Espana",
+    Pais == "Sri Lanka" ~ "Sri Lanka",
+    Pais == "St. Kitts and Nevis" ~ "San Cristobal y Nieves",
+    Pais == "St. Lucia" ~ "Santa Lucia",
+    Pais == "St. Martin (French part)" ~ "San Martin",
+    Pais == "St. Vincent and the Grenadines" ~ "San Vicente y las Granadinas",
+    Pais == "Sudan" ~ "Sudan",
+    Pais == "Suriname" ~ "Surinam",
+    Pais == "Sweden" ~ "Suecia",
+    Pais == "Switzerland" ~ "Suiza",
+    Pais == "Syrian Arab Republic" ~ "Siria",
+    Pais == "Tajikistan" ~ "Tayikistan",
+    Pais == "Tanzania" ~ "Tanzania",
+    Pais == "Thailand" ~ "Tailandia",
+    Pais == "Timor-Leste" ~ "Timor Oriental",
+    Pais == "Togo" ~ "Togo",
+    Pais == "Tonga" ~ "Tonga",
+    Pais == "Trinidad and Tobago" ~ "Trinidad y Tobago",
+    Pais == "Tunisia" ~ "Tunez",
+    Pais == "Turkiye" ~ "Turquia",
+    Pais == "Turkmenistan" ~ "Turkmenistan",
+    Pais == "Turks and Caicos Islands" ~ "Islas Turcas y Caicos",
+    Pais == "Tuvalu" ~ "Tuvalu",
+    Pais == "Uganda" ~ "Uganda",
+    Pais == "Ukraine" ~ "Ucrania",
+    Pais == "United Arab Emirates" ~ "Emiratos Arabes Unidos",
+    Pais == "United Kingdom" ~ "Reino Unido",
+    Pais == "United States" ~ "Estados Unidos",
+    Pais == "Uruguay" ~ "Uruguay",
+    Pais == "Uzbekistan" ~ "Uzbekistan",
+    Pais == "Vanuatu" ~ "Vanuatu",
+    Pais == "Venezuela, RB" ~ "Venezuela",
+    Pais == "Viet Nam" ~ "Vietnam",
+    Pais == "Virgin Islands (U.S.)" ~ "Islas Virgenes Americanas",
+    Pais == "West Bank and Gaza" ~ "Palestina",
+    Pais == "Yemen, Rep." ~ "Yemen",
+    Pais == "Zambia" ~ "Zambia",
+    Pais == "Zimbabwe" ~ "Zimbabue",
+    TRUE ~ as.character(Pais)
+  ))
+```
+
+```{r verificar-datos, message=FALSE, warning=FALSE, results='hide'}
+# Verificar la base final
+print(paste("Número de países después de la limpieza:", nrow(Muertes)))
+print("Estructura de la base:")
+str(Muertes)
+```
+
+# Análisis de Componentes Principales
+
+```{r preparar-acp}
+# Preparar base para ACP
+Muertes_df <- Muertes %>% 
+  select(-Pais) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  scale()
+rownames(Muertes_df) <- Muertes$Pais
+
+# Ver las primeras filas y columnas
+head(Muertes_df[, 1:6])
+```
+
+```{r realizar-acp, message=FALSE, warning=FALSE, results='hide'}
+# Realizar el ACP con datos ya escalados
+res.pca <- prcomp(Muertes_df, scale = FALSE)
+res.pca
+```
+
+
+##matriz correlaciones
+
+```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide'}
+library(ggplot2)
+library(reshape2)
+Muertes[, -1] <- lapply(Muertes[, -1], as.numeric)
+cor_matrix <- cor(Muertes[, -1])
+
+print("Matriz de correlación calculada:")
+print(dim(cor_matrix))
+
+# 4. Crear el objeto cor_melted con verificación
+cor_melted <- melt(cor_matrix)
+names(cor_melted) <- c("Var1", "Var2", "value")
+
+print("Objeto cor_melted creado:")
+print(head(cor_melted))
+print(dim(cor_melted))
+
+# 5. Crear la gráfica
+p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "red", high = "blue", mid = "white", 
+                       midpoint = 0, limits = c(-1,1)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Matriz de Correlaciones")
+
+# 6. Mostrar la gráfica
+print(p1)
+```
+
+
+## Gráfico de Sedimentación
+
+```{r scree-plot:Gráfico de Sedimentación}
+p2 <- fviz_eig(res.pca, 
+         addlabels = TRUE,
+         barfill = "#2E8B57",
+         barcolor = "#2E8B57",
+         linecolor = "#FF6B35",
+         choice = "variance",  # Mostrar varianza en lugar de eigenvalues
+         geom = "bar",         # Usar barras en lugar de líneas
+         main = "ANÁLISIS DE COMPONENTES PRINCIPALES - SCREE PLOT",
+         xlab = "Número de Componente Principal",
+         ylab = "Porcentaje de Varianza Explicada",
+         ggtheme = theme_minimal()) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "grey90"),
+    panel.grid.minor = element_blank()
+  )
+print(p2)
+```
+
+## Gráfico de Individuos (Países)
+
+```{r grafico individuos}
+library(factoextra)
+library(plotly)
+
+# Extraer datos del PCA
+pca_data <- get_pca_ind(res.pca)
+
+# Crear dataframe con las 2 primeras dimensiones
+df <- data.frame(
+  País = rownames(pca_data$coord),
+  PC1 = pca_data$coord[,1],
+  PC2 = pca_data$coord[,2]
+)
+
+# Calcular calidad de representación (cos2) en las 2 dimensiones
+if(!is.null(pca_data$cos2)) {
+  df$Cos2 <- rowSums(pca_data$cos2[,1:2])
+} else {
+  df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
+}
+
+# Obtener los porcentajes de varianza de manera segura
+# Primero verifiquemos la estructura de res.pca
+if(!is.null(res.pca$eig) && is.numeric(res.pca$eig[1,2])) {
+  percent_pc1 <- round(res.pca$eig[1,2], 1)
+  percent_pc2 <- round(res.pca$eig[2,2], 1)
+} else {
+  # Si la estructura es diferente, calculamos manualmente
+  eigenvalues <- res.pca$eig[,1]  # o la columna correcta según tu estructura
+  total_variance <- sum(eigenvalues)
+  percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
+  percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
+}
+
+# Crear gráfico 2D interactivo
+p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
+        type = 'scatter',
+        mode = 'markers',
+        marker = list(
+          size = 8,
+          color = ~Cos2,
+          colorscale = list(
+            c(0, "#00AFBB"),
+            c(0.5, "#E7B800"),
+            c(1, "#FC4E07")
+          ),
+          showscale = TRUE,
+          colorbar = list(title = "Calidad (cos2)"),
+          opacity = 0.8,
+          line = list(
+            width = 1,
+            color = 'darkgray'
+          )
+        ),
+        text = ~paste('<b>País:</b>', País,
+                     '<br><b>PC1:</b>', round(PC1, 3),
+                     '<br><b>PC2:</b>', round(PC2, 3),
+                     '<br><b>Calidad:</b>', round(Cos2, 3)),
+        hoverinfo = 'text',
+        hoverlabel = list(
+          bgcolor = "white",
+          bordercolor = "black",
+          font = list(color = "black", size = 12)
+        )
+) %>%
+  layout(
+    title = list(
+      text = "Análisis PCA - 182 Países (PC1 vs PC2)",
+      font = list(size = 16)
+    ),
+    xaxis = list(
+      title = if(exists("percent_pc1")) paste0("PC1 (", percent_pc1, "%)") else "PC1",
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    yaxis = list(
+      title = if(exists("percent_pc2")) paste0("PC2 (", percent_pc2, "%)") else "PC2",
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    margin = list(l = 50, r = 50, b = 50, t = 50),
+    showlegend = FALSE
+  )
+print(p3)
+```
+
+
+## Gráfico de Variables
+
+```{r grafico-variables}
+fviz_pca_var(res.pca,
+             col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE,
+             axes = c(1,3)
+)
+```
+
+## Biplot: Individuos y Variables
+
+```{r biplot}
+fviz_pca_biplot(res.pca, 
+                repel = TRUE,
+                col.var = "#2E9FDF",
+                col.ind = "#696969",
+                axes = c(1,2)
+)
+```
+
+# Resultados del ACP
+
+## Valores Propios
+
+```{r valores-propios, message=FALSE, warning=FALSE, results='hide'}
+eig.val <- get_eigenvalue(res.pca)
+eig.val
+```
+
+## Resultados para Variables
+
+```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
+res.var <- get_pca_var(res.pca)
+
+# Coordenadas
+head(res.var$coord)
+
+# Contribuciones a los CPs
+head(res.var$contrib)
+
+# Calidad de representación
+head(res.var$cos2)
+```
+
+```{r contribuciones-variables-totales, message=FALSE, warning=FALSE, results='hide'}
+# Visualizar contribuciones de variables a los primeros componentes
+colSums(res.var$contrib[,1:2])
+```
+
+## Resultados para Individuos (Países)
+
+```{r resultados-individuos, message=FALSE, warning=FALSE, results='hide'}
+res.ind <- get_pca_ind(res.pca)
+
+# Coordenadas
+head(res.ind$coord)
+
+# Contribuciones a los CPs
+head(res.ind$contrib[,1:3])
+
+# Calidad de representación
+head(res.ind$cos2)
+```
+
+# Tabla Interactiva de Contribuciones
+
+```{r tabla-contribuciones}
+# Crear el dataframe con las contribuciones
+contribuciones_df <- data.frame(
+  País = rownames(res.ind$contrib),
+  CP1 = res.ind$contrib[,1],
+  CP2 = res.ind$contrib[,2],
+  row.names = NULL
+)
+
+# Ordenar por CP1 (descendente)
+contribuciones_df <- contribuciones_df[order(contribuciones_df$CP1, decreasing = TRUE), ]
+
+# Definir la paleta de verdes
+verde_principal <- "#488B49"
+verde_claro <- "#E8F5E8"
+verde_medio <- "#81C784"
+verde_oscuro <- "#2E7D32"
+verde_muy_oscuro <- "#1B5E20"
+
+# Función para crear colores sólidos basados en el valor
+color_scale <- function(values, color_low = verde_claro, color_high = verde_principal) {
+  normalized <- (values - min(values)) / (max(values) - min(values))
+  colors <- colorRamp(c(color_low, color_high))(normalized)
+  rgb(colors[,1], colors[,2], colors[,3], maxColorValue = 255)
+}
+
+# Aplicar escala de colores
+cp1_colors <- color_scale(contribuciones_df$CP1)
+cp2_colors <- color_scale(contribuciones_df$CP2)
+
+# Crear la tabla
+tabla_contribuciones <- reactable(
+  contribuciones_df,
+  defaultPageSize = 15,
+  showPageSizeOptions = TRUE,
+  pageSizeOptions = c(10, 15, 25, 50),
+  filterable = TRUE,
+  searchable = TRUE,
+  sortable = TRUE,
+  resizable = FALSE,
+  striped = FALSE,
+  highlight = FALSE,
+  bordered = FALSE,
+  wrap = FALSE,
+  showSortIcon = TRUE,
+  
+  theme = reactableTheme(
+    backgroundColor = "#ffffff",
+    borderColor = verde_claro,
+    cellPadding = "6px 10px",
+    style = list(
+      fontFamily = "Segoe UI, Arial, sans-serif",
+      fontSize = "13px"
+    ),
+    searchInputStyle = list(
+      width = "100%",
+      padding = "6px 10px",
+      border = paste("1px solid", verde_medio),
+      borderRadius = "4px",
+      fontSize = "13px"
+    ),
+    headerStyle = list(
+      borderBottom = paste("2px solid", verde_oscuro),
+      fontSize = "13px",
+      backgroundColor = verde_principal,
+      color = "white",
+      fontWeight = "bold",
+      textTransform = "uppercase",
+      letterSpacing = "0.5px"
+    )
+  ),
+  
+  columns = list(
+    País = colDef(
+      name = "PAÍS",
+      minWidth = 180,
+      filterable = TRUE,
+      align = "left",
+      style = list(
+        fontWeight = "600",
+        color = verde_oscuro,
+        borderRight = paste("1px solid", verde_claro)
+      )
+    ),
+    CP1 = colDef(
+      name = "CONTRIBUCIÓN CP1",
+      minWidth = 140,
+      align = "center",
+      style = function(value, index) {
+        list(
+          background = cp1_colors[index],
+          fontWeight = "bold",
+          color = ifelse(contribuciones_df$CP1[index] > mean(contribuciones_df$CP1), "white", verde_oscuro),
+          borderLeft = paste("1px solid", verde_claro)
+        )
+      },
+      format = colFormat(digits = 3, percent = FALSE)
+    ),
+    CP2 = colDef(
+      name = "CONTRIBUCIÓN CP2",
+      minWidth = 140,
+      align = "center",
+      style = function(value, index) {
+        list(
+          background = cp2_colors[index],
+          fontWeight = "bold",
+          color = ifelse(contribuciones_df$CP2[index] > mean(contribuciones_df$CP2), "white", verde_oscuro),
+          borderLeft = paste("1px solid", verde_claro)
+        )
+      },
+      format = colFormat(digits = 3, percent = FALSE)
+    )
+  )
+)
+
+tabla_contribuciones
+```
