@@ -3,43 +3,17 @@ Muertes_df <- Muertes %>%
   select(-Pais) %>%
   mutate(across(everything(), as.numeric)) %>%
   scale()
-
 rownames(Muertes_df) <- Muertes$Pais
 
+head(Muertes_df[, 1:6]) # Ver las primeras filas y columnas
 
-# ============================================================================
-# EQUIVALENTE A: decathlon2.train <- decathlon2[1:23, 1:10]
-# ============================================================================
-# En este caso, vamos a usar TODOS los países para el análisis
-# Si quieres dividir en entrenamiento y prueba, puedes hacer:
-# Muertes_df.train <- Muertes_df[1:200, ]  # Ejemplo: primeros 200 países
+# REALIZAR EL ANÁLISIS DE COMPONENTES PRINCIPALES YA ESCALADOS
 
-# Ver las primeras filas y columnas
-head(Muertes_df[, 1:6])
-
-# ============================================================================
-# REALIZAR EL ANÁLISIS DE COMPONENTES PRINCIPALES
-# ============================================================================
-
-# NOTA IMPORTANTE: Ya escalamos los datos con scale() arriba,
-# por lo que aquí usamos scale = FALSE (diferente al código original)
 res.pca <- prcomp(Muertes_df, scale = FALSE)
+res.pca # resumen del ACP
 
-# Ver resumen del ACP
-res.pca
-
-# ============================================================================
 # VISUALIZACIONES PRINCIPALES
-# ============================================================================
-
 # Gráfico de sedimentación (scree plot)
-# Muestra el porcentaje de varianza explicado por cada componente
-#-------- si se corre el error-------
-# Cerrar dispositivos gráficos
-#dev.off()
-# O cerrar TODOS si tienes varios abiertos
-#while (!is.null(dev.list())) dev.off()
-# Intentar de nuevo
 
 fviz_eig(res.pca)
 
@@ -67,9 +41,7 @@ fviz_pca_biplot(res.pca, repel = TRUE,
                 axes = c(1,2) # Componentes 1 y 2
 )
 
-# ============================================================================
-# ACCEDER A LOS RESULTADOS
-# ============================================================================
+# RESULTADOS
 
 library(factoextra)
 
@@ -85,7 +57,6 @@ res.var$cos2           # Calidad de representación
 
 
 # Visualizar contribuciones de variables a los primeros componentes
-View(res.var$contrib[,1:7]) # Miro los primeros factores
 colSums(res.var$contrib[,1:2])
 
 # Resultados para individuos (países)
