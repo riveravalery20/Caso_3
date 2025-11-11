@@ -268,88 +268,96 @@ print(p2)
 library(factoextra)
 library(plotly)
 
-# Crear el gráfico PCA base
-p3 <- fviz_pca_ind(res.pca,
-                 col.ind = "cos2",
-                 gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-                 repel = FALSE,  # Important: desactivar repel para plotly
-                 geom = "point") # Solo puntos, sin texto
+# Extraer datos del PCA
+pca_data <- get_pca_ind(res.pca)
 
-# Convertir a interactivo con plotly
-ggplotly(p, tooltip = "all") %>%
+# Crear dataframe con las 2 primeras dimensiones
+df <- data.frame(
+  País = rownames(pca_data$coord),
+  PC1 = pca_data$coord[,1],
+  PC2 = pca_data$coord[,2]
+)
+
+# Calcular calidad de representación (cos2) en las 2 dimensiones
+if(!is.null(pca_data$cos2)) {
+  df$Cos2 <- rowSums(pca_data$cos2[,1:2])
+} else {
+  df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
+}
+
+# Obtener los porcentajes de varianza de manera segura
+# Primero verifiquemos la estructura de res.pca
+if(!is.null(res.pca$eig) && is.numeric(res.pca$eig[1,2])) {
+  percent_pc1 <- round(res.pca$eig[1,2], 1)
+  percent_pc2 <- round(res.pca$eig[2,2], 1)
+} else {
+  # Si la estructura es diferente, calculamos manualmente
+  eigenvalues <- res.pca$eig[,1]  # o la columna correcta según tu estructura
+  total_variance <- sum(eigenvalues)
+  percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
+  percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
+}
+
+# Crear gráfico 2D interactivo
+p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
+        type = 'scatter',
+        mode = 'markers',
+        marker = list(
+          size = 8,
+          color = ~Cos2,
+          colorscale = list(
+            c(0, "#00AFBB"),
+            c(0.5, "#E7B800"),
+            c(1, "#FC4E07")
+          ),
+          showscale = TRUE,
+          colorbar = list(title = "Calidad (cos2)"),
+          opacity = 0.8,
+          line = list(
+            width = 1,
+            color = 'darkgray'
+          )
+        ),
+        text = ~paste('<b>País:</b>', País,
+                     '<br><b>PC1:</b>', round(PC1, 3),
+                     '<br><b>PC2:</b>', round(PC2, 3),
+                     '<br><b>Calidad:</b>', round(Cos2, 3)),
+        hoverinfo = 'text',
+        hoverlabel = list(
+          bgcolor = "white",
+          bordercolor = "black",
+          font = list(color = "black", size = 12)
+        )
+) %>%
   layout(
-    hoverlabel = list(
-      bgcolor = "white",
-      font = list(color = "black")
-    )
+    title = list(
+      text = "Análisis PCA - 182 Países (PC1 vs PC2)",
+      font = list(size = 16)
+    ),
+    xaxis = list(
+      title = if(exists("percent_pc1")) paste0("PC1 (", percent_pc1, "%)") else "PC1",
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    yaxis = list(
+      title = if(exists("percent_pc2")) paste0("PC2 (", percent_pc2, "%)") else "PC2",
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    margin = list(l = 50, r = 50, b = 50, t = 50),
+    showlegend = FALSE
   )
 print(p3)
 ```
 
 ```{r grafico variables , include=FALSE}
-# Crear nombres cortos para las variables
-nombres_cortos <- c(
-  "Exp_vida_mujer" = "Expectativa_de_vida_mujer",
-  "Exp_vida_hombre" = "Expectativa_de_vida_hombres",
-  "Acc_transito" = "Accidentes_de_transito",
-  "Enf_card_mujer" = "Enfermedades_cardiacas_cancer_diabetes_mujeres",
-  "Enf_card_hombre" = "Enfermedades_cardiacas_cancer_diabetes_hombres",
-  "Polucion_mujer" = "Polucion_del_aire_mujeres",
-  "Polucion_hombre" = "Polucion_del_aire_hombres",
-  "Envenena_mujer" = "Envenenamiento_accidental_mujeres",
-  "Envenena_hombre" = "Envenenamiento_accidental_hombres",
-  "Mort_adulta_mujer" = "Tasa_de_mortalidad_mujeres_adultas",
-  "Mort_adulta_hombre" = "Tasa_de_mortalidad_hombres_adultos",
-  "Mort_inf_mujer" = "Tasa_de_mortalidad_infantil_mujeres",
-  "Mort_inf_hombre" = "Tasa_de_mortalidad_infantil_varones",
-  "Mort_neonatal" = "Tasa_de_mortalidad_neonatal",
-  "Mort_temp_mujer" = "Tasa_de_mortalidad_infantil_temprana_mujeres",
-  "Mort_temp_hombre" = "Tasa_de_mortalidad_infantil_temprana_hombres",
-  "Muertes_infantiles" = "Numero_de_muertes_infantiles",
-  "Muertes_neonatales" = "Numero_de_muertes_neonatales",
-  "Suicidios_mujer" = "Tasa_de_suicidios_mujeres",
-  "Suicidios_hombre" = "Tasa_de_suicidios_hombres",
-  "Sup_65_mujer" = "Supervivencia_hasta_los_65_anos_mujeres",
-  "Sup_65_hombre" = "Supervivencia_hasta_los_65_anos_hombres"
-)
 
-# Aplicar nombres cortos a los datos
-Muertes_short <- Muertes
-colnames(Muertes_short)[-1] <- names(nombres_cortos)[match(colnames(Muertes)[-1], nombres_cortos)]
-
-# Rehacer el ACP con nombres cortos
-Muertes_df_short <- Muertes_short %>% 
-  select(-Pais) %>%
-  mutate(across(everything(), as.numeric)) %>%
-  scale()
-rownames(Muertes_df_short) <- Muertes_short$Pais
-
-res.pca_short <- prcomp(Muertes_df_short, scale = FALSE)
-
-p4 <- fviz_pca_var(res.pca_short,
-             axes = c(1, 3),
-             select.var = list(contrib = 10),  # SOLO 10 variables más importantes
-             col.var = "contrib",
-             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-             repel = TRUE,
-             alpha.var = 0.9,
-             shape.var = 17,
-             labelsize = 5,   # Texto más grande para mejor legibilidad
-             pointsize = 2.5,
-             ggtheme = theme_minimal()) +
-  labs(title = "TOP 10 VARIABLES CON MAYOR CONTRIBUCIÓN",
-       subtitle = "Componentes Principales 1 vs 3 - Variables Más Influyentes",
-       caption = "Las 10 variables que más contribuyen a la variabilidad de los datos") +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    plot.subtitle = element_text(hjust = 0.5, color = "gray40", size = 12),
-    plot.caption = element_text(hjust = 0.5, face = "italic", color = "gray50"),
-    legend.position = "right",
-    legend.title = element_text(face = "bold"),
-    panel.grid.major = element_line(color = "grey90"),
-    panel.grid.minor = element_blank()
-  )
-print(p4)
 ```
 
 ```{r grafico biplot , include=FALSE}
