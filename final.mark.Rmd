@@ -200,7 +200,7 @@ invisible(list2env(par_default, envir = .GlobalEnv))
 
 ```
 
-:::::::::::::::: container
+::::::::::::::::: container
 <!-- SIDEBAR -->
 
 :::: sidebar
@@ -233,7 +233,7 @@ invisible(list2env(par_default, envir = .GlobalEnv))
 
 <!-- CONTENIDO PRINCIPAL -->
 
-::::::::::::: main-content
+:::::::::::::: main-content
 <!-- ENCABEZADO -->
 
 ::: main-header
@@ -289,7 +289,8 @@ invisible(list2env(par_default, envir = .GlobalEnv))
 :::
 
 <!-- METODOLOGÍA -->
-::: {#metodologia .content-card}
+
+:::: {#metodologia .content-card}
 <h2>Metodología</h2>
 
 <p>La metodología se fundamenta en la aplicación secuencial de Análisis de Componentes Principales (ACP) y clusterización jerárquica mediante el método de Ward, permitiendo reducir la dimensionalidad de 22 indicadores de mortalidad e identificar grupos de países con perfiles epidemiológicos similares. El análisis se realiza sobre datos del año 2019 del Banco Mundial, con una muestra de 182 países que presentan información completa para las 22 variables seleccionadas.</p>
@@ -298,19 +299,23 @@ invisible(list2env(par_default, envir = .GlobalEnv))
 
 <p>La selección del conjunto de 22 indicadores de mortalidad se fundamentó en tres criterios complementarios que aseguran relevancia analítica y robustez estadística:</p>
 
-<div class="variables-box">
+::: variables-box
 <ol>
+
 <li><strong>Relevancia epidemiológica documentada</strong> En la literatura de salud global, garantizando que cada variable capture aspectos fundamentales del perfil de mortalidad poblacional.</li>
 
 <li><strong>Disponibilidad sistemática de datos</strong> Para la mayoría de países en el año 2019, minimizando problemas de valores faltantes.</li>
 
 <li><strong>Capacidad discriminante</strong> Para diferenciar entre perfiles de mortalidad distintos, evitando redundancia informativa que podría sesgar los resultados del análisis multivariado.</li>
+
 </ol>
-</div>
+:::
 
-<h3>Dimensión: Expectativa de vida y longevidad</h3>
+<h3>Dimensión: Expectativa de vida y longevidad
+</h3>
 
-<p>Se incluyen medidas de expectativa de vida al nacer y supervivencia acumulada hasta los 65 años, desagregadas por sexo. Estos indicadores sintéticos capturan el impacto integrado de todas las causas de muerte a lo largo del ciclo vital y constituyen medidas ampliamente reconocidas del estado general de salud y desarrollo socioeconómico de las poblaciones. La desagregación por sexo permite identificar inequidades de género en longevidad, un aspecto fundamental para políticas de equidad en salud.</p>
+<p>Se incluyen medidas de expectativa de vida al nacer y supervivencia acumulada hasta los 65 años, desagregadas por sexo. Estos indicadores sintéticos capturan el impacto integrado de todas las causas de muerte a lo largo del ciclo vital y constituyen medidas ampliamente reconocidas del estado general de salud y desarrollo socioeconómico de las poblaciones. La desagregación por sexo permite identificar inequidades de género en longevidad, un aspecto fundamental para políticas de equidad en salud.
+</p>
 
 ```{r dimension 1, echo=FALSE}
 expectativa_vida <- data.frame(
@@ -346,9 +351,13 @@ kable(expectativa_vida,
   footnote(general = "Fuente: Elaboración propia con base en indicadores de mortalidad global (2019).")
 ```
 
-<h3>Dimensión: Mortalidad por enfermedades crónicas no transmisibles</h3>
 
-<p>Comprende tasas de mortalidad por enfermedades cardiovasculares, cáncer y diabetes mellitus, desagregadas por sexo. Estos indicadores son particularmente relevantes en contextos de países desarrollados y en transición epidemiológica avanzada, donde las enfermedades no transmisibles representan la carga de enfermedad predominante. La inclusión de esta dimensión permite identificar países que han completado la transición epidemiológica versus aquellos que aún enfrentan cargas duales de mortalidad.</p>
+<h3>
+Dimensión: Mortalidad por enfermedades crónicas no transmisibles</h3>
+
+<p>Comprende tasas de mortalidad por enfermedades cardiovasculares, cáncer y diabetes mellitus, desagregadas por sexo. Estos indicadores son particularmente relevantes en contextos de países desarrollados y en transición epidemiológica avanzada, donde las enfermedades no transmisibles representan la carga de enfermedad predominante. La inclusión de esta dimensión permite identificar países que han completado la transición epidemiológica versus aquellos que aún enfrentan cargas duales de mortalidad.
+</p>
+
 
 ```{r dimension 2}
 cronicas <- data.frame(
@@ -376,9 +385,13 @@ kable(cronicas,
 
 ```
 
-<h3>Dimensión: Mortalidad por causas externas</h3>
 
-<p>Agrupa mortalidad por accidentes de tránsito, envenenamientos accidentales y suicidios, con desagregación por sexo. Estos indicadores reflejan determinantes sociales de la salud incluyendo violencia interpersonal, seguridad vial, salud mental y factores de riesgo comportamentales. La mortalidad por causas externas es altamente prevenible mediante intervenciones de salud pública y políticas intersectoriales, constituyendo un área crítica de acción para sistemas de salud efectivos.</p>
+<h3>
+Dimensión: Mortalidad por causas externas</h3>
+
+<p>Agrupa mortalidad por accidentes de tránsito, envenenamientos accidentales y suicidios, con desagregación por sexo. Estos indicadores reflejan determinantes sociales de la salud incluyendo violencia interpersonal, seguridad vial, salud mental y factores de riesgo comportamentales. La mortalidad por causas externas es altamente prevenible mediante intervenciones de salud pública y políticas intersectoriales, constituyendo un área crítica de acción para sistemas de salud efectivos.
+</p>
+
 
 ```{r dimension 3}
 externas <- data.frame(
@@ -411,9 +424,12 @@ kable(externas,
   footnote(general = "Fuente: Elaboración propia con base en registros vitales y salud pública (2019).")
 ```
 
-<h3>Dimensión: Mortalidad por factores ambientales</h3>
+<h3>
+Dimensión: Mortalidad por factores ambientales</h3>
 
-<p>Incluye mortalidad atribuible a polución del aire, desagregada por sexo. Este indicador captura determinantes de salud ambiental y refleja desafíos de sostenibilidad, industrialización e infraestructura sanitaria. La creciente importancia de factores ambientales en la carga global de enfermedad justifica la inclusión de esta dimensión en el análisis.</p>
+<p>Incluye mortalidad atribuible a polución del aire, desagregada por sexo. Este indicador captura determinantes de salud ambiental y refleja desafíos de sostenibilidad, industrialización e infraestructura sanitaria. La creciente importancia de factores ambientales en la carga global de enfermedad justifica la inclusión de esta dimensión en el análisis.
+</p>
+
 
 ```{r dimension 4}
 ambiental <- data.frame(
@@ -440,11 +456,12 @@ kable(ambiental,
   footnote(general = "Fuente: Elaboración propia con base en datos de mortalidad ambiental (2019).")
 ```
 
-<h3>Dimensión: Mortalidad Adulta </h3>
+<h3>
+Dimensión: Mortalidad Adulta</h3>
 
 <p>Comprende tasas de mortalidad en población adulta (probabilidad de muerte entre 15 y 60 años) desagregadas por sexo. Estos indicadores miden la carga de mortalidad prematura y la efectividad acumulada de sistemas de salud en proteger a población en edades productivas. La mortalidad adulta elevada señala fragilidad de sistemas de salud y factores de riesgo prevenibles que afectan población económicamente activa.
-
 </p>
+
 
 ```{r dimension 5}
 mortalidad_adulta <- data.frame(
@@ -472,9 +489,12 @@ kable(mortalidad_adulta,
 ```
 
 
-<h3>Dimensión: Mortalidad infantil, neonatal e infantil temprana</h3>
+<h3>
+Dimensión: Mortalidad infantil, neonatal e infantil temprana</h3>
 
-<p>Incluye tasas de mortalidad específicas para estas etapas (por 1,000 nacidos vivos), desagregadas por sexo, además de números absolutos de muertes neonatales e infantiles. Estos indicadores actúan como trazadores de la calidad de servicios de salud materno-infantil, acceso a atención obstétrica y condiciones de vida en la primera infancia. La mortalidad infantil y neonatal son altamente sensibles a intervenciones de salud pública y constituyen metas prioritarias de los Objetivos de Desarrollo Sostenible.</p>
+<p>Incluye tasas de mortalidad específicas para estas etapas (por 1,000 nacidos vivos), desagregadas por sexo, además de números absolutos de muertes neonatales e infantiles. Estos indicadores actúan como trazadores de la calidad de servicios de salud materno-infantil, acceso a atención obstétrica y condiciones de vida en la primera infancia. La mortalidad infantil y neonatal son altamente sensibles a intervenciones de salud pública y constituyen metas prioritarias de los Objetivos de Desarrollo Sostenible.
+</p>
+
 
 ```{r dimension 6}
 mortalidad_infantil <- data.frame(
@@ -513,13 +533,19 @@ kable(mortalidad_infantil,
   footnote(general = "Fuente: Elaboración propia con base en indicadores de mortalidad infantil (2019).")
 ```
 
-<p>La desagregación por sexo en la mayoría de variables responde a evidencia documentada de diferencias sistemáticas de género en patrones de mortalidad, incluyendo mayor vulnerabilidad masculina en mortalidad infantil, mayor mortalidad masculina por causas externas y suicidios, y mayor longevidad femenina en prácticamente todas las sociedades. Esta desagregación permite identificar inequidades de género específicas dentro de cada cluster identificado.</p>
+<p>La desagregación por sexo en la mayoría de variables responde a evidencia documentada de diferencias sistemáticas de género en patrones de mortalidad, incluyendo mayor vulnerabilidad masculina en mortalidad infantil, mayor mortalidad masculina por causas externas y suicidios, y mayor longevidad femenina en prácticamente todas las sociedades. Esta desagregación permite identificar inequidades de género específicas dentro de cada cluster identificado.
+</p>
+
 
 <h3>3.2 Preparación y Procesamiento de Datos</h3>
 
-<p>El protocolo de procesamiento de datos fue diseñado para asegurar la integridad, comparabilidad y validez estadística del análisis subsecuente. La base original contenía 245 entidades, de las cuales se procedió a la eliminación sistemática de agregados regionales (observaciones 182 a 245), garantizando la homogeneidad conceptual de la unidad de análisis. Posteriormente se aplicó la función na.omit() para eliminar cualquier observación que presentara valores faltantes en alguna de las 22 variables incluidas, asegurando que el análisis multivariado posterior no esté comprometido por suposiciones implícitas sobre datos faltantes.​
+<p>
 
-Este procedimiento de limpieza resultó en una muestra final de 182 países con información completa para las 22 indicadores de mortalidad, garantizando la robustez estadística del análisis posterior.</p>
+El protocolo de procesamiento de datos fue diseñado para asegurar la integridad, comparabilidad y validez estadística del análisis subsecuente. La base original contenía 245 entidades, de las cuales se procedió a la eliminación sistemática de agregados regionales (observaciones 182 a 245), garantizando la homogeneidad conceptual de la unidad de análisis. Posteriormente se aplicó la función na.omit() para eliminar cualquier observación que presentara valores faltantes en alguna de las 22 variables incluidas, asegurando que el análisis multivariado posterior no esté comprometido por suposiciones implícitas sobre datos faltantes.​
+
+Este procedimiento de limpieza resultó en una muestra final de 182 países con información completa para las 22 indicadores de mortalidad, garantizando la robustez estadística del análisis posterior.
+
+</p>
 
 ```{r base de datos interactiva, echo=FALSE}
 library(readr)
@@ -827,151 +853,119 @@ reactable(
 )
 ```
 
-
-<h3>Estandarización de variables:</h3>
+<h3>
+Estandarización de variables:</h3>
 
 <p>El paso crítico siguiente corresponde a la estandarización de variables mediante transformación Z-score. Dada la heterogeneidad en escalas de medición, que incluye tasas de mortalidad expresadas por 1,000 o 100,000 habitantes, años de expectativa de vida, porcentajes de supervivencia y números absolutos; la estandarización es metodológicamente esencial:</p>
 
 <p style="text-align: center;">
+
 $$
 z_i = \frac{x_i - \mu}{\sigma}
 $$
+
 </p>
 
-<p>
-donde cada variable $x_i$ es transformada a una distribución con media $\mu = 0$ 
-y desviación estándar $\sigma = 1$. 
-Esta normalización garantiza que todas las variables contribuyan equitativamente al análisis, 
-independientemente de sus magnitudes originales; que las estructuras de covarianza reflejen relaciones genuinas 
-entre variables sin sesgos por diferencias de escala; y que las distancias euclidianas capturen similitudes reales entre países.
-</p>
+<p>donde cada variable $x_i$ es transformada a una distribución con media $\mu = 0$ y desviación estándar $\sigma = 1$. Esta normalización garantiza que todas las variables contribuyan equitativamente al análisis, independientemente de sus magnitudes originales; que las estructuras de covarianza reflejen relaciones genuinas entre variables sin sesgos por diferencias de escala; y que las distancias euclidianas capturen similitudes reales entre países.</p>
 
 <h3>3.3 Análisis de Componentes Principales (ACP)</h3>
 
-<p>El Análisis de Componentes Principales es una técnica de reducción de dimensionalidad que transforma un conjunto de variables correlacionadas en un conjunto menor de variables ortogonales no correlacionadas llamadas componentes principales. El objetivo fundamental del ACP es capturar la mayor cantidad de varianza presente en los datos originales utilizando el menor número posible de dimensiones, facilitando así la interpretación y visualización de estructuras complejas en datos de alta dimensionalidad.​
+<p>
 
-En el contexto de este estudio, el ACP permite reducir las 22 variables de mortalidad a un número más manejable de componentes que capturan las dimensiones subyacentes más importantes de los perfiles de mortalidad globales. Esta reducción dimensional facilita tanto la interpretación de patrones como la posterior aplicación de algoritmos de clusterización al eliminar redundancia y ruido en los datos.​</p>
+El Análisis de Componentes Principales es una técnica de reducción de dimensionalidad que transforma un conjunto de variables correlacionadas en un conjunto menor de variables ortogonales no correlacionadas llamadas componentes principales. El objetivo fundamental del ACP es capturar la mayor cantidad de varianza presente en los datos originales utilizando el menor número posible de dimensiones, facilitando así la interpretación y visualización de estructuras complejas en datos de alta dimensionalidad.​
+
+En el contexto de este estudio, el ACP permite reducir las 22 variables de mortalidad a un número más manejable de componentes que capturan las dimensiones subyacentes más importantes de los perfiles de mortalidad globales. Esta reducción dimensional facilita tanto la interpretación de patrones como la posterior aplicación de algoritmos de clusterización al eliminar redundancia y ruido en los datos.​
+
+</p>
 
 <h3>Fundamento matemático:</h3>
 
-<p>
-Sea <b>X</b> una matriz de datos de dimensión <i>n × p</i>, donde 
-$n = 182$ países y $p = 22$ variables. 
-El Análisis de Componentes Principales (ACP) busca identificar vectores propios 
-$v_1, v_2, \dots, v_p$ y valores propios asociados 
-$\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_p$ tales que:
-</p>
+<p>Sea <b>X</b> una matriz de datos de dimensión <i>n × p</i>, donde $n = 182$ países y $p = 22$ variables. El Análisis de Componentes Principales (ACP) busca identificar vectores propios $v_1, v_2, \dots, v_p$ y valores propios asociados $\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_p$ tales que:</p>
 
 <p style="text-align: center;">
+
 $$
 \text{Cov}(X) \cdot v_j = \lambda_j \cdot v_j
 $$
+
 </p>
 
-<p>
-Cada componente principal se define como:
-</p>
+<p>Cada componente principal se define como:</p>
 
 <p style="text-align: center;">
+
 $$
 PC_j = w_{j1} X_1 + w_{j2} X_2 + \dots + w_{j22} X_{22}
 $$
+
 </p>
 
-<p>
-donde $w_{ji}$ son los pesos (<i>loadings</i>) del eigenvector $v_j$. 
-Los componentes están ordenados según la varianza explicada. 
-La proporción de varianza explicada por cada componente corresponde a su valor propio:
-</p>
+<p>donde $w_{ji}$ son los pesos (<i>loadings</i>) del eigenvector $v_j$. Los componentes están ordenados según la varianza explicada. La proporción de varianza explicada por cada componente corresponde a su valor propio:</p>
 
 <p style="text-align: center;">
+
 $$
 \text{Proporción de varianza explicada por } PC_j = 
 \frac{\lambda_j}{\sum_{k=1}^{22} \lambda_k}
 $$
+
 </p>
 
 <h3>Criterios de retención e interpretación:</h3>
 
 <p>
+
 La determinación del número óptimo de componentes se basó en dos criterios complementarios. En primer lugar, el gráfico de sedimentación (Scree plot), que representa los valores propios ordenados y permite identificar el punto de inflexión o “codo” a partir del cual los componentes adicionales aportan incrementos marginales mínimos en la varianza explicada. En segundo lugar, el criterio de varianza acumulada, mediante el cual se retuvieron los componentes necesarios para alcanzar entre un 70% y 80% de la varianza total. Este enfoque combinado garantiza un equilibrio adecuado entre la simplificación del modelo y la conservación de la información esencial contenida en los datos originales.
 
 La interpretación de los componentes principales se fundamenta en el análisis de las cargas factoriales asociadas a cada variable. Aquellas con valores absolutos elevados (típicamente $|w| > 0.3$) se consideran las de mayor contribución a la definición del componente, reflejando su peso estructural dentro del patrón multivariado. Por ejemplo, un componente con cargas altas en mortalidad infantil y neonatal puede interpretarse como un “factor de salud materno-infantil”, mientras que otro con cargas elevadas en expectativa de vida y supervivencia puede representar un “factor de longevidad y desarrollo”.
+
 </p>
 
 <h3>3.4 Clusterización Jerárquica: Método de Ward</h3>
 
-<p>La clusterización jerárquica es un método de aprendizaje no supervisado que agrupa observaciones en una estructura de árbol (dendrograma) basándose en medidas de similitud o disimilitud entre ellas. A diferencia de métodos de partición como k-means, que requieren especificar a priori el número de clusters, la clusterización jerárquica produce una jerarquía completa de agrupaciones que permite explorar soluciones con diferentes números de clusters.​
+<p>
+
+La clusterización jerárquica es un método de aprendizaje no supervisado que agrupa observaciones en una estructura de árbol (dendrograma) basándose en medidas de similitud o disimilitud entre ellas. A diferencia de métodos de partición como k-means, que requieren especificar a priori el número de clusters, la clusterización jerárquica produce una jerarquía completa de agrupaciones que permite explorar soluciones con diferentes números de clusters.​
 
 Entre los diversos métodos de clusterización jerárquica aglomerativa, el método de Ward se destaca por su capacidad para crear clusters compactos y bien separados, minimizando la varianza intra-cluster. Este criterio resulta particularmente apropiado para el análisis de perfiles de mortalidad, donde se busca identificar grupos de países homogéneos en sus patrones de muerte.​
+
 </p>
 
 <h3>Fundamento Matemático:</h3>
 
-<p>
-El método de <b>Ward</b> define la distancia entre dos clusters \( C_i \) y \( C_j \) como:
-</p>
+<p>El método de <b>Ward</b> define la distancia entre dos clusters $C_i$ y $C_j$ como:</p>
 
 <p style="text-align:center;">
+
 $$
 d(C_i, C_j) = \frac{n_i n_j}{n_i + n_j} \, \lVert \bar{x}_i - \bar{x}_j \rVert^2
 $$
+
 </p>
 
-<p>
-donde \( n_i \) y \( n_j \) representan los tamaños de los clusters, 
-\( \bar{x}_i \) y \( \bar{x}_j \) son sus respectivos centroides, 
-y \( \lVert \cdot \rVert \) denota la distancia euclidiana. 
-Este criterio minimiza el incremento de la suma de cuadrados dentro de los grupos en cada etapa de fusión, 
-favoreciendo la formación de clusters compactos y homogéneos.
-</p>
+<p>donde $n_i$ y $n_j$ representan los tamaños de los clusters, $\bar{x}_i$ y $\bar{x}_j$ son sus respectivos centroides, y $\lVert \cdot \rVert$ denota la distancia euclidiana. Este criterio minimiza el incremento de la suma de cuadrados dentro de los grupos en cada etapa de fusión, favoreciendo la formación de clusters compactos y homogéneos.</p>
 
 <h3>Procedimiento:</h3>
 
-<p>El proceso de agrupamiento se llevó a cabo mediante un algoritmo aglomerativo ascendente, donde inicialmente cada país se considera un cluster individual. En cada iteración, se fusionan los dos clusters con la menor distancia de Ward, y este proceso se repite hasta que todos los países se integran en un único conglomerado jerárquico. El dendrograma resultante permite visualizar las relaciones de similitud entre países y establecer puntos de corte adecuados para determinar el número óptimo de clusters.
+<p>
 
-Para optimizar la calidad del agrupamiento, las puntuaciones de los países en los componentes principales retenidos fueron utilizadas como insumo en lugar de las variables originales. Esta estrategia combinada (ACP + método de Ward) presenta ventajas sustanciales: reduce la multicolinealidad al emplear componentes ortogonales por construcción, elimina el ruido al descartar variables redundantes o de baja variabilidad, mejora la estabilidad y reproducibilidad de los resultados, y aumenta la eficiencia computacional del procedimiento.</p>
+El proceso de agrupamiento se llevó a cabo mediante un algoritmo aglomerativo ascendente, donde inicialmente cada país se considera un cluster individual. En cada iteración, se fusionan los dos clusters con la menor distancia de Ward, y este proceso se repite hasta que todos los países se integran en un único conglomerado jerárquico. El dendrograma resultante permite visualizar las relaciones de similitud entre países y establecer puntos de corte adecuados para determinar el número óptimo de clusters.
+
+Para optimizar la calidad del agrupamiento, las puntuaciones de los países en los componentes principales retenidos fueron utilizadas como insumo en lugar de las variables originales. Esta estrategia combinada (ACP + método de Ward) presenta ventajas sustanciales: reduce la multicolinealidad al emplear componentes ortogonales por construcción, elimina el ruido al descartar variables redundantes o de baja variabilidad, mejora la estabilidad y reproducibilidad de los resultados, y aumenta la eficiencia computacional del procedimiento.
+
+</p>
 
 <h3>3.5 Determinación del Número Óptimo de Clusters</h3>
 
-<p>
-La selección del número óptimo de clusters constituye un desafío metodológico fundamental en el análisis de clusterización no supervisada. A diferencia de las técnicas supervisadas, donde la validez se evalúa comparando con etiquetas conocidas, en la clusterización no supervisada es necesario aplicar criterios intrínsecos que midan la calidad y coherencia interna de las agrupaciones.
+<p>El número óptimo de clusters se determinó mediante inspección visual del dendrograma resultante del método de Ward. Las alturas de fusión consecutivas en el dendrograma revelan puntos de inflexión pronunciados que identifican cortes naturales en la jerarquía, indicando números de clusters potencialmente óptimos. Se examinaron visualmente aquellas alturas donde ocurrían cambios significativos de magnitud, seleccionando el número de clusters que capturaba de forma más equilibrada la estructura subyacente en los datos de mortalidad global.\
+
 </p>
 
-<p>
-En este estudio se implementó el coeficiente de silueta (Silhouette coefficient) como criterio principal para determinar el número óptimo de clusters. Este índice cuantifica qué tan similar es cada observación a su propio cluster en comparación con otros clusters. Para cada país <em>i</em>, el coeficiente se define como:
-</p>
-
-<p style="text-align:center;">
-$$
-s(i) \;=\; \dfrac{b(i) - a(i)}{\max\{a(i),\,b(i)\}}
-$$
-</p>
-<p>
-donde:
-</p>
-<ul>
-  <li><em>a(i)</em>: distancia promedio entre el país <em>i</em> y los demás países de su mismo cluster (cohesión intra-cluster).</li>
-  <li><em>b(i)</em>: distancia promedio entre el país <em>i</em> y los países del cluster más cercano al que no pertenece (separación inter-cluster).</li>
-</ul>
-<p>
-El coeficiente de silueta varía entre <strong>-1</strong> y <strong>1</strong>:
-</p>
-<ul>
-  <li><strong>Valores cercanos a 1:</strong> el país está bien asignado a su cluster.</li>
-  <li><strong>Valores cercanos a 0:</strong> indican una asignación ambigua, es decir, el país se encuentra en el límite entre clusters.</li>
-  <li><strong>Valores negativos:</strong> sugieren una asignación probablemente incorrecta.</li>
-</ul>
-
-<p>
-El coeficiente de silueta promedio para una solución con <em>k</em> clusters proporciona una medida global de calidad. En este estudio, se calculó dicho coeficiente para distintos valores de <em>k</em> (típicamente desde <em>k = 2</em> hasta <em>k = 10</em>), identificando el valor de <em>k</em> que maximiza esta métrica. Este enfoque fue seleccionado por su solidez estadística y su capacidad para identificar soluciones con clusters compactos (alta cohesión interna) y bien separados (baja similitud entre grupos), características deseables en la segmentación de países según sus perfiles de mortalidad.
-</p>
-
-<h3>3.6 Determinación del Número Óptimo de Clusters</h3>
-
-:::
+<h3>3.6 Caracterización de Clusters</h3>
+::::
 
 <!-- RESULTADOS DESCRIPTIVOS -->
+
 ::: {#resultadosd .content-card}
 <h2>Resultados Descriptivos</h2>
 
@@ -979,6 +973,7 @@ El coeficiente de silueta promedio para una solución con <em>k</em> clusters pr
 :::
 
 <!-- RESULTADOS DEL MODELO -->
+
 ::: {#resultadosm .content-card}
 <h2>Resultados del Modelo</h2>
 
@@ -986,6 +981,7 @@ El coeficiente de silueta promedio para una solución con <em>k</em> clusters pr
 :::
 
 <!-- CONCLUSIONES -->
+
 ::: {#conclusiones .content-card}
 <h2>Conclusiones</h2>
 
@@ -993,10 +989,15 @@ El coeficiente de silueta promedio para una solución con <em>k</em> clusters pr
 :::
 
 <!-- BIBLIOGRAFIA -->
+
 ::: {#bibliografia .content-card}
 <h2>Bibliografía</h2>
 
-<p>Banco Mundial. (2023). World Development Indicators 2023. Recuperado de https://databank.worldbank.org/source/world-development-indicators
+<p>
+
+Banco Mundial. (2023). World Development Indicators 2023. Recuperado de <https://databank.worldbank.org/source/world-development-indicators>
+
+Bloom, D. E., Canning, D., & Sevilla, J. (2004). The effect of health on economic growth: A production function approach. World Development, 32(1), 1–13.
 
 Everitt, B. S., Landau, S., Leese, M., & Stahl, D. (2011). Cluster analysis (5th ed.). Wiley-Blackwell.
 
@@ -1008,6 +1009,8 @@ Hastie, T., Tibshirani, R., & Friedman, J. (2009). The elements of statistical l
 
 Jolliffe, I. T. (2002). Principal component analysis (2nd ed.). Springer-Verlag.
 
+Kaufman, L., & Rousseeuw, P. J. (1990). Finding groups in data: An introduction to cluster analysis. Wiley.
+
 Lozano, R., Naghavi, M., Foreman, K., Lim, S., Shibuya, K., Aboyans, V., ... & Murray, C. J. (2012). Global and regional mortality from 235 causes of death for 20 age groups in 1990 and 2010: A systematic analysis for the Global Burden of Disease Study 2010. The Lancet, 380(9859), 2095–2128.
 
 Omran, A. R. (1971). The epidemiologic transition: A theory of the epidemiology of population change. The Milbank Quarterly, 49(4), 509–538.
@@ -1016,27 +1019,27 @@ Organización Mundial de la Salud. (2021). World health statistics 2021: Monitor
 
 Provost, F., & Fawcett, T. (2013). Data science for business: What you need to know about data mining and data-analytic thinking. O'Reilly Media.
 
-Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. Journal of Computational and Applied Mathematics, 20, 53–65.
-
 Rajaratnam, J. K., Marcus, J. R., Flaxman, A. D., Wang, H., Levin-Rector, A., Dwyer, L., ... & Murray, C. J. (2010). Neonatal, postneonatal, childhood, and under-5 mortality for 187 countries, 1970–2010: A systematic analysis of progress towards Millennium Development Goal 4. The Lancet, 375(9730), 1988–2008.
+
+Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. Journal of Computational and Applied Mathematics, 20, 53–65.
 
 Ward, J. H. (1963). Hierarchical grouping to optimize an objective function. Journal of the American Statistical Association, 58(301), 236–244.
 
 Wold, S., Esbensen, K., & Geladi, P. (1987). Principal component analysis. Chemometrics and Intelligent Laboratory Systems, 2(1-3), 37–52.
 
-Bloom, D. E., Canning, D., & Sevilla, J. (2004). The effect of health on economic growth: A production function approach. World Development, 32(1), 1–13.
-
-Kaufman, L., & Rousseeuw, P. J. (1990). Finding groups in data: An introduction to cluster analysis. Wiley.</p>
+</p>
 :::
 
 <!-- FOOTER -->
+
 ::: footer
 <p>Universidad del Valle - Facultad de Ingeniería</p>
+
 <p>Gestión de Datos - Profesor: Orlando Joaqui Barandica</p>
+
 <p>Fecha: `r format(Sys.Date(), "%d/%m/%Y")`</p>
 :::
-
-:::::::::::::::
+::::::::::::::
 
 :::::::::::::::::: <!-- BOTÓN FLOTANTE ELEGANTE -->
 
@@ -1045,10 +1048,6 @@ Kaufman, L., & Rousseeuw, P. J. (1990). Finding groups in data: An introduction 
 📝 Mostrar Todo el Código
 
 </button>
+:::::::::::::::::
 
-:::::::::::::::
-
-::::::::::::::::::
-::::::::
-:::::::::::::
-::::::::::::::::
+:::::::::::::::::: :::::::: ::::::::::::: ::::::::::::::::
