@@ -267,30 +267,78 @@ res.pca
 ```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=9, fig.height=7}
 library(ggplot2)
 library(reshape2)
-Muertes[, -1] <- lapply(Muertes[, -1], as.numeric)
-cor_matrix <- cor(Muertes[, -1])
 
-print("Matriz de correlación calculada:")
-print(dim(cor_matrix))
+# Vector de nombres cortos con los nombres correctos del dataframe:
+nombres_cortos <- c(
+  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
+  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
+  "Accidentes_de_transito" = "Accidentes Tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
+  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
+  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
+  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
+  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
+  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
+  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
+  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
+  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
+  "Supervivencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
+  "Supervivencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
+)
 
-# 4. Crear el objeto cor_melted con verificación
+# 1. Selecciona las 22 variables (excluye País)
+variables_requeridas <- names(nombres_cortos)
+Muertes_filtradas <- Muertes[, variables_requeridas]
+Muertes_filtradas[] <- lapply(Muertes_filtradas, as.numeric)
+
+# 2. Renombra columnas a los cortos
+colnames(Muertes_filtradas) <- nombres_cortos
+
+# 3. Elimina filas con NA
+Muertes_filtradas <- na.omit(Muertes_filtradas)
+
+# 4. Calcula la matriz de correlación
+cor_matrix <- cor(Muertes_filtradas, use = "pairwise.complete.obs")
+
+# 5. Prepara datos para graficar sin NA
+library(reshape2)
 cor_melted <- melt(cor_matrix)
 names(cor_melted) <- c("Var1", "Var2", "value")
 
-print("Objeto cor_melted creado:")
-print(head(cor_melted))
-print(dim(cor_melted))
-
-# 5. Crear la gráfica
+# 6. Gráfica
+library(ggplot2)
 p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
-  geom_tile() +
-  scale_fill_gradient2(low = "red", high = "blue", mid = "white", 
-                       midpoint = 0, limits = c(-1,1)) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Matriz de Correlaciones")
+  geom_tile(color = "grey90") +
+  scale_fill_gradient2(
+    low = "#d73027",
+    high = "#4575b4",
+    mid = "white",
+    midpoint = 0, 
+    limits = c(-1, 1),
+    name = "Correlación"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 12), 
+    panel.grid = element_blank()
+  ) +
+  labs(
+    title = "Matriz de Correlaciones",
+    x = "",
+    y = ""
+  )
 
-# 6. Mostrar la gráfica
 print(p1)
+
 ```
 
 
