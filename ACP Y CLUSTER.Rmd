@@ -9,20 +9,11 @@ output:
     theme: cosmo
     code_folding: hide
 ---
+# Preparación inicial datos y base 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  warning = FALSE,
-  message = FALSE,
-  fig.width = 10,
-  fig.height = 7
-)
-```
+##Librerías
 
-# Cargar Librerías
-
-```{r librerias}
+```{r librerias, message=FALSE, warning=FALSE, results='hide'}
 library(readr)
 library(tidyverse)
 library(FactoMineR)
@@ -39,12 +30,11 @@ library(dplyr)
 library(tidyr)
 library(ggforce)
 library(cluster)
-
 ```
 
-# Cargar y Preparar Datos
+##Cargar y Preparar Datos
 
-```{r cargar-datos}
+```{r cargar-datos, message=FALSE, warning=FALSE, results='hide'}
 # Leer la base
 Muertes_ans <- read_csv("Muertes ans.csv", locale = locale(encoding = "UTF-8"))
 Muertes <- data.frame(Muertes_ans)
@@ -52,9 +42,7 @@ Muertes <- data.frame(Muertes_ans)
 # Limpieza y selección de variables
 Muertes <- Muertes[-(218:245), ]
 Muertes <- na.omit(Muertes)
-```
 
-```{r renombrar-columnas}
 # Renombrar columnas
 colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", 
                        "Accidentes_de_transito", "Enfermedades_cardiacas_cancer_diabetes_mujeres", 
@@ -72,9 +60,7 @@ colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida
 # Eliminar filas con valores NA
 Muertes <- Muertes %>%
   filter(complete.cases(.))
-```
 
-```{r traducir-paises}
 # Traducir nombres de países al español
 Muertes <- Muertes %>%
   mutate(Pais = case_when(
@@ -232,9 +218,6 @@ Muertes <- Muertes %>%
     Pais == "Zimbabwe" ~ "Zimbabue",
     TRUE ~ as.character(Pais)
   ))
-```
-
-```{r verificar-datos, message=FALSE, warning=FALSE, results='hide'}
 # Verificar la base final
 print(paste("Número de países después de la limpieza:", nrow(Muertes)))
 print("Estructura de la base:")
@@ -243,7 +226,7 @@ str(Muertes)
 
 # Análisis de Componentes Principales
 
-```{r preparar-acp}
+```{r preparar-acp, message=FALSE, warning=FALSE, results='hide'}
 # Preparar base para ACP
 Muertes_df <- Muertes %>% 
   select(-Pais) %>%
@@ -253,9 +236,7 @@ rownames(Muertes_df) <- Muertes$Pais
 
 # Ver las primeras filas y columnas
 head(Muertes_df[, 1:6])
-```
 
-```{r realizar-acp, message=FALSE, warning=FALSE, results='hide'}
 # Realizar el ACP con datos ya escalados
 res.pca <- prcomp(Muertes_df, scale = FALSE)
 res.pca
@@ -344,7 +325,7 @@ print(p1)
 
 ## Gráfico de Sedimentación
 
-```{r scree-plot:Gráfico de Sedimentación,fig.width=9, fig.height=7}
+```{r scree-plot:Gráfico de Sedimentación, message=FALSE, warning=FALSE, results='hide'}
 p2 <- fviz_eig(res.pca, 
          addlabels = TRUE,
          barfill = "#2E8B57",
@@ -566,14 +547,14 @@ grafico_profesional
 
 # Resultados del ACP
 
-## Valores Propios
+##Valores Propios
 
 ```{r valores-propios, message=FALSE, warning=FALSE, results='hide',fig.width=9, fig.height=7}
 eig.val <- get_eigenvalue(res.pca)
 eig.val
 ```
 
-## Resultados para Variables
+##Resultados para Variables
 
 ```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
 res.var <- get_pca_var(res.pca)
@@ -586,14 +567,11 @@ head(res.var$contrib)
 
 # Calidad de representación
 head(res.var$cos2)
-```
-
-```{r contribuciones-variables-totales, message=FALSE, warning=FALSE, results='hide'}
 # Visualizar contribuciones de variables a los primeros componentes
 colSums(res.var$contrib[,1:2])
 ```
 
-## Resultados para Individuos (Países)
+## Resultados para Países
 
 ```{r resultados-individuos, message=FALSE, warning=FALSE, results='hide'}
 res.ind <- get_pca_ind(res.pca)
@@ -610,7 +588,7 @@ head(res.ind$cos2)
 
 # Tabla Interactiva de Contribuciones
 
-```{r tabla-contribuciones,fig.width=9, fig.height=7}
+```{r tabla-contribuciones}
 library(reactable)
 library(reactablefmtr)
 
@@ -755,21 +733,14 @@ tabla_contribuciones
 ```
 
 
-#CLUSTER
+# CLUSTER
 
-# Configuración Inicial
+## Análisis de Componentes Principales
 
-
-# Configuración Inicial
-
-```{r config}
+```{r acp, message=FALSE, warning=FALSE, results='hide'}
 graphics.off()
 par(mar = c(4, 4, 3, 2))
-```
 
-# Análisis de Componentes Principales
-
-```{r acp}
 # Realizar ACP de forma no interactiva
 acp_resultado <- dudi.pca(df = Muertes_df, 
                           scannf = FALSE,  # No mostrar gráfico de selección
@@ -790,9 +761,9 @@ resultado_ACP <- list(
 NuevaBase <- data.frame(Cluster = resultado_ACP$cluster, Muertes_df)
 ```
 
-# Preparación de Datos
+## Preparación de Datos
 
-```{r preparacion_datos}
+```{r preparacion_datos, message=FALSE, warning=FALSE, results='hide'}
 # Extraer información del ACP para ggplot
 acp_ind <- as.data.frame(resultado_ACP$dudi$li)
 acp_var <- as.data.frame(resultado_ACP$dudi$co)
@@ -810,10 +781,9 @@ eigenvals <- resultado_ACP$dudi$eig
 var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
 ```
 
-# Análisis Jerárquico
+# Análisis Dendrograma
 
-## Dendrograma
-```{r dendrograma interactivo, fig.width=9, fig.height=7}
+```{r dendrograma interactivo, fig.width=9, fig.height=7, message=FALSE, warning=FALSE, results='hide'}
 
 # Cargar librerías
 library(plotly)
@@ -915,7 +885,7 @@ if(exists("hc")) {
 
 ```
 
-```{r dendo,fig.width=9, fig.height=7}
+```{r dendo,fig.width=9, fig.height=7, message=FALSE, warning=FALSE, results='hide'}
 library(plotly)
 library(factoextra)
 library(viridis)
@@ -988,8 +958,6 @@ plotly_dendro <- plotly_dendro %>%
 plotly_dendro
 ```
 
-
-# Visualizaciones Interactivas
 
 ## Gráfico de Individuos (Países) - Componentes 1 y 2
 
@@ -1367,73 +1335,147 @@ plotly_biplot
 ```
 
 
+## Gráfico PC1 vs PC2 - Clusters
 
-## Clusters con Elipses - Componentes 1 y 3
+```{r clusters-pc1-pc2, fig.width=12, fig.height=9}
+library(ggplot2)
+library(ggforce)
+library(dplyr)
 
-```{r clusters_elipses_13,fig.width=9, fig.height=7}
-library(plotly)
+# Preparar datos para el gráfico
+df_clusters <- data.frame(
+  Pais = rownames(resultado_ACP$dudi$li),
+  PC1 = resultado_ACP$dudi$li[, 1],
+  PC2 = resultado_ACP$dudi$li[, 2],
+  PC3 = resultado_ACP$dudi$li[, 3],
+  Cluster = as.factor(NuevaBase$Cluster)
+)
 
-if(ncol(acp_ind) >= 3) {
-  plot_interactivo <- plot_ly(acp_ind, x = ~Axis1, y = ~Axis3, 
-                             color = ~Cluster, colors = viridis::viridis(length(unique(acp_ind$Cluster))),
-                             type = 'scatter', mode = 'markers',
-                             marker = list(size = 8, opacity = 0.7, line = list(width = 1, color = 'white')),
-                             text = ~paste("</b>Cluster:</b> ", Cluster,
-                                          "</b><br>Axis1:</b> ", round(Axis1, 3),
-                                          "</b><br>Axis3:</b> ", round(Axis3, 3)),
-                             hoverinfo = 'text',
-                             showlegend = TRUE) %>%
-    
-    # Añadir elipses de confianza
-    add_trace(x = ~Axis1, y = ~Axis3, color = ~Cluster,
-              type = 'scatter', mode = 'none',
-              fill = 'toself', fillcolor = ~Cluster,
-              opacity = 0.1, showlegend = FALSE,
-              hoverinfo = 'none') %>%
-    
-    layout(
-      title = list(
-        text = paste0("<b>Clusters con Elipses de Confianza</b><br>",
-                     "<sup>Dimensiones 1 y 3 (95% de confianza)</sup>"),
-        x = 0.5,
-        font = list(size = 16)
-      ),
-      xaxis = list(
-        title = paste0("Dimensión 1 (", var_exp[1], "%)"),
-        gridcolor = 'lightgray',
-        zeroline = FALSE
-      ),
-      yaxis = list(
-        title = paste0("Dimensión 3 (", var_exp[3], "%)"),
-        gridcolor = 'lightgray',
-        zeroline = FALSE
-      ),
-      plot_bgcolor = 'white',
-      paper_bgcolor = 'white',
-      font = list(family = "Arial"),
-      hoverlabel = list(
-        bgcolor = "white",
-        bordercolor = "black",
-        font = list(family = "Arial")
-      ),
-      legend = list(
-        title = list(text = "<b>Cluster</b>"),
-        orientation = "h",
-        x = 0.5,
-        y = -0.2,
-        xanchor = "center"
-      )
-    )
-  
-}
-plot_interactivo
+# Calcular centroides de cada cluster
+centroides_12 <- df_clusters %>%
+  group_by(Cluster) %>%
+  summarise(
+    PC1_centro = mean(PC1),
+    PC2_centro = mean(PC2),
+    .groups = 'drop'
+  )
+
+# Definir colores profesionales para los clusters
+colores_clusters <- c("#2E7D32", "#1565C0")  # Verde oscuro y azul oscuro
+
+# Crear gráfico estático PC1 vs PC2 con elipses
+plot_clusters_12 <- ggplot(df_clusters, aes(x = PC1, y = PC2, color = Cluster, fill = Cluster)) +
+  # Elipses de confianza (95%)
+  stat_ellipse(geom = "polygon", alpha = 0.2, level = 0.95, linewidth = 1.5) +
+  # Puntos de los países
+  geom_point(size = 3.5, alpha = 0.8, stroke = 1, shape = 21, color = "white") +
+  # Centroides
+  geom_point(data = centroides_12, 
+             aes(x = PC1_centro, y = PC2_centro, color = Cluster),
+             size = 10, shape = 4, stroke = 3, show.legend = FALSE) +
+  # Etiquetas de centroides
+  geom_text(data = centroides_12,
+            aes(x = PC1_centro, y = PC2_centro, label = paste("Centroide", Cluster)),
+            vjust = -1.5, size = 5, fontface = "bold", show.legend = FALSE) +
+  # Líneas en cero
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  # Escalas de color
+  scale_color_manual(values = colores_clusters, name = "Cluster") +
+  scale_fill_manual(values = colores_clusters, name = "Cluster") +
+  # Etiquetas y título
+  labs(
+    title = "Análisis de Clusters - Componentes Principales 1 y 2",
+    subtitle = "Elipses de confianza al 95% con centroides",
+    x = paste0("Componente Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Componente Principal 2 (", var_exp[2], "%)")
+  ) +
+  # Tema
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5, color = "#2E7D32"),
+    plot.subtitle = element_text(face = "italic", size = 12, hjust = 0.5, color = "gray40"),
+    axis.title = element_text(face = "bold", size = 14),
+    axis.text = element_text(size = 12),
+    legend.position = "right",
+    legend.title = element_text(face = "bold", size = 13),
+    legend.text = element_text(size = 12),
+    legend.background = element_rect(fill = "white", color = "#2E7D32", linewidth = 1),
+    legend.key.size = unit(1, "cm"),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_line(color = "gray95"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+print(plot_clusters_12)
 ```
+
+## Gráfico PC1 vs PC3 - Clusters
+
+```{r clusters-pc1-pc3, fig.width=12, fig.height=9}
+# Calcular centroides para PC1 y PC3
+centroides_13 <- df_clusters %>%
+  group_by(Cluster) %>%
+  summarise(
+    PC1_centro = mean(PC1),
+    PC3_centro = mean(PC3),
+    .groups = 'drop'
+  )
+
+# Crear gráfico estático PC1 vs PC3 con elipses
+plot_clusters_13 <- ggplot(df_clusters, aes(x = PC1, y = PC3, color = Cluster, fill = Cluster)) +
+  # Elipses de confianza (95%)
+  stat_ellipse(geom = "polygon", alpha = 0.2, level = 0.95, linewidth = 1.5) +
+  # Puntos de los países
+  geom_point(size = 3.5, alpha = 0.8, stroke = 1, shape = 21, color = "white") +
+  # Centroides
+  geom_point(data = centroides_13, 
+             aes(x = PC1_centro, y = PC3_centro, color = Cluster),
+             size = 10, shape = 4, stroke = 3, show.legend = FALSE) +
+  # Etiquetas de centroides
+  geom_text(data = centroides_13,
+            aes(x = PC1_centro, y = PC3_centro, label = paste("Centroide", Cluster)),
+            vjust = -1.5, size = 5, fontface = "bold", show.legend = FALSE) +
+  # Líneas en cero
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  # Escalas de color
+  scale_color_manual(values = colores_clusters, name = "Cluster") +
+  scale_fill_manual(values = colores_clusters, name = "Cluster") +
+  # Etiquetas y título
+  labs(
+    title = "Análisis de Clusters - Componentes Principales 1 y 3",
+    subtitle = "Elipses de confianza al 95% con centroides",
+    x = paste0("Componente Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Componente Principal 3 (", var_exp[3], "%)")
+  ) +
+  # Tema
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5, color = "#2E7D32"),
+    plot.subtitle = element_text(face = "italic", size = 12, hjust = 0.5, color = "gray40"),
+    axis.title = element_text(face = "bold", size = 14),
+    axis.text = element_text(size = 12),
+    legend.position = "right",
+    legend.title = element_text(face = "bold", size = 13),
+    legend.text = element_text(size = 12),
+    legend.background = element_rect(fill = "white", color = "#2E7D32", linewidth = 1),
+    legend.key.size = unit(1, "cm"),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_line(color = "gray95"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+print(plot_clusters_13)
+```
+
 
 # Análisis de Contribución
 
-## Contribución de Variables a los Componentes
 
-```{r contribucion_variables,fig.width=9, fig.height=7}
+```{r contribucion_variables, fig.width=9, fig.height=7}
 contrib_data <- acp_var %>%
   mutate(Contrib1 = abs(Axis1) / sum(abs(Axis1)) * 100,
          Contrib2 = abs(Axis2) / sum(abs(Axis2)) * 100) %>%
@@ -1457,29 +1499,19 @@ p6 <- ggplot(contrib_data, aes(x = reorder(Variable, Contribucion),
 print(p6)
 ```
 
-## Scree Plot - Varianza Explicada
-
-# Resumen Estadístico
-
 ## Información General del Análisis
 
 # Resumen Estadístico del Análisis
 
 ## 1. Información General
 
-```{r resumen_general, echo=FALSE}
+```{r resumen_general, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 cat("### RESUMEN DEL ANÁLISIS ACP Y CLUSTERING\n\n")
 cat("📊 **Países analizados:**", nrow(NuevaBase), "\n")
 cat("🔢 **Número de clusters identificados:**", length(unique(NuevaBase$Cluster)), "\n")
 cat("📈 **Variables incluidas:**", ncol(NuevaBase) - 2, "\n")
 cat("🎯 **Varianza explicada (PC1+PC2):**", round(sum(var_exp[1:2]), 2), "%\n")
-```
 
----
-
-## 2. Distribución de Países por Cluster
-
-```{r distribucion_cluster, echo=FALSE,fig.width=9, fig.height=7}
 library(knitr)
 library(kableExtra)
 
