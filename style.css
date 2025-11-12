@@ -1,4 +1,6 @@
-/* RESET Y CONFIGURACIÓN GENERAL */
+/* ==========================================================================
+   RESET Y CONFIGURACIÓN GENERAL - LIMPIO
+   ========================================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -13,13 +15,15 @@ body {
   min-height: 100vh;
 }
 
-/* CONTENEDOR PRINCIPAL */
+/* ==========================================================================
+   ESTRUCTURA PRINCIPAL
+   ========================================================================== */
 .container {
   display: flex;
   min-height: 100vh;
 }
 
-/* SIDEBAR ESTILO UV */
+/* SIDEBAR */
 .sidebar {
   width: 280px;
   background: #488B49;
@@ -39,14 +43,14 @@ body {
 }
 
 .logo-uv {
-  width: 140px;  /* Aumenté el ancho */
-  height: 140px; /* Aumenté la altura */
+  width: 140px;
+  height: 140px;
   margin: 0 auto 1rem;
   border-radius: 50%;
   display: block;
   object-fit: contain;
   background: white;
-  padding: 5px;  /* Reducí el padding */
+  padding: 5px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
@@ -96,11 +100,6 @@ body {
   font-weight: 600;
 }
 
-.sidebar-nav .icon {
-  margin-right: 0.8rem;
-  font-size: 1.1rem;
-}
-
 /* CONTENIDO PRINCIPAL */
 .main-content {
   margin-left: 280px;
@@ -148,8 +147,10 @@ body {
   margin-top: 1rem;
 }
 
+/* ==========================================================================
+   COMPONENTES DE CONTENIDO
+   ========================================================================== */
 /* TARJETAS DE CONTENIDO */
-/* TARJETAS DE CONTENIDO INTERACTIVAS */
 .content-card {
   background: white;
   border-radius: 12px;
@@ -158,7 +159,6 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   border-left: 5px solid #488B49;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  cursor: pointer;
   position: relative;
   overflow: hidden;
 }
@@ -199,36 +199,34 @@ body {
   transform: translateX(5px);
 }
 
-/* Efecto para los párrafos dentro de las tarjetas */
+/* PÁRRAFOS EN CONTENT-CARD */
 .content-card p {
+  margin: 0 0 1.5rem 0;
+  padding: 0;
+  line-height: 1.7;
+  text-align: justify;
+  text-justify: inter-word;
+  display: block;
+  word-spacing: 0.05em;
   transition: transform 0.3s ease;
+}
+
+.content-card p + p {
+  margin-top: 1.5rem;
+}
+
+.content-card p:last-of-type {
+  margin-bottom: 0;
 }
 
 .content-card:hover p {
   transform: translateX(3px);
 }
 
-/* CONTENEDORES DE CÓDIGO (OCULTOS INICIALMENTE) */
-.code-container {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 0;
-  margin: 1rem 0;
-  display: none;
-  overflow: hidden;
-}
-
-.code-content {
-  padding: 1.5rem;
-  background: #2d3748;
-  color: #e2e8f0;
-  font-family: 'Courier New', monospace;
-  border-left: 4px solid #488B49;
-  margin: 0;
-}
-
-/* BOTÓN FLOTANTE ELEGANTE */
+/* ==========================================================================
+   COMPONENTES ESPECIALES
+   ========================================================================== */
+/* BOTÓN FLOTANTE */
 .floating-code-btn {
   position: fixed;
   bottom: 30px;
@@ -254,20 +252,110 @@ body {
   box-shadow: 0 8px 25px rgba(72, 139, 73, 0.6);
 }
 
-.floating-code-btn:active {
-  transform: translateY(-1px) scale(1.02);
-}
-
-/* GRÁFICOS Y TABLAS */
-.plot-container {
-  background: #f8f9fa;
-  border-radius: 10px;
+/* CONTENEDORES DE GRÁFICOS */
+.plot-container,
+.ggplot-container,
+.figure {
+  background: white;
+  border-radius: 12px;
   padding: 1.5rem;
   margin: 1.5rem 0;
   border: 1px solid #e9ecef;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #488B49;
 }
 
-/* RESPONSIVE */
+/* ==========================================================================
+   ESTILOS PARA TABLAS KABLEEXTRA (PRINCIPALES)
+   ========================================================================== */
+table {
+  border-collapse: collapse;
+  margin: 1.5rem auto;
+  width: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background: white;
+}
+
+table thead {
+  background: linear-gradient(135deg, #488B49 0%, #3a6e3a 100%);
+  color: white;
+}
+
+table th {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+}
+
+table td {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+table tbody tr:hover {
+  background-color: rgba(72, 139, 73, 0.05);
+}
+
+table caption {
+  caption-side: top;
+  font-weight: 700;
+  color: #2d5534;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.2rem;
+  background: rgba(72, 139, 73, 0.1);
+  border-radius: 8px 8px 0 0;
+}
+
+/* ==========================================================================
+   COMPONENTES AUXILIARES
+   ========================================================================== */
+/* CAJAS DE VARIABLES */
+.variables-box {
+  background: rgba(115, 226, 167, 0.1);
+  border: 1px solid rgba(72, 139, 73, 0.3);
+  border-radius: 8px;
+  padding: 1.2rem;
+  margin: 1rem 0;
+}
+
+.variables-box strong {
+  color: #2d5534;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.variables-box ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.2rem;
+}
+
+.variables-box li {
+  margin: 0.3rem 0;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  margin-top: 3rem;
+  border-top: 1px solid #e9ecef;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
 @media (max-width: 768px) {
   .sidebar {
     display: none;
@@ -289,83 +377,83 @@ body {
     padding: 14px 20px;
     font-size: 0.9rem;
   }
+  
+  .content-card {
+    padding: 1.5rem;
+  }
+  
+  table {
+    font-size: 0.85rem;
+  }
+  
+  table th,
+  table td {
+    padding: 0.8rem;
+  }
 }
 
-/* FOOTER */
-.footer {
-  text-align: center;
-  padding: 2rem;
-  margin-top: 3rem;
-  border-top: 1px solid #e9ecef;
-  color: #6c757d;
-  font-size: 0.9rem;
-}
+/* ==========================================================================
+   ESTILOS PARA CHUNKS DE CÓDIGO R (BOTÓN MOSTRAR/OCULTAR)
+   ========================================================================== */
 
-/* Estilos automáticos para TODOS los gráficos ggplot2 */
-.ggplot-container {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-  border-radius: 12px !important;
-  padding: 2rem !important;
-  margin: 2rem 0 !important;
-  border: 1px solid #e9ecef !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Estilos automáticos para TODAS las tablas kable */
-table {
-  border-collapse: collapse !important;
-  margin: 1.5rem auto !important;
-}
-
-/* Asegurar que las tablas kable tengan nuestros estilos */
-.kable-table {
-  width: 100% !important;
-  border-collapse: collapse !important;
-  margin: 1.5rem 0 !important;
-  font-size: 0.95rem !important;
-  border-radius: 10px !important;
-  overflow: hidden !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
-  background: white !important;
-}
-
-.kable-table thead {
-  background: linear-gradient(135deg, #488B49 0%, #3a6e3a 100%) !important;
-  color: white !important;
-}
-
-.kable-table th {
-  padding: 1rem 1.2rem !important;
-  text-align: left !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  border: none !important;
-}
-
-.kable-table td {
-  padding: 1rem 1.2rem !important;
-  border-bottom: 1px solid #e9ecef !important;
-}
-
-.kable-table tbody tr:hover {
-  background-color: rgba(72, 139, 73, 0.05) !important;
-}
-
-/* Estilos para gráficos plotly automáticamente */
-.js-plotly-plot .plotly {
-  border-radius: 12px !important;
-  background: #f8f9fa !important;
-  padding: 1rem !important;
-}
-
-/* Contenedor automático para cualquier gráfico */
-.figure {
-  background: white !important;
-  border-radius: 12px !important;
+pre.r, pre.python, pre.sql, pre.bash {
+  background: #2d3748 !important;
+  color: #e2e8f0 !important;
+  border-radius: 8px !important;
   padding: 1.5rem !important;
-  margin: 1.5rem 0 !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+  margin: 1rem 0 !important;
   border-left: 4px solid #488B49 !important;
+  font-family: 'Courier New', Monaco, monospace !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  overflow-x: auto !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Efecto hover para chunks de código */
+pre.r:hover, pre.python:hover, pre.sql:hover, pre.bash:hover {
+  transform: translateX(5px) !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15) !important;
+}
+
+/* Resaltar sintaxis dentro del código */
+pre.r code, pre.python code, pre.sql code, pre.bash code {
+  background: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+}
+
+/* Indicador visual cuando el código está visible */
+.code-visible {
+  border-left: 4px solid #73e2a7 !important;
+}
+
+/* Botón flotante mejorado */
+.floating-code-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #488B49;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.floating-code-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(72, 139, 73, 0.6);
+  background: #3a6e3a;
 }

@@ -1,0 +1,44 @@
+output:
+  html_document:
+    css: style.css
+    theme: null
+    highlight: null
+    self_contained: true
+    toc: false
+---
+
+```{=html}
+<script>
+// Función para mostrar/ocultar TODO el código
+function toggleAllCode() {
+  var codeContainers = document.querySelectorAll('.code-container');
+  var button = document.querySelector('.floating-code-btn');
+  var allHidden = true;
+  
+  // Verificar si algún código está visible
+  codeContainers.forEach(function(container) {
+    if (container.style.display === 'block') {
+      allHidden = false;
+    }
+  });
+  
+  // Mostrar u ocultar todo
+  codeContainers.forEach(function(container) {
+    if (allHidden) {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+    }
+  });
+  
+  // Cambiar texto del botón
+  if (allHidden) {
+    button.innerHTML = '📝 Ocultar Todo el Código';
+  } else {
+    button.innerHTML = '📝 Mostrar Todo el Código';
+  }
+}
+</script>
+´´´
+
+
