@@ -34,6 +34,12 @@ library(plotly)
 library(ggrepel)
 library(dendextend)
 library(viridis)
+library(FactoClass)
+library(dplyr)
+library(tidyr)
+library(ggforce)
+library(cluster)
+
 ```
 
 # Cargar y Preparar Datos
@@ -510,12 +516,16 @@ grafico_profesional
 ```
 
 
+# Resultados del ACP
+
+## Valores Propios
+
 ```{r valores-propios, message=FALSE, warning=FALSE, results='hide'}
 eig.val <- get_eigenvalue(res.pca)
 eig.val
 ```
 
-
+## Resultados para Variables
 
 ```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
 res.var <- get_pca_var(res.pca)
@@ -669,3 +679,794 @@ tabla_contribuciones <- reactable(
 
 tabla_contribuciones
 ```
+
+
+#CLUSTER
+
+# Configuración Inicial
+
+
+# Configuración Inicial
+
+```{r config}
+graphics.off()
+par(mar = c(4, 4, 3, 2))
+```
+
+# Análisis de Componentes Principales
+
+```{r acp}
+# Realizar ACP de forma no interactiva
+acp_resultado <- dudi.pca(df = Muertes_df, 
+                          scannf = FALSE,  # No mostrar gráfico de selección
+                          nf = 3)          # Número de ejes a retener
+
+# Clustering no interactivo usando directamente los resultados del ACP
+dist_matrix <- dist(acp_resultado$li[, 1:3])  # Distancia euclidiana en las 3 primeras componentes
+hclust_result <- hclust(dist_matrix, method = "ward.D2")
+clusters <- cutree(hclust_result, k = 2)  # Cortar en 2 clusters
+
+# Crear objeto similar a FactoClass
+resultado_ACP <- list(
+  dudi = acp_resultado,
+  cluster = clusters,
+  hclust = hclust_result
+)
+
+NuevaBase <- data.frame(Cluster = resultado_ACP$cluster, Muertes_df)
+```
+
+# Preparación de Datos
+
+```{r preparacion_datos}
+# Extraer información del ACP para ggplot
+acp_ind <- as.data.frame(resultado_ACP$dudi$li)
+acp_var <- as.data.frame(resultado_ACP$dudi$co)
+
+# Asignar nombres consistentes
+colnames(acp_ind) <- paste0("Axis", 1:ncol(acp_ind))
+colnames(acp_var) <- paste0("Axis", 1:ncol(acp_var))
+
+acp_ind$Cluster <- as.factor(NuevaBase$Cluster)
+acp_ind$Pais <- rownames(Muertes_df)
+acp_var$Variable <- rownames(acp_var)
+
+# Porcentaje de varianza explicada
+eigenvals <- resultado_ACP$dudi$eig
+var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
+```
+
+# Análisis Jerárquico
+
+## Dendrograma
+```{r dendrograma interactivo, fig.height=8}
+
+# Cargar librerías
+library(plotly)
+library(viridis)
+library(ggdendro)  # Para extraer datos del dendrograma
+
+# Función mejorada que incluye el dendrograma visualizado
+crear_dendrograma_interactivo_mejorado <- function(hc) {
+  
+  # Obtener la altura máxima del dendrograma
+  altura_max <- max(hc$height)
+  
+  # Crear secuencia de alturas para el slider
+  alturas <- seq(0, altura_max, length.out = 20)
+  
+  # Extraer datos del dendrograma para visualización
+  dend_data <- dendro_data(hc)
+  segmentos <- segment(dend_data)
+  
+  # Crear gráfico base con el dendrograma
+  fig <- plot_ly() %>%
+    add_segments(
+      data = segmentos,
+      x = ~x, xend = ~xend,
+      y = ~y, yend = ~yend,
+      line = list(color = "gray", width = 1),
+      hoverinfo = "none",
+      showlegend = FALSE
+    ) %>%
+    layout(
+      title = "Dendrograma Interactivo con Línea de Corte",
+      xaxis = list(
+        title = "Países", 
+        showticklabels = FALSE,
+        range = c(0, max(segmentos$xend) + 1)
+      ),
+      yaxis = list(
+        title = "Distancia", 
+        range = c(0, altura_max * 1.1)
+      ),
+      showlegend = FALSE
+    )
+  
+  # Agregar línea de corte inicial
+  fig <- fig %>% add_lines(
+    x = c(0, max(segmentos$xend) + 1),
+    y = c(alturas[1], alturas[1]),
+    line = list(color = "red", width = 3, dash = "dash"),
+    name = "Línea de corte"
+  )
+  
+  # Preparar steps para el slider
+  steps <- list()
+  
+  for (i in 1:length(alturas)) {
+    altura_actual <- alturas[i]
+    
+    step <- list(
+      method = "restyle",
+      args = list(
+        "y",  # Propiedad a modificar
+        list(c(altura_actual, altura_actual)),  # Nuevo valor
+        list(1)  # Índice de la traza (la línea de corte)
+      ),
+      label = sprintf("%.1f", altura_actual)
+    )
+    steps[[i]] <- step
+  }
+  
+  # Configurar slider
+  fig <- fig %>% layout(
+    sliders = list(
+      list(
+        active = 0,
+        currentvalue = list(prefix = "Altura de corte: "),
+        pad = list(t = 50),
+        steps = steps
+      )
+    )
+  )
+  
+  return(fig)
+}
+
+# EJECUTAR el código
+if(exists("hc")) {
+  dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
+  dend_interactivo
+} else {
+  # Si hc no existe, crear un ejemplo
+  cat("Creando un ejemplo con datos de iris...\n")
+  data <- scale(iris[, 1:4])
+  dist_matrix <- dist(data)
+  hc <- hclust(dist_matrix, method = "ward.D2")
+  
+  dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
+  dend_interactivo
+}
+
+```
+
+```{r dendo}
+library(plotly)
+library(factoextra)
+library(viridis)
+
+# Crear matriz de distancia y dendrograma
+dist_matrix <- dist(resultado_ACP$dudi$li[, 1:3])
+hc <- hclust(dist_matrix, method = "ward.D2")
+
+# Obtener los nombres de los países
+paises <- rownames(resultado_ACP$dudi$li)
+
+# Primero crear el dendrograma con factoextra para obtener la estructura
+dendro_plot <- fviz_dend(hc, k = 2, 
+                         cex = 0.6,
+                         k_colors = viridis(2),
+                         color_labels_by_k = TRUE,
+                         ggtheme = theme_minimal(),
+                         main = "Dendrograma - Clasificación Jerárquica",
+                         xlab = "Países", ylab = "Distancia")
+
+# Convertir el ggplot a plotly manteniendo los colores y estructura
+plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
+  layout(
+    title = list(
+      text = "<b>Dendrograma - Clasificación Jerárquica</b>",
+      x = 0.5,
+      font = list(size = 20, family = "Arial")
+    ),
+    xaxis = list(
+      title = "<b>Países</b>",
+      tickfont = list(size = 10),
+      titlefont = list(size = 14),
+      showticklabels = FALSE  # Ocultar etiquetas del eje X para evitar desorden
+    ),
+    yaxis = list(
+      title = "<b>Distancia</b>",
+      titlefont = list(size = 14)
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    )
+  )
+
+# Función para obtener el nombre del país basado en la posición
+get_country_name <- function(position) {
+  if (position >= 1 && position <= length(paises)) {
+    return(paises[position])
+  }
+  return("N/A")
+}
+
+# Mejorar los tooltips para mostrar nombres de países
+plotly_dendro <- plotly_dendro %>%
+  style(
+    hoverinfo = "text",
+    text = ~paste0(
+      "<b>País:</b> ", get_country_name(x), "<br>",
+      "<b>Distancia:</b> ", round(y, 4), "<br>",
+      "<b>Posición:</b> ", x
+    ),
+    traces = c(1, 2)  # Aplicar a los traces de segmentos y puntos
+  )
+
+# Mostrar el gráfico interactivo
+plotly_dendro
+```
+
+
+# Visualizaciones Interactivas
+
+## Gráfico de Individuos (Países) - Componentes 1 y 2
+
+```{r grafico_paises_interactivo}
+plotly_p1 <- plot_ly(acp_ind, 
+                     x = ~Axis1, y = ~Axis2, 
+                     color = ~Cluster,
+                     colors = viridis_pal()(2),
+                     text = ~paste("País:", Pais, 
+                                   "Cluster:", Cluster,
+                                   "Comp1:", round(Axis1, 2),
+                                   "Comp2:", round(Axis2, 2)),
+                     hoverinfo = "text",
+                     type = "scatter",
+                     mode = "markers",
+                     marker = list(size = 10, opacity = 0.7, line = list(width = 1))) %>%
+  layout(title = "ACP Interactivo - Países por Cluster",
+         xaxis = list(title = paste0("Dimensión 1 (", var_exp[1], "%)")),
+         yaxis = list(title = paste0("Dimensión 2 (", var_exp[2], "%)")),
+         hoverlabel = list(bgcolor = "white"))
+
+plotly_p1
+```
+
+## Círculo de Correlaciones
+
+```{r circulo_correlaciones}
+library(plotly)
+
+# Crear nombres cortos para las variables
+nombres_cortos <- c(
+  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
+  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
+  "Accidentes_de_transito" = "Accidentes Tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
+  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
+  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
+  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
+  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
+  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
+  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
+  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
+  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
+  "Supervivenencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
+  "Supervivenencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
+)
+
+# Preparar datos
+circle_data <- data.frame(
+  Axis1 = acp_var[,1],
+  Axis2 = acp_var[,2],
+  Variable = rownames(acp_var)
+)
+
+# Aplicar nombres cortos
+circle_data$NombreCorto <- nombres_cortos[circle_data$Variable]
+
+# Calcular métricas para tooltips
+circle_data$Longitud <- sqrt(circle_data$Axis1^2 + circle_data$Axis2^2)
+circle_data$Angulo <- round(atan2(circle_data$Axis2, circle_data$Axis1) * 180/pi, 1)
+circle_data$Correlacion <- round(circle_data$Longitud, 3)
+
+# Crear gráfico interactivo profesional
+plot_interactivo <- plot_ly() %>%
+  
+  # Añadir círculo de referencia
+  add_trace(
+    type = "scatter",
+    x = cos(seq(0, 2*pi, length.out = 100)),
+    y = sin(seq(0, 2*pi, length.out = 100)),
+    mode = "lines",
+    line = list(color = "blue", dash = "dash", width = 1),
+    hoverinfo = "none",
+    showlegend = FALSE,
+    name = "Círculo unidad"
+  ) %>%
+  
+  # Añadir flechas
+  add_annotations(
+    x = circle_data$Axis1,
+    y = circle_data$Axis2,
+    ax = 0,
+    ay = 0,
+    text = "",
+    showarrow = TRUE,
+    arrowhead = 2,
+    arrowsize = 1.2,
+    arrowwidth = 2,
+    arrowcolor = "#E41A1C",
+    opacity = 0.8
+  ) %>%
+  
+  # Añadir puntos interactivos
+  add_trace(
+    data = circle_data,
+    x = ~Axis1,
+    y = ~Axis2,
+    type = "scatter",
+    mode = "markers",
+    marker = list(
+      size = 10,
+      color = "#E41A1C",
+      line = list(color = "white", width = 2)
+    ),
+    text = ~paste(
+      "<b>Variable:</b> ", NombreCorto,
+      "<br><b>Correlación Comp. 1:</b> ", round(Axis1, 3),
+      "<br><b>Correlación Comp. 2:</b> ", round(Axis2, 3),
+      "<br><b>Longitud vector:</b> ", round(Longitud, 3),
+      "<br><b>Ángulo:</b> ", Angulo, "°",
+      "<br><b>Variable original:</b><br>", Variable
+    ),
+    hoverinfo = "text",
+    hoverlabel = list(bgcolor = "white", bordercolor = "black"),
+    showlegend = FALSE
+  ) %>%
+  
+  # Añadir etiquetas con nombres cortos
+  add_annotations(
+    x = circle_data$Axis1 * 1.15,
+    y = circle_data$Axis2 * 1.15,
+    text = circle_data$NombreCorto,
+    showarrow = FALSE,
+    font = list(
+      family = "Arial",
+      size = 11,
+      color = "darkred",
+      weight = "bold"
+    ),
+    bgcolor = "rgba(255,255,255,0.85)",
+    bordercolor = "rgba(200,0,0,0.3)",
+    borderwidth = 1,
+    borderpad = 4,
+    opacity = 0.9
+  ) %>%
+  
+  layout(
+    title = list(
+      text = paste0(
+        "<b> CÍRCULO DE CORRELACIONES - </b><br>",
+        "<sup>Dimensión 1 (", var_exp[1], "%) vs Dimensión 2 (", var_exp[2], "%)</sup>"
+      ),
+      x = 0.5,
+      font = list(size = 20, family = "Arial")
+    ),
+    xaxis = list(
+      title = paste0("<b>Dimensión 1 (", var_exp[1], "%)</b>"),
+      range = c(-1.3, 1.3),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1.5,
+      titlefont = list(size = 14)
+    ),
+    yaxis = list(
+      title = paste0("<b>Dimensión 2 (", var_exp[2], "%)</b>"),
+      range = c(-1.3, 1.3),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1.5,
+      scaleanchor = "x",
+      titlefont = list(size = 14)
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    ),
+    showlegend = FALSE,
+    margin = list(t = 100, b = 80, l = 80, r = 80)
+  )
+
+plot_interactivo
+```
+
+## Biplot Interactivo
+
+```{r biplot_interactivo}
+# Crear nombres cortos para las variables
+nombres_cortos <- c(
+  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
+  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
+  "Accidentes_de_transito" = "Accidentes Tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
+  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
+  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
+  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
+  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
+  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
+  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
+  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
+  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
+  "Supervivenencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
+  "Supervivenencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
+)
+
+# Aplicar nombres cortos a circle_data
+circle_data$Variable_corto <- nombres_cortos[circle_data$Variable]
+
+# Crear lista de anotaciones para las flechas
+anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
+  list(
+    x = circle_data$Axis1[i] * 3,
+    y = circle_data$Axis2[i] * 3,
+    ax = 0,
+    ay = 0,
+    xref = "x",
+    yref = "y",
+    axref = "x",
+    ayref = "y",
+    text = "",
+    showarrow = TRUE,
+    arrowhead = 4,
+    arrowsize = 0.8,
+    arrowwidth = 1.5,
+    arrowcolor = "rgba(228,26,28,0.8)"
+  )
+})
+
+# Obtener clusters únicos
+clusters <- unique(acp_ind$Cluster)
+
+# Biplot interactivo profesional CORREGIDO
+plotly_biplot <- plot_ly()
+
+# Agregar un trace por cada cluster
+for(cluster in clusters) {
+  datos_cluster <- acp_ind[acp_ind$Cluster == cluster, ]
+  
+  plotly_biplot <- plotly_biplot %>%
+    add_trace(data = datos_cluster,
+              x = ~Axis1, y = ~Axis2,
+              type = "scatter",
+              mode = "markers",
+              marker = list(size = 9, opacity = 0.7, line = list(width = 1, color = 'darkgray')),
+              name = paste("Cluster", cluster),
+              text = ~paste("<b>País:</b>", Pais, 
+                            "<br><b>Cluster:</b>", Cluster,
+                            "<br><b>Comp. 1:</b>", round(Axis1, 2),
+                            "<br><b>Comp. 2:</b>", round(Axis2, 2)),
+              hoverinfo = "text",
+              showlegend = TRUE,
+              legendgroup = "paises")
+}
+
+# Agregar variables - TEXTO
+plotly_biplot <- plotly_biplot %>%
+  add_trace(data = circle_data,
+            x = ~Axis1*3, y = ~Axis2*3,
+            text = ~Variable_corto,
+            type = "scatter",
+            mode = "text",
+            textfont = list(color = "#E41A1C", size = 11, family = "Arial", weight = "bold"),
+            name = "Variables",
+            hoverinfo = "text",
+            hovertext = ~paste("<b>Variable:</b>", Variable_corto,
+                               "<br><b>Comp. 1:</b>", round(Axis1, 3),
+                               "<br><b>Comp. 2:</b>", round(Axis2, 3)),
+            showlegend = TRUE,
+            legendgroup = "variables")
+
+# Crear la configuración de visibilidad según número de clusters
+n_clusters <- length(clusters)
+# Para "Solo Países": primeros n_clusters traces visibles, último oculto
+visible_solo_paises <- c(rep(TRUE, n_clusters), FALSE)
+# Para "Solo Variables": primeros n_clusters traces ocultos, último visible
+visible_solo_variables <- c(rep(FALSE, n_clusters), TRUE)
+# Para "Ambos": todos visibles
+visible_ambos <- rep(TRUE, n_clusters + 1)
+
+# Layout con botones corregidos
+plotly_biplot <- plotly_biplot %>%
+  layout(
+    title = list(
+      text = "<b>Biplot - Análisis de Componentes Principales</b>",
+      x = 0.05,
+      font = list(size = 18, family = "Arial")
+    ),
+    xaxis = list(
+      title = paste0("<b>Dimensión 1 (", var_exp[1], "%)</b>"),
+      gridcolor = 'lightgray',
+      zerolinecolor = 'gray',
+      zerolinewidth = 2
+    ),
+    yaxis = list(
+      title = paste0("<b>Dimensión 2 (", var_exp[2], "%)</b>"),
+      gridcolor = 'lightgray',
+      zerolinecolor = 'gray',
+      zerolinewidth = 2
+    ),
+    plot_bgcolor = 'white',
+    paper_bgcolor = 'white',
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    ),
+    legend = list(
+      orientation = "v",
+      x = 0.02,
+      y = 0.98,
+      bgcolor = 'rgba(255,255,255,0.9)',
+      bordercolor = 'gray',
+      borderwidth = 1
+    ),
+    # Agregar las flechas como anotaciones fijas
+    annotations = anotaciones_flechas,
+    # Botones de control CORREGIDOS
+    updatemenus = list(
+      list(
+        type = "buttons",
+        direction = "right",
+        x = 0.8,
+        xanchor = "center",
+        y = 1.12,
+        yanchor = "top",
+        bgcolor = "#F5F5F5",
+        bordercolor = "#CCCCCC",
+        borderwidth = 1,
+        buttons = list(
+          # Botón 1: Solo Países
+          list(
+            method = "update",
+            args = list(
+              list(visible = as.list(visible_solo_paises)),
+              list(annotations = list())
+            ),
+            label = "Solo Países"
+          ),
+          # Botón 2: Solo Variables
+          list(
+            method = "update",
+            args = list(
+              list(visible = as.list(visible_solo_variables)),
+              list(annotations = anotaciones_flechas)
+            ),
+            label = "Solo Variables"
+          ),
+          # Botón 3: Ambos
+          list(
+            method = "update",
+            args = list(
+              list(visible = as.list(visible_ambos)),
+              list(annotations = anotaciones_flechas)
+            ),
+            label = "Ambos"
+          )
+        )
+      )
+    )
+  )
+
+plotly_biplot
+```
+
+
+
+## Clusters con Elipses - Componentes 1 y 3
+
+```{r clusters_elipses_13}
+library(plotly)
+
+if(ncol(acp_ind) >= 3) {
+  plot_interactivo <- plot_ly(acp_ind, x = ~Axis1, y = ~Axis3, 
+                             color = ~Cluster, colors = viridis::viridis(length(unique(acp_ind$Cluster))),
+                             type = 'scatter', mode = 'markers',
+                             marker = list(size = 8, opacity = 0.7, line = list(width = 1, color = 'white')),
+                             text = ~paste("</b>Cluster:</b> ", Cluster,
+                                          "</b><br>Axis1:</b> ", round(Axis1, 3),
+                                          "</b><br>Axis3:</b> ", round(Axis3, 3)),
+                             hoverinfo = 'text',
+                             showlegend = TRUE) %>%
+    
+    # Añadir elipses de confianza
+    add_trace(x = ~Axis1, y = ~Axis3, color = ~Cluster,
+              type = 'scatter', mode = 'none',
+              fill = 'toself', fillcolor = ~Cluster,
+              opacity = 0.1, showlegend = FALSE,
+              hoverinfo = 'none') %>%
+    
+    layout(
+      title = list(
+        text = paste0("<b>Clusters con Elipses de Confianza</b><br>",
+                     "<sup>Dimensiones 1 y 3 (95% de confianza)</sup>"),
+        x = 0.5,
+        font = list(size = 16)
+      ),
+      xaxis = list(
+        title = paste0("Dimensión 1 (", var_exp[1], "%)"),
+        gridcolor = 'lightgray',
+        zeroline = FALSE
+      ),
+      yaxis = list(
+        title = paste0("Dimensión 3 (", var_exp[3], "%)"),
+        gridcolor = 'lightgray',
+        zeroline = FALSE
+      ),
+      plot_bgcolor = 'white',
+      paper_bgcolor = 'white',
+      font = list(family = "Arial"),
+      hoverlabel = list(
+        bgcolor = "white",
+        bordercolor = "black",
+        font = list(family = "Arial")
+      ),
+      legend = list(
+        title = list(text = "<b>Cluster</b>"),
+        orientation = "h",
+        x = 0.5,
+        y = -0.2,
+        xanchor = "center"
+      )
+    )
+  
+}
+plot_interactivo
+```
+
+# Análisis de Contribución
+
+## Contribución de Variables a los Componentes
+
+```{r contribucion_variables}
+contrib_data <- acp_var %>%
+  mutate(Contrib1 = abs(Axis1) / sum(abs(Axis1)) * 100,
+         Contrib2 = abs(Axis2) / sum(abs(Axis2)) * 100) %>%
+  pivot_longer(cols = c(Contrib1, Contrib2), 
+               names_to = "Componente", 
+               values_to = "Contribucion")
+
+p6 <- ggplot(contrib_data, aes(x = reorder(Variable, Contribucion), 
+                               y = Contribucion, fill = Componente)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_viridis(discrete = TRUE, begin = 0.3, end = 0.8) +
+  labs(
+    title = "Contribución de Variables a los Componentes Principales",
+    x = "Variables",
+    y = "Contribución Absoluta (%)",
+    fill = "Componente"
+  ) +
+  coord_flip() +
+  theme_minimal()
+
+print(p6)
+```
+
+## Scree Plot - Varianza Explicada
+
+# Resumen Estadístico
+
+## Información General del Análisis
+
+# Resumen Estadístico del Análisis
+
+## 1. Información General
+
+```{r resumen_general, echo=FALSE}
+cat("### RESUMEN DEL ANÁLISIS ACP Y CLUSTERING\n\n")
+cat("📊 **Países analizados:**", nrow(NuevaBase), "\n")
+cat("🔢 **Número de clusters identificados:**", length(unique(NuevaBase$Cluster)), "\n")
+cat("📈 **Variables incluidas:**", ncol(NuevaBase) - 2, "\n")
+cat("🎯 **Varianza explicada (PC1+PC2):**", round(sum(var_exp[1:2]), 2), "%\n")
+```
+
+---
+
+## 2. Distribución de Países por Cluster
+
+```{r distribucion_cluster, echo=FALSE}
+library(knitr)
+library(kableExtra)
+
+# Tabla de distribución
+dist_tabla <- as.data.frame(table(NuevaBase$Cluster))
+colnames(dist_tabla) <- c("Cluster", "N° Países")
+dist_tabla$Porcentaje <- round(dist_tabla$`N° Países` / sum(dist_tabla$`N° Países`) * 100, 1)
+dist_tabla$Porcentaje <- paste0(dist_tabla$Porcentaje, "%")
+
+kable(dist_tabla, 
+      align = c("c", "c", "c"),
+      caption = "Distribución de países por cluster") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "center") %>%
+  row_spec(0, bold = TRUE, background = "#4CAF50", color = "white")
+```
+
+
+---
+
+## 3. Varianza Explicada por Componentes Principales
+
+```{r varianza_tabla, echo=FALSE}
+# Tabla de varianza explicada
+n_comp <- min(10, length(var_exp))
+var_tabla <- data.frame(
+  Componente = paste0("DIM", 1:n_comp),
+  `Varianza Individual (%)` = round(var_exp[1:n_comp], 2),
+  `Varianza Acumulada (%)` = round(cumsum(var_exp)[1:n_comp], 2)
+)
+
+kable(var_tabla, 
+      align = c("c", "c", "c"),
+      caption = "Varianza explicada por componentes principales") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "center") %>%
+  row_spec(0, bold = TRUE, background = "#2196F3", color = "white") %>%
+  row_spec(1:2, bold = TRUE, background = "#E3F2FD")
+```
+
+```{r scree_plot, echo=FALSE, fig.width=8, fig.height=4, fig.align='center'}
+# Scree plot
+library(ggplot2)
+scree_data <- data.frame(
+  Componente = 1:n_comp,
+  Varianza = var_exp[1:n_comp]
+)
+
+ggplot(scree_data, aes(x = Componente, y = Varianza)) +
+  geom_line(color = "#2196F3", size = 1.2) +
+  geom_point(color = "#2196F3", size = 3) +
+  geom_hline(yintercept = 100/length(var_exp), linetype = "dashed", 
+             color = "red", alpha = 0.7) +
+  labs(title = "Scree Plot - Varianza Explicada por Componente",
+       subtitle = "Línea roja: criterio de Kaiser (varianza promedio)",
+       x = "Componente Principal", y = "Varianza Explicada (%)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        plot.subtitle = element_text(hjust = 0.5, size = 10))
+```
+
+**Interpretación:** Los primeros `r sum(var_exp[1:2] > 100/length(var_exp))` componentes explican el `r round(sum(var_exp[1:2]), 1)`% de la varianza total, siendo suficientes para representar la estructura de los datos.
