@@ -318,7 +318,7 @@ print(p2)
 library(factoextra)
 library(plotly)
 
-# Extraer datos del PCA
+# Extraer datos del PCA - asumiendo que res.pca es un objeto de FactoMineR
 pca_data <- get_pca_ind(res.pca)
 
 # Crear dataframe con las 2 primeras dimensiones
@@ -332,17 +332,20 @@ df <- data.frame(
 if(!is.null(pca_data$cos2)) {
   df$Cos2 <- rowSums(pca_data$cos2[,1:2])
 } else {
+  # Si no hay cos2, calculamos manualmente como la suma de los cuadrados de las coordenadas en las dos primeras dimensiones dividido por la suma de los cuadrados de todas las coordenadas
   df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
 }
 
-# Obtener los porcentajes de varianza de manera segura
-# Primero verifiquemos la estructura de res.pca
-if(!is.null(res.pca$eig) && is.numeric(res.pca$eig[1,2])) {
+# Obtener los porcentajes de varianza explicada
+# Para un objeto de FactoMineR, los autovalores y porcentajes están en res.pca$eig
+if(inherits(res.pca, "PCA")) {
+  # Si es un objeto PCA de FactoMineR
   percent_pc1 <- round(res.pca$eig[1,2], 1)
   percent_pc2 <- round(res.pca$eig[2,2], 1)
 } else {
-  # Si la estructura es diferente, calculamos manualmente
-  eigenvalues <- res.pca$eig[,1]  # o la columna correcta según tu estructura
+  # Si es un objeto de prcomp (o otro)
+  # Calculamos la varianza explicada
+  eigenvalues <- res.pca$sdev^2
   total_variance <- sum(eigenvalues)
   percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
   percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
@@ -385,14 +388,14 @@ p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
       font = list(size = 16)
     ),
     xaxis = list(
-      title = if(exists("percent_pc1")) paste0("PC1 (", percent_pc1, "%)") else "PC1",
+      title = paste0("PC1 (", percent_pc1, "%)"),
       gridcolor = "lightgray",
       zeroline = TRUE,
       zerolinecolor = "black",
       zerolinewidth = 1
     ),
     yaxis = list(
-      title = if(exists("percent_pc2")) paste0("PC2 (", percent_pc2, "%)") else "PC2",
+      title = paste0("PC2 (", percent_pc2, "%)"),
       gridcolor = "lightgray",
       zeroline = TRUE,
       zerolinecolor = "black",
@@ -403,42 +406,116 @@ p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
     margin = list(l = 50, r = 50, b = 50, t = 50),
     showlegend = FALSE
   )
-print(p3)
+
+# Mostrar el gráfico
+p3
 ```
 
 
 ## Gráfico de Variables
 
 ```{r grafico-variables}
-fviz_pca_var(res.pca,
-             col.var = "contrib",
-             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-             repel = TRUE,
-             axes = c(1,3)
+library(factoextra)
+library(plotly)
+library(dplyr)
+
+# Extraer datos de las variables
+var_data <- get_pca_var(res.pca)
+
+# Crear dataframe con información completa para PC1 y PC2
+df_var <- data.frame(
+  Variable = rownames(var_data$coord),
+  PC1 = var_data$coord[,1],
+  PC2 = var_data$coord[,2],  # Cambiado: PC2 en lugar de PC3
+  Contrib = rowSums(var_data$contrib[,c(1,2)]),  # Contribución total a PC1 y PC2
+  Cos2 = rowSums(var_data$cos2[,c(1,2)])        # Calidad de representación en PC1 y PC2
 )
+
+# Crear gráfico interactivo profesional - SIN ETIQUETAS PERMANENTES
+grafico_profesional <- plot_ly(df_var, x = ~PC1, y = ~PC2,  # Cambiado: PC2 en lugar de PC3
+        type = 'scatter',
+        mode = 'markers',  # Solo markers, sin text
+        marker = list(
+          size = 12,
+          color = ~Contrib,
+          colorscale = list(
+            c(0, "#00AFBB"),
+            c(0.3, "#00AFBB"),
+            c(0.5, "#E7B800"),
+            c(1, "#FC4E07")
+          ),
+          showscale = TRUE,
+          colorbar = list(
+            title = "Contribución",
+            thickness = 15,
+            len = 0.5
+          ),
+          opacity = 0.8,
+          line = list(
+            width = 2,
+            color = 'darkgray'
+          )
+        ),
+        hoverinfo = 'text',
+        hovertext = ~paste(
+          '<b>Variable:</b>', Variable,
+          '<br><b>PC1:</b>', round(PC1, 3),
+          '<br><b>PC2:</b>', round(PC2, 3),  # Cambiado: PC2 en lugar de PC3
+          '<br><b>Contribución:</b>', round(Contrib, 1), '%',
+          '<br><b>Calidad (cos2):</b>', round(Cos2, 3)
+        ),
+        hoverlabel = list(
+          bgcolor = "white",
+          bordercolor = "black",
+          font = list(color = "black", size = 12)
+        )
+) %>%
+  layout(
+    title = list(
+      text = "<b>Análisis PCA - Contribución de Variables (PC1 vs PC2)</b>",  # Cambiado el título
+      font = list(size = 16, family = "Arial"),
+      x = 0.05
+    ),
+    xaxis = list(
+      title = list(
+        text = "PC1",
+        font = list(size = 14, family = "Arial")
+      ),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1,
+      showgrid = TRUE
+    ),
+    yaxis = list(
+      title = list(
+        text = "PC2",  # Cambiado: PC2 en lugar de PC3
+        font = list(size = 14, family = "Arial")
+      ),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1,
+      showgrid = TRUE
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    margin = list(l = 80, r = 80, b = 80, t = 80),
+    showlegend = FALSE,
+    font = list(family = "Arial")
+  )
+
+# Mostrar el gráfico
+grafico_profesional
 ```
 
-## Biplot: Individuos y Variables
-
-```{r biplot}
-fviz_pca_biplot(res.pca, 
-                repel = TRUE,
-                col.var = "#2E9FDF",
-                col.ind = "#696969",
-                axes = c(1,2)
-)
-```
-
-# Resultados del ACP
-
-## Valores Propios
 
 ```{r valores-propios, message=FALSE, warning=FALSE, results='hide'}
 eig.val <- get_eigenvalue(res.pca)
 eig.val
 ```
 
-## Resultados para Variables
+
 
 ```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
 res.var <- get_pca_var(res.pca)
