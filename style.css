@@ -369,3 +369,176 @@ table {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
   border-left: 4px solid #488B49 !important;
 }
+
+
+/* SEPARACIÓN DE PÁRRAFOS CON PADDING (no margin) */
+.content-card p {
+  margin: 0 !important;
+  padding: 0 0 1.5rem 0 !important;
+  line-height: 1.7 !important;
+  text-align: justify !important;
+  display: block !important;
+}
+
+/* Doble separación entre párrafos consecutivos */
+.content-card p + p {
+  padding-top: 0.5rem !important;
+  border-top: 2px solid rgba(72, 139, 73, 0.3) !important;
+}
+
+/* El último párrafo no necesita padding inferior */
+.content-card p:last-of-type {
+  padding-bottom: 0 !important;
+}
+
+/* Mantener el efecto hover solo para el texto, no para el espaciado */
+.content-card p {
+  transition: transform 0.3s ease !important;
+}
+
+/* ==========================================================================
+   ESTILOS ADICIONALES PARA METODOLOGÍA MEJORADA
+   ========================================================================== */
+
+/* Caja para listas de variables */
+.variables-box {
+  background: rgba(115, 226, 167, 0.1) !important;
+  border: 1px solid rgba(72, 139, 73, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 1.2rem !important;
+  margin: 1rem 0 !important;
+}
+
+.variables-box strong {
+  color: #2d5534 !important;
+  font-size: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  display: block !important;
+}
+
+.variables-box ul {
+  margin: 0.5rem 0 0 0 !important;
+  padding-left: 1.2rem !important;
+}
+
+.variables-box li {
+  margin: 0.3rem 0 !important;
+  color: #333 !important;
+  font-size: 0.9rem !important;
+}
+
+/* Mejora para fórmulas matemáticas */
+.formula {
+  text-align: center !important;
+  margin: 1.5rem 0 !important;
+  padding: 1.2rem !important;
+  background: rgba(115, 226, 167, 0.08) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(72, 139, 73, 0.2) !important;
+  font-family: "Cambria Math", "Latin Modern Math", serif !important;
+  font-size: 1.1rem !important;
+}
+
+/* Estilos para listas ordenadas en metodología */
+.methodology-card ol {
+  margin: 1rem 0 !important;
+  padding-left: 1.5rem !important;
+}
+
+.methodology-card ol li {
+  margin: 0.7rem 0 !important;
+  line-height: 1.5 !important;
+  color: #333 !important;
+}
+
+.methodology-card ol li strong {
+  color: #2d5534 !important;
+}
+
+/* Mejora para código inline */
+.methodology-card code {
+  background: rgba(72, 139, 73, 0.1) !important;
+  color: #2d5534 !important;
+  padding: 0.2rem 0.4rem !important;
+  border-radius: 4px !important;
+  font-family: 'Courier New', monospace !important;
+  font-size: 0.9rem !important;
+  border: 1px solid rgba(72, 139, 73, 0.2) !important;
+}
+
+/* Iconos en subtítulos h4 */
+.methodology-card h4 {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+/* Responsive mejorado */
+@media (max-width: 768px) {
+  .variables-box {
+    padding: 1rem !important;
+  }
+  
+  .formula {
+    padding: 1rem !important;
+    font-size: 1rem !important;
+    overflow-x: auto !important;
+  }
+  
+  .methodology-card h4 {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* Efectos de transición suaves */
+.methodology-card {
+  transition: all 0.3s ease !important;
+}
+
+.methodology-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(72, 139, 73, 0.15) !important;
+}
+
+/* ==========================================================================
+   SOLUCIÓN DEFINITIVA - PÁRRAFOS JUSTIFICADOS Y SEPARADOS
+   ========================================================================== */
+
+/* RESTAURAR MÁRGENES PARA ELEMENTOS DE TEXTO - DEBE IR AL PRINCIPIO */
+body, p, h1, h2, h3, h4, h5, h6 {
+  margin: initial !important;
+  padding: initial !important;
+}
+
+/* PÁRRAFOS EN CONTENT-CARD - JUSTIFICADOS Y SEPARADOS */
+.content-card p {
+  margin: 0 0 1.5rem 0 !important;
+  padding: 0 !important;
+  line-height: 1.7 !important;
+  text-align: justify !important;
+  text-justify: inter-word !important;
+  display: block !important;
+  word-spacing: 0.05em !important;
+  hyphens: auto !important;
+}
+
+/* SEPARACIÓN ENTRE PÁRRAFOS CONSECUTIVOS */
+.content-card p + p {
+  margin-top: 1.5rem !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
+/* ÚLTIMO PÁRRAFO SIN MARGEN INFERIOR */
+.content-card p:last-of-type {
+  margin-bottom: 0 !important;
+}
+
+/* MANTENER EFECTO HOVER SOLO PARA TEXTO */
+.content-card p {
+  transition: transform 0.3s ease !important;
+}
+
+.content-card:hover p {
+  transform: translateX(3px) !important;
+}
