@@ -184,7 +184,6 @@ Muertes <- Muertes %>%
     TRUE ~ as.character(Pais)
   ))
 # Verificar la base final
-View(Muertes)
 print(paste("Número de países después de la limpieza:", nrow(Muertes)))
 print("Estructura de la base:")
 str(Muertes)

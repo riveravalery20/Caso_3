@@ -557,8 +557,8 @@ plotly_p1 <- plot_ly(acp_ind,
                      mode = "markers",
                      marker = list(size = 10, opacity = 0.7, line = list(width = 1))) %>%
   layout(title = "ACP Interactivo - Países por Cluster",
-         xaxis = list(title = paste0("Componente 1 (", var_exp[1], "%)")),
-         yaxis = list(title = paste0("Componente 2 (", var_exp[2], "%)")),
+         xaxis = list(title = paste0("Dimensión 1 (", var_exp[1], "%)")),
+         yaxis = list(title = paste0("Dimensión 2 (", var_exp[2], "%)")),
          hoverlabel = list(bgcolor = "white"))
 
 plotly_p1
@@ -688,13 +688,13 @@ plot_interactivo <- plot_ly() %>%
     title = list(
       text = paste0(
         "<b> CÍRCULO DE CORRELACIONES - </b><br>",
-        "<sup>Componente 1 (", var_exp[1], "%) vs Componente 2 (", var_exp[2], "%)</sup>"
+        "<sup>Dimensión 1 (", var_exp[1], "%) vs Dimensión 2 (", var_exp[2], "%)</sup>"
       ),
       x = 0.5,
       font = list(size = 20, family = "Arial")
     ),
     xaxis = list(
-      title = paste0("<b>Componente 1 (", var_exp[1], "%)</b>"),
+      title = paste0("<b>Dimensión 1 (", var_exp[1], "%)</b>"),
       range = c(-1.3, 1.3),
       gridcolor = "lightgray",
       zeroline = TRUE,
@@ -703,7 +703,7 @@ plot_interactivo <- plot_ly() %>%
       titlefont = list(size = 14)
     ),
     yaxis = list(
-      title = paste0("<b>Componente 2 (", var_exp[2], "%)</b>"),
+      title = paste0("<b>Dimensión 2 (", var_exp[2], "%)</b>"),
       range = c(-1.3, 1.3),
       gridcolor = "lightgray",
       zeroline = TRUE,
@@ -724,7 +724,7 @@ plot_interactivo <- plot_ly() %>%
     margin = list(t = 100, b = 80, l = 80, r = 80)
   )
 
-print(plot_interactivo)
+plot_interactivo
 ```
 
 ## Biplot Interactivo
@@ -839,13 +839,13 @@ plotly_biplot <- plotly_biplot %>%
       font = list(size = 18, family = "Arial")
     ),
     xaxis = list(
-      title = paste0("<b>Componente 1 (", var_exp[1], "%)</b>"),
+      title = paste0("<b>Dimensión 1 (", var_exp[1], "%)</b>"),
       gridcolor = 'lightgray',
       zerolinecolor = 'gray',
       zerolinewidth = 2
     ),
     yaxis = list(
-      title = paste0("<b>Componente 2 (", var_exp[2], "%)</b>"),
+      title = paste0("<b>Dimensión 2 (", var_exp[2], "%)</b>"),
       gridcolor = 'lightgray',
       zerolinecolor = 'gray',
       zerolinewidth = 2
@@ -873,7 +873,7 @@ plotly_biplot <- plotly_biplot %>%
       list(
         type = "buttons",
         direction = "right",
-        x = 0.5,
+        x = 0.8,
         xanchor = "center",
         y = 1.12,
         yanchor = "top",
@@ -916,24 +916,7 @@ plotly_biplot <- plotly_biplot %>%
 plotly_biplot
 ```
 
-## Clusters con Países - Componentes 1 y 2
 
-```{r clusters_interactivo}
-
-plotly_elipses <- plot_ly(acp_ind) %>%
-  add_trace(x = ~Axis1, y = ~Axis2, color = ~Cluster,
-            colors = viridis_pal()(2),
-            text = ~paste("País:", Pais, "<br>Cluster:", Cluster),
-            type = "scatter",
-            mode = "markers",
-            marker = list(size = 8, opacity = 0.7),
-            name = "Países") %>%
-  layout(title = "Clusters con Países - Componentes 1 y 2",
-         xaxis = list(title = paste0("Componente 1 (", var_exp[1], "%)")),
-         yaxis = list(title = paste0("Componente 2 (", var_exp[2], "%)")))
-
-plotly_elipses
-```
 
 ## Clusters con Elipses - Componentes 1 y 3
 
@@ -961,17 +944,17 @@ if(ncol(acp_ind) >= 3) {
     layout(
       title = list(
         text = paste0("<b>Clusters con Elipses de Confianza</b><br>",
-                     "<sup>Componentes 1 y 3 (95% de confianza)</sup>"),
+                     "<sup>Dimensiones 1 y 3 (95% de confianza)</sup>"),
         x = 0.5,
         font = list(size = 16)
       ),
       xaxis = list(
-        title = paste0("Componente 1 (", var_exp[1], "%)"),
+        title = paste0("Dimensión 1 (", var_exp[1], "%)"),
         gridcolor = 'lightgray',
         zeroline = FALSE
       ),
       yaxis = list(
-        title = paste0("Componente 3 (", var_exp[3], "%)"),
+        title = paste0("Dimensión 3 (", var_exp[3], "%)"),
         gridcolor = 'lightgray',
         zeroline = FALSE
       ),
@@ -992,8 +975,8 @@ if(ncol(acp_ind) >= 3) {
       )
     )
   
-  print(plot_interactivo)
 }
+plot_interactivo
 ```
 
 # Análisis de Contribución
@@ -1026,76 +1009,90 @@ print(p6)
 
 ## Scree Plot - Varianza Explicada
 
-```{r scree_plot}
-scree_data <- data.frame(
-  Componente = 1:length(var_exp),
-  Varianza = var_exp,
-  Acumulado = cumsum(var_exp)
-)
-
-p7 <- ggplot(scree_data, aes(x = factor(Componente), y = Varianza, group = 1)) +
-  geom_line(color = "#377EB8", size = 1.2) +
-  geom_point(color = "#377EB8", size = 3) +
-  geom_text(aes(label = paste0(var_exp, "%")), vjust = -1, size = 3.5) +
-  labs(
-    title = "Scree Plot - Varianza Explicada por Componente",
-    x = "Componentes Principales",
-    y = "Porcentaje de Varianza Explicada (%)"
-  ) +
-  theme_minimal()
-
-print(p7)
-```
-
 # Resumen Estadístico
 
 ## Información General del Análisis
 
-```{r resumen_general}
-cat("=== RESUMEN DEL ANÁLISIS ACP Y CLUSTERING ===\n")
-cat("Número total de países:", nrow(NuevaBase), "\n")
-cat("Número de clusters:", length(unique(NuevaBase$Cluster)), "\n\n")
+# Resumen Estadístico del Análisis
+
+## 1. Información General
+
+```{r resumen_general, echo=FALSE}
+cat("### RESUMEN DEL ANÁLISIS ACP Y CLUSTERING\n\n")
+cat("📊 **Países analizados:**", nrow(NuevaBase), "\n")
+cat("🔢 **Número de clusters identificados:**", length(unique(NuevaBase$Cluster)), "\n")
+cat("📈 **Variables incluidas:**", ncol(NuevaBase) - 2, "\n")
+cat("🎯 **Varianza explicada (PC1+PC2):**", round(sum(var_exp[1:2]), 2), "%\n")
 ```
 
-## Distribución por Cluster
+---
 
-```{r distribucion_cluster}
-distribucion <- table(NuevaBase$Cluster)
-cat("Distribución de países por cluster:\n")
-print(distribucion)
-cat("\n")
+## 2. Distribución de Países por Cluster
+
+```{r distribucion_cluster, echo=FALSE}
+library(knitr)
+library(kableExtra)
+
+# Tabla de distribución
+dist_tabla <- as.data.frame(table(NuevaBase$Cluster))
+colnames(dist_tabla) <- c("Cluster", "N° Países")
+dist_tabla$Porcentaje <- round(dist_tabla$`N° Países` / sum(dist_tabla$`N° Países`) * 100, 1)
+dist_tabla$Porcentaje <- paste0(dist_tabla$Porcentaje, "%")
+
+kable(dist_tabla, 
+      align = c("c", "c", "c"),
+      caption = "Distribución de países por cluster") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "center") %>%
+  row_spec(0, bold = TRUE, background = "#4CAF50", color = "white")
 ```
 
-## Varianza Explicada por Componentes
 
-```{r varianza_explicada}
-cat("Varianza explicada por componentes:\n")
-for(i in 1:min(20, length(var_exp))) {
-  cat("Componente", i, ":", var_exp[i], "%\n")
-}
-cat("\nVarianza total explicada (3 componentes):", sum(var_exp[1:3]), "%\n")
+---
+
+## 3. Varianza Explicada por Componentes Principales
+
+```{r varianza_tabla, echo=FALSE}
+# Tabla de varianza explicada
+n_comp <- min(10, length(var_exp))
+var_tabla <- data.frame(
+  Componente = paste0("DIM", 1:n_comp),
+  `Varianza Individual (%)` = round(var_exp[1:n_comp], 2),
+  `Varianza Acumulada (%)` = round(cumsum(var_exp)[1:n_comp], 2)
+)
+
+kable(var_tabla, 
+      align = c("c", "c", "c"),
+      caption = "Varianza explicada por componentes principales") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "center") %>%
+  row_spec(0, bold = TRUE, background = "#2196F3", color = "white") %>%
+  row_spec(1:2, bold = TRUE, background = "#E3F2FD")
 ```
 
-## Medias de Variables por Cluster
+```{r scree_plot, echo=FALSE, fig.width=8, fig.height=4, fig.align='center'}
+# Scree plot
+library(ggplot2)
+scree_data <- data.frame(
+  Componente = 1:n_comp,
+  Varianza = var_exp[1:n_comp]
+)
 
-```{r medias_cluster}
-medias_cluster <- NuevaBase %>%
-  group_by(Cluster) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
-
-print(medias_cluster)
+ggplot(scree_data, aes(x = Componente, y = Varianza)) +
+  geom_line(color = "#2196F3", size = 1.2) +
+  geom_point(color = "#2196F3", size = 3) +
+  geom_hline(yintercept = 100/length(var_exp), linetype = "dashed", 
+             color = "red", alpha = 0.7) +
+  labs(title = "Scree Plot - Varianza Explicada por Componente",
+       subtitle = "Línea roja: criterio de Kaiser (varianza promedio)",
+       x = "Componente Principal", y = "Varianza Explicada (%)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        plot.subtitle = element_text(hjust = 0.5, size = 10))
 ```
 
-# Conclusiones
-
-En este análisis hemos:
-
-1. Realizado un Análisis de Componentes Principales (ACP)
-2. Identificado `r length(unique(NuevaBase$Cluster))` clusters distintos
-3. Visualizado las relaciones entre países y variables
-4. Analizado la contribución de cada variable a los componentes principales
-
-La varianza total explicada por los primeros tres componentes es de `r sum(var_exp[1:3])`%.
-
+**Interpretación:** Los primeros `r sum(var_exp[1:2] > 100/length(var_exp))` componentes explican el `r round(sum(var_exp[1:2]), 1)`% de la varianza total, siendo suficientes para representar la estructura de los datos.
 
 
