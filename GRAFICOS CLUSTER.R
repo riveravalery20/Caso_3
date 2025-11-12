@@ -1,4 +1,4 @@
-#otra vez
+#librerias
 library(FactoClass)
 library(FactoMineR)
 library(ggplot2)
