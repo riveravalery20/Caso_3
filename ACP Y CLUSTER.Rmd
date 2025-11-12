@@ -264,7 +264,7 @@ res.pca
 
 ##matriz correlaciones
 
-```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide'}
+```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=9, fig.height=7}
 library(ggplot2)
 library(reshape2)
 Muertes[, -1] <- lapply(Muertes[, -1], as.numeric)
@@ -296,7 +296,7 @@ print(p1)
 
 ## Gráfico de Sedimentación
 
-```{r scree-plot:Gráfico de Sedimentación}
+```{r scree-plot:Gráfico de Sedimentación,fig.width=9, fig.height=7}
 p2 <- fviz_eig(res.pca, 
          addlabels = TRUE,
          barfill = "#2E8B57",
@@ -320,7 +320,7 @@ print(p2)
 
 ## Gráfico de Individuos (Países)
 
-```{r grafico individuos}
+```{r grafico individuos,fig.width=9, fig.height=7}
 library(factoextra)
 library(plotly)
 
@@ -420,7 +420,7 @@ p3
 
 ## Gráfico de Variables
 
-```{r grafico-variables}
+```{r grafico-variables,fig.width=9, fig.height=7}
 library(factoextra)
 library(plotly)
 library(dplyr)
@@ -520,7 +520,7 @@ grafico_profesional
 
 ## Valores Propios
 
-```{r valores-propios, message=FALSE, warning=FALSE, results='hide'}
+```{r valores-propios, message=FALSE, warning=FALSE, results='hide',fig.width=9, fig.height=7}
 eig.val <- get_eigenvalue(res.pca)
 eig.val
 ```
@@ -562,7 +562,7 @@ head(res.ind$cos2)
 
 # Tabla Interactiva de Contribuciones
 
-```{r tabla-contribuciones}
+```{r tabla-contribuciones,fig.width=9, fig.height=7}
 library(reactable)
 library(reactablefmtr)
 
@@ -765,7 +765,7 @@ var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
 # Análisis Jerárquico
 
 ## Dendrograma
-```{r dendrograma interactivo, fig.height=8}
+```{r dendrograma interactivo, fig.width=9, fig.height=7}
 
 # Cargar librerías
 library(plotly)
@@ -867,7 +867,7 @@ if(exists("hc")) {
 
 ```
 
-```{r dendo}
+```{r dendo,fig.width=9, fig.height=7}
 library(plotly)
 library(factoextra)
 library(viridis)
@@ -945,7 +945,7 @@ plotly_dendro
 
 ## Gráfico de Individuos (Países) - Componentes 1 y 2
 
-```{r grafico_paises_interactivo}
+```{r grafico_paises_interactivo,fig.width=9, fig.height=7}
 plotly_p1 <- plot_ly(acp_ind, 
                      x = ~Axis1, y = ~Axis2, 
                      color = ~Cluster,
@@ -968,7 +968,7 @@ plotly_p1
 
 ## Círculo de Correlaciones
 
-```{r circulo_correlaciones}
+```{r circulo_correlaciones,fig.width=9, fig.height=7}
 library(plotly)
 
 # Crear nombres cortos para las variables
@@ -1131,7 +1131,7 @@ plot_interactivo
 
 ## Biplot Interactivo
 
-```{r biplot_interactivo}
+```{r biplot_interactivo,fig.width=9, fig.height=7}
 # Crear nombres cortos para las variables
 nombres_cortos <- c(
   "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
@@ -1322,7 +1322,7 @@ plotly_biplot
 
 ## Clusters con Elipses - Componentes 1 y 3
 
-```{r clusters_elipses_13}
+```{r clusters_elipses_13,fig.width=9, fig.height=7}
 library(plotly)
 
 if(ncol(acp_ind) >= 3) {
@@ -1385,7 +1385,7 @@ plot_interactivo
 
 ## Contribución de Variables a los Componentes
 
-```{r contribucion_variables}
+```{r contribucion_variables,fig.width=9, fig.height=7}
 contrib_data <- acp_var %>%
   mutate(Contrib1 = abs(Axis1) / sum(abs(Axis1)) * 100,
          Contrib2 = abs(Axis2) / sum(abs(Axis2)) * 100) %>%
@@ -1431,7 +1431,7 @@ cat("🎯 **Varianza explicada (PC1+PC2):**", round(sum(var_exp[1:2]), 2), "%\n"
 
 ## 2. Distribución de Países por Cluster
 
-```{r distribucion_cluster, echo=FALSE}
+```{r distribucion_cluster, echo=FALSE,fig.width=9, fig.height=7}
 library(knitr)
 library(kableExtra)
 
@@ -1450,49 +1450,4 @@ kable(dist_tabla,
   row_spec(0, bold = TRUE, background = "#4CAF50", color = "white")
 ```
 
-
 ---
-
-## 3. Varianza Explicada por Componentes Principales
-
-```{r varianza_tabla, echo=FALSE}
-# Tabla de varianza explicada
-n_comp <- min(10, length(var_exp))
-var_tabla <- data.frame(
-  Componente = paste0("DIM", 1:n_comp),
-  `Varianza Individual (%)` = round(var_exp[1:n_comp], 2),
-  `Varianza Acumulada (%)` = round(cumsum(var_exp)[1:n_comp], 2)
-)
-
-kable(var_tabla, 
-      align = c("c", "c", "c"),
-      caption = "Varianza explicada por componentes principales") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE,
-                position = "center") %>%
-  row_spec(0, bold = TRUE, background = "#2196F3", color = "white") %>%
-  row_spec(1:2, bold = TRUE, background = "#E3F2FD")
-```
-
-```{r scree_plot, echo=FALSE, fig.width=8, fig.height=4, fig.align='center'}
-# Scree plot
-library(ggplot2)
-scree_data <- data.frame(
-  Componente = 1:n_comp,
-  Varianza = var_exp[1:n_comp]
-)
-
-ggplot(scree_data, aes(x = Componente, y = Varianza)) +
-  geom_line(color = "#2196F3", size = 1.2) +
-  geom_point(color = "#2196F3", size = 3) +
-  geom_hline(yintercept = 100/length(var_exp), linetype = "dashed", 
-             color = "red", alpha = 0.7) +
-  labs(title = "Scree Plot - Varianza Explicada por Componente",
-       subtitle = "Línea roja: criterio de Kaiser (varianza promedio)",
-       x = "Componente Principal", y = "Varianza Explicada (%)") +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
-        plot.subtitle = element_text(hjust = 0.5, size = 10))
-```
-
-**Interpretación:** Los primeros `r sum(var_exp[1:2] > 100/length(var_exp))` componentes explican el `r round(sum(var_exp[1:2]), 1)`% de la varianza total, siendo suficientes para representar la estructura de los datos.
