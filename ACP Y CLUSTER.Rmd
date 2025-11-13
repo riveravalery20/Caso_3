@@ -732,6 +732,167 @@ tabla_contribuciones
 
 ```
 
+```{r top pc1,fig.width=9, fig.height=7}
+# Crear tabla del top 5 de contribución a PC1 por países
+top5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(desc(.[,1])) %>%
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+# Mostrar tabla formateada
+library(kableExtra)
+
+top5_pc1 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países por Contribución al Componente Principal 1 (PC1)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el primer componente principal.",
+           general_title = "Nota:")
+```
+
+```{r top 5 menos pc1,fig.width=9, fig.height=7}
+# Crear tabla del top 5 de menor contribución a PC1 por países
+bottom5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(.[,1]) %>%  # Orden ascendente esta vez
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+# Mostrar tabla formateada
+bottom5_pc1 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países con Menor Contribución al Componente Principal 1 (PC1)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el primer componente principal. Valores bajos indican menor influencia en la dirección del componente.",
+           general_title = "Nota:")
+```
+
+```{r top 5 mas pc2,fig.width=9, fig.height=7}
+# Crear tabla del top 5 de contribución a PC2 por países
+top5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(desc(.[,1])) %>%
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+# Mostrar tabla formateada
+top5_pc2 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países por Contribución al Componente Principal 2 (PC2)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el segundo componente principal.",
+           general_title = "Nota:")
+
+```
+
+```{r top 5 menos pc2,fig.width=9, fig.height=7}
+
+# Crear tabla del top 5 de menor contribución a PC2 por países
+bottom5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(.[,1]) %>%  # Orden ascendente para los menores valores
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+# Mostrar tabla formateada
+bottom5_pc2 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países con Menor Contribución al Componente Principal 2 (PC2)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el segundo componente principal. Valores bajos indican menor influencia en esta dimensión ortogonal al PC1.",
+           general_title = "Nota:")
+```
+
+```{r top 5 mas pc3,fig.width=9, fig.height=7}
+# Crear tabla del top 5 de contribución a PC3 por países
+top5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(desc(.[,1])) %>%
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+# Mostrar tabla formateada
+top5_pc3 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países por Contribución al Componente Principal 3 (PC3)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el tercer componente principal.",
+           general_title = "Nota:")
+```
+
+```{r top 5 mas pc3,fig.width=9, fig.height=7}
+
+# Crear tabla del top 5 de menor contribución a PC3 por países
+bottom5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(.[,1]) %>%  # Orden ascendente para los menores valores
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+# Mostrar tabla formateada
+bottom5_pc3 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países con Menor Contribución al Componente Principal 3 (PC3)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el tercer componente principal. Valores bajos indican menor influencia en esta tercera dimensión de variabilidad.",
+           general_title = "Nota:")
+
+```
 
 # CLUSTER
 
