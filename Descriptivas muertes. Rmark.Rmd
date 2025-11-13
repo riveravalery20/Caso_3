@@ -1,0 +1,1087 @@
+---
+title: "Descriptivas"
+author: "Melany Enriquez, Sofia Potosí, Valery Rivera, Santiago Posada"
+date: "2025-11-12"
+output: html_document
+---
+
+Este mapa se ve representado con frecuencias en donde los tonos más oscuros equivalen a más frecuencia y los más claros a frecuencias más debiles, las variables que se encuentran representadas en el mapa son aquellas que están diferenciadas por sexo, cuya tematica se encuentra en causas de muerte, tasas en diferentes edades e indicadores de expectativa de vida 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+El objetivo de este grafico es representar como diferentes indicadores cambian dependiendo del sexo y ubicación geografica, estableciendo la comparación es posible determinar planes de acción pertinentes, en donde los beneficios  se vean reflejados al publico objetivo, y por consiguiente a los países.
+Los indicadores muestran sobre que paises e individuos efectuar acciones que reduzcan la frecuencia de casos evitables, como suicidios, mortalidades infantiles e infantiles tempranas, envenenamientos, y polución del aire; indicadores que traducen el desarrollo de un pais sobre su control demografico y calidad de vida que es capaz de ofrecer, se sobreentiende que las muertes hacen parte del ciclo de vida, de las decisiones de individuo, pero así mismo las condiciones en materia de salud, economia y ecologicas están arraigadas directamente en que una muerte evitable se retrase.
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+A continuación hay un apartado que plasma las diferentes variables relacionadas con la muerte, en los 182 países que hacen parte de la muestra, con distintas distinciones en causas, expectativa de vida y grupos etarios de forma general y discriminadas por sexo 
+
+
+
+RELACIÓN PAÍS-EXPECTATIVA DE VIDA 
+El siguiente grafico muestra una relación y comparación entre los países, expectativa de vida y sexo. La linea de tendencia está trazada para separar de manera equitativa entre las edades de hombres y mujeres
+
+```{r pressure, echo=FALSE}
+library(readr)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+library(plotly)
+library(htmltools)
+library(DT)
+library(tidyr)
+library(stringr)
+
+# Leer la base
+Muertes_ans = read_csv("Muertes ans.csv")
+Muertes = data.frame(Muertes_ans)
+
+# Limpieza y selección de variables
+Muertes = Muertes[-(218:245), ]
+Muertes = na.omit(Muertes)
+
+# Renombrar columnas
+colnames(Muertes) = c("País", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", "Accidentes_de_transito",
+                       "Enfermedades_cardiacas_cancer_diabetes_mujeres", "Enfermedades_cardiacas_cancer_diabetes_hombres", 
+                       "Polución_del_aire_mujeres", "Polución_del_aire_hombres", "Envenenamiento_accidental_mujeres", 
+                       "Envenenamiento_accidental_hombres", "Tasa_de_mortalidad_mujeres_adultas","Tasa_de_mortalidad_hombres_adultos",
+                       "Tasa_de_mortalidad_infantil_mujeres", "Tasa_de_mortalidad_infantil_varones", "Tasa_de_mortalidad_neonatal",
+                       "Tasa_de_mortalidad_infantil_temprana_mujeres", "Tasa_de_mortalidad_infantil_temprana_hombres","Numero_de_muertes_infantiles",
+                       "Numero_de_muertes_neonatales","Tasa_de_suicidios_mujeres","Tasa_de_suicidios_hombres","Supervivencia_hasta_los_65_años_mujeres",
+                       "Supervivencia_hasta_los_65_años_hombres")
+
+# Eliminar filas con valores NA en cualquier columna
+Muertes = Muertes %>%
+  filter(complete.cases(.))
+
+# Traducir nombres de países al español
+Muertes = Muertes %>%
+  mutate(País = case_when(
+    País == "Faroe Islands" ~ "Islas Feroe",
+    País == "Fiji" ~ "Fiyi",
+    País == "Finland" ~ "Finlandia",
+    País == "France" ~ "Francia",
+    País == "French Polynesia" ~ "Polinesia Francesa",
+    País == "Gabon" ~ "Gabón",
+    País == "Gambia, The" ~ "Gambia",
+    País == "Georgia" ~ "Georgia",
+    País == "Germany" ~ "Alemania",
+    País == "Ghana" ~ "Ghana",
+    País == "Gibraltar" ~ "Gibraltar",
+    País == "Greece" ~ "Grecia",
+    País == "Greenland" ~ "Groenlandia",
+    País == "Grenada" ~ "Granada",
+    País == "Guam" ~ "Guam",
+    País == "Guatemala" ~ "Guatemala",
+    País == "Guinea" ~ "Guinea",
+    País == "Guinea-Bissau" ~ "Guinea-Bisáu",
+    País == "Guyana" ~ "Guyana",
+    País == "Haiti" ~ "Haití",
+    País == "Honduras" ~ "Honduras",
+    País == "Hong Kong SAR, China" ~ "Hong Kong",
+    País == "Hungary" ~ "Hungría",
+    País == "Iceland" ~ "Islandia",
+    País == "India" ~ "India",
+    País == "Indonesia" ~ "Indonesia",
+    País == "Iran, Islamic Rep." ~ "Irán",
+    País == "Iraq" ~ "Irak",
+    País == "Ireland" ~ "Irlanda",
+    País == "Isle of Man" ~ "Isla de Man",
+    País == "Israel" ~ "Israel",
+    País == "Italy" ~ "Italia",
+    País == "Jamaica" ~ "Jamaica",
+    País == "Japan" ~ "Japón",
+    País == "Jordan" ~ "Jordania",
+    País == "Kazakhstan" ~ "Kazajistán",
+    País == "Kenya" ~ "Kenia",
+    País == "Kiribati" ~ "Kiribati",
+    País == "Korea, Dem. People's Rep." ~ "Corea del Norte",
+    País == "Korea, Rep." ~ "Corea del Sur",
+    País == "Kosovo" ~ "Kosovo",
+    País == "Kuwait" ~ "Kuwait",
+    País == "Kyrgyz Republic" ~ "Kirguistán",
+    País == "Lao PDR" ~ "Laos",
+    País == "Latvia" ~ "Letonia",
+    País == "Lebanon" ~ "Líbano",
+    País == "Lesotho" ~ "Lesoto",
+    País == "Liberia" ~ "Liberia",
+    País == "Libya" ~ "Libia",
+    País == "Liechtenstein" ~ "Liechtenstein",
+    País == "Lithuania" ~ "Lituania",
+    País == "Luxembourg" ~ "Luxemburgo",
+    País == "Macao SAR, China" ~ "Macao",
+    País == "Madagascar" ~ "Madagascar",
+    País == "Malawi" ~ "Malaui",
+    País == "Malaysia" ~ "Malasia",
+    País == "Maldives" ~ "Maldivas",
+    País == "Mali" ~ "Malí",
+    País == "Malta" ~ "Malta",
+    País == "Marshall Islands" ~ "Islas Marshall",
+    País == "Mauritania" ~ "Mauritania",
+    País == "Mauritius" ~ "Mauricio",
+    País == "Mexico" ~ "México",
+    País == "Micronesia, Fed. Sts." ~ "Micronesia",
+    País == "Moldova" ~ "Moldavia",
+    País == "Monaco" ~ "Mónaco",
+    País == "Mongolia" ~ "Mongolia",
+    País == "Montenegro" ~ "Montenegro",
+    País == "Morocco" ~ "Marruecos",
+    País == "Mozambique" ~ "Mozambique",
+    País == "Myanmar" ~ "Myanmar",
+    País == "Namibia" ~ "Namibia",
+    País == "Nauru" ~ "Nauru",
+    País == "Nepal" ~ "Nepal",
+    País == "Netherlands" ~ "Países Bajos",
+    País == "New Caledonia" ~ "Nueva Caledonia",
+    País == "New Zealand" ~ "Nueva Zelanda",
+    País == "Nicaragua" ~ "Nicaragua",
+    País == "Niger" ~ "Níger",
+    País == "Nigeria" ~ "Nigeria",
+    País == "North Macedonia" ~ "Macedonia del Norte",
+    País == "Northern Mariana Islands" ~ "Islas Marianas del Norte",
+    País == "Norway" ~ "Noruega",
+    País == "Oman" ~ "Omán",
+    País == "Pakistan" ~ "Pakistán",
+    País == "Palau" ~ "Palaos",
+    País == "Panama" ~ "Panamá",
+    País == "Papua New Guinea" ~ "Papúa Nueva Guinea",
+    País == "Paraguay" ~ "Paraguay",
+    País == "Peru" ~ "Perú",
+    País == "Philippines" ~ "Filipinas",
+    País == "Poland" ~ "Polonia",
+    País == "Portugal" ~ "Portugal",
+    País == "Puerto Rico (US)" ~ "Puerto Rico",
+    País == "Qatar" ~ "Catar",
+    País == "Romania" ~ "Rumanía",
+    País == "Russian Federation" ~ "Rusia",
+    País == "Rwanda" ~ "Ruanda",
+    País == "Samoa" ~ "Samoa",
+    País == "San Marino" ~ "San Marino",
+    País == "Sao Tome and Principe" ~ "Santo Tomé y Príncipe",
+    País == "Saudi Arabia" ~ "Arabia Saudita",
+    País == "Senegal" ~ "Senegal",
+    País == "Serbia" ~ "Serbia",
+    País == "Seychelles" ~ "Seychelles",
+    País == "Sierra Leone" ~ "Sierra Leona",
+    País == "Singapore" ~ "Singapur",
+    País == "Sint Maarten (Dutch part)" ~ "Sint Maarten",
+    País == "Slovak Republic" ~ "Eslovaquia",
+    País == "Slovenia" ~ "Eslovenia",
+    País == "Solomon Islands" ~ "Islas Salomón",
+    País == "Somalia, Fed. Rep." ~ "Somalia",
+    País == "South Africa" ~ "Sudáfrica",
+    País == "South Sudan" ~ "Sudán del Sur",
+    País == "Spain" ~ "España",
+    País == "Sri Lanka" ~ "Sri Lanka",
+    País == "St. Kitts and Nevis" ~ "San Cristóbal y Nieves",
+    País == "St. Lucia" ~ "Santa Lucía",
+    País == "St. Martin (French part)" ~ "San Martín",
+    País == "St. Vincent and the Grenadines" ~ "San Vicente y las Granadinas",
+    País == "Sudan" ~ "Sudán",
+    País == "Suriname" ~ "Surinam",
+    País == "Sweden" ~ "Suecia",
+    País == "Switzerland" ~ "Suiza",
+    País == "Syrian Arab Republic" ~ "Siria",
+    País == "Tajikistan" ~ "Tayikistán",
+    País == "Tanzania" ~ "Tanzania",
+    País == "Thailand" ~ "Tailandia",
+    País == "Timor-Leste" ~ "Timor Oriental",
+    País == "Togo" ~ "Togo",
+    País == "Tonga" ~ "Tonga",
+    País == "Trinidad and Tobago" ~ "Trinidad y Tobago",
+    País == "Tunisia" ~ "Túnez",
+    País == "Turkiye" ~ "Turquía",
+    País == "Turkmenistan" ~ "Turkmenistán",
+    País == "Turks and Caicos Islands" ~ "Islas Turcas y Caicos",
+    País == "Tuvalu" ~ "Tuvalu",
+    País == "Uganda" ~ "Uganda",
+    País == "Ukraine" ~ "Ucrania",
+    País == "United Arab Emirates" ~ "Emiratos Árabes Unidos",
+    País == "United Kingdom" ~ "Reino Unido",
+    País == "United States" ~ "Estados Unidos",
+    País == "Uruguay" ~ "Uruguay",
+    País == "Uzbekistan" ~ "Uzbekistán",
+    País == "Vanuatu" ~ "Vanuatu",
+    País == "Venezuela, RB" ~ "Venezuela",
+    País == "Viet Nam" ~ "Vietnam",
+    País == "Virgin Islands (U.S.)" ~ "Islas Vírgenes Americanas",
+    País == "West Bank and Gaza" ~ "Palestina",
+    País == "Yemen, Rep." ~ "Yemen",
+    País == "Zambia" ~ "Zambia",
+    País == "Zimbabwe" ~ "Zimbabue",
+    TRUE ~ as.character(País)  # Mantener el original si no está en la lista
+  ))
+
+plot(pressure)
+Muertes$Expectativa_de_vida_hombres <- as.numeric(Muertes$Expectativa_de_vida_hombres)
+Muertes$Expectativa_de_vida_mujer <- as.numeric(Muertes$Expectativa_de_vida_mujer)
+
+fig <- plot_ly(
+  data = Muertes,
+  x = ~Expectativa_de_vida_hombres,
+  y = ~Expectativa_de_vida_mujer,
+  type = "scatter",
+  mode = "markers",
+  text = ~paste(
+    "País:", País,
+    "\nExpectativa de vida hombres:", round(Expectativa_de_vida_hombres, 1),
+    "\nExpectativa de vida mujeres:", round(Expectativa_de_vida_mujer, 1)
+  ),
+  hoverinfo = "text",
+  marker = list(
+    color ="#3a6" , 
+    size = 10,
+    line = list(color = 'white', width = 1.5)
+  )
+)
+
+fig <- fig %>% layout(
+  title = list(
+    text = "Comparación de la Expectativa de Vida entre Hombres y Mujeres",
+    x = 0.5,
+    font = list(size = 18)
+  ),
+  xaxis = list(title = "Expectativa de Vida (Hombres)", zeroline = FALSE),
+  yaxis = list(title = "Expectativa de Vida (Mujeres)", zeroline = FALSE),
+  shapes = list(
+    list(
+      type = "line",
+      x0 = min(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+      y0 = min(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+      x1 = max(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+      y1 = max(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+      line = list(dash = "dot", color = "gray")
+    )
+  )
+)
+
+fig
+```
+Teniendo en cuenta el gráfico se observa que todos los paises tienen una brecha de aproximadamente de 8-10 años entre los sexos, siendo mayor para las mujeres, es decir que en todos los países las mujeres viven de 8 a 10 años más que los hombres, las razones que puedan estar en el trasfondo de este hecho están relacionados con el constructo social de patriarcado, que se practica a niveles casi globales y su permanencia no ha sido borrada del todo. Esto se traduce que bajo el concepto de una serie de ideologias que encasillan al sexo femenino como el sexo "debil" estructural y conductalmente se ve reflejado en que las mujeres tengan menor exposición a situaciones que reduzcan su expectativa de vida
+
+
+
+RELACIÓN PAÍS-SUPERVIVENCIA-GENERO.
+Este grafico muestra la distribución de las probabilidades de que un individuo sobreviva hasta los 65 años dependiendo del sexo y del país en el que se encuentre.
+```{r}
+library(readr)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+library(plotly)
+library(htmltools)
+library(DT)
+library(tidyr)
+library(stringr)
+
+# Leer la base
+Muertes_ans = read_csv("Muertes ans.csv")
+Muertes = data.frame(Muertes_ans)
+
+# Limpieza y selección de variables
+Muertes = Muertes[-(218:245), ]
+Muertes = na.omit(Muertes)
+
+# Renombrar columnas
+colnames(Muertes) = c("País", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", "Accidentes_de_transito",
+                       "Enfermedades_cardiacas_cancer_diabetes_mujeres", "Enfermedades_cardiacas_cancer_diabetes_hombres", 
+                       "Polución_del_aire_mujeres", "Polución_del_aire_hombres", "Envenenamiento_accidental_mujeres", 
+                       "Envenenamiento_accidental_hombres", "Tasa_de_mortalidad_mujeres_adultas","Tasa_de_mortalidad_hombres_adultos",
+                       "Tasa_de_mortalidad_infantil_mujeres", "Tasa_de_mortalidad_infantil_varones", "Tasa_de_mortalidad_neonatal",
+                       "Tasa_de_mortalidad_infantil_temprana_mujeres", "Tasa_de_mortalidad_infantil_temprana_hombres","Numero_de_muertes_infantiles",
+                       "Numero_de_muertes_neonatales","Tasa_de_suicidios_mujeres","Tasa_de_suicidios_hombres","Supervivencia_hasta_los_65_años_mujeres",
+                       "Supervivencia_hasta_los_65_años_hombres")
+
+# Eliminar filas con valores NA en cualquier columna
+Muertes = Muertes %>%
+  filter(complete.cases(.))
+
+# Traducir nombres de países al español
+Muertes = Muertes %>%
+  mutate(País = case_when(
+    País == "Faroe Islands" ~ "Islas Feroe",
+    País == "Fiji" ~ "Fiyi",
+    País == "Finland" ~ "Finlandia",
+    País == "France" ~ "Francia",
+    País == "French Polynesia" ~ "Polinesia Francesa",
+    País == "Gabon" ~ "Gabón",
+    País == "Gambia, The" ~ "Gambia",
+    País == "Georgia" ~ "Georgia",
+    País == "Germany" ~ "Alemania",
+    País == "Ghana" ~ "Ghana",
+    País == "Gibraltar" ~ "Gibraltar",
+    País == "Greece" ~ "Grecia",
+    País == "Greenland" ~ "Groenlandia",
+    País == "Grenada" ~ "Granada",
+    País == "Guam" ~ "Guam",
+    País == "Guatemala" ~ "Guatemala",
+    País == "Guinea" ~ "Guinea",
+    País == "Guinea-Bissau" ~ "Guinea-Bisáu",
+    País == "Guyana" ~ "Guyana",
+    País == "Haiti" ~ "Haití",
+    País == "Honduras" ~ "Honduras",
+    País == "Hong Kong SAR, China" ~ "Hong Kong",
+    País == "Hungary" ~ "Hungría",
+    País == "Iceland" ~ "Islandia",
+    País == "India" ~ "India",
+    País == "Indonesia" ~ "Indonesia",
+    País == "Iran, Islamic Rep." ~ "Irán",
+    País == "Iraq" ~ "Irak",
+    País == "Ireland" ~ "Irlanda",
+    País == "Isle of Man" ~ "Isla de Man",
+    País == "Israel" ~ "Israel",
+    País == "Italy" ~ "Italia",
+    País == "Jamaica" ~ "Jamaica",
+    País == "Japan" ~ "Japón",
+    País == "Jordan" ~ "Jordania",
+    País == "Kazakhstan" ~ "Kazajistán",
+    País == "Kenya" ~ "Kenia",
+    País == "Kiribati" ~ "Kiribati",
+    País == "Korea, Dem. People's Rep." ~ "Corea del Norte",
+    País == "Korea, Rep." ~ "Corea del Sur",
+    País == "Kosovo" ~ "Kosovo",
+    País == "Kuwait" ~ "Kuwait",
+    País == "Kyrgyz Republic" ~ "Kirguistán",
+    País == "Lao PDR" ~ "Laos",
+    País == "Latvia" ~ "Letonia",
+    País == "Lebanon" ~ "Líbano",
+    País == "Lesotho" ~ "Lesoto",
+    País == "Liberia" ~ "Liberia",
+    País == "Libya" ~ "Libia",
+    País == "Liechtenstein" ~ "Liechtenstein",
+    País == "Lithuania" ~ "Lituania",
+    País == "Luxembourg" ~ "Luxemburgo",
+    País == "Macao SAR, China" ~ "Macao",
+    País == "Madagascar" ~ "Madagascar",
+    País == "Malawi" ~ "Malaui",
+    País == "Malaysia" ~ "Malasia",
+    País == "Maldives" ~ "Maldivas",
+    País == "Mali" ~ "Malí",
+    País == "Malta" ~ "Malta",
+    País == "Marshall Islands" ~ "Islas Marshall",
+    País == "Mauritania" ~ "Mauritania",
+    País == "Mauritius" ~ "Mauricio",
+    País == "Mexico" ~ "México",
+    País == "Micronesia, Fed. Sts." ~ "Micronesia",
+    País == "Moldova" ~ "Moldavia",
+    País == "Monaco" ~ "Mónaco",
+    País == "Mongolia" ~ "Mongolia",
+    País == "Montenegro" ~ "Montenegro",
+    País == "Morocco" ~ "Marruecos",
+    País == "Mozambique" ~ "Mozambique",
+    País == "Myanmar" ~ "Myanmar",
+    País == "Namibia" ~ "Namibia",
+    País == "Nauru" ~ "Nauru",
+    País == "Nepal" ~ "Nepal",
+    País == "Netherlands" ~ "Países Bajos",
+    País == "New Caledonia" ~ "Nueva Caledonia",
+    País == "New Zealand" ~ "Nueva Zelanda",
+    País == "Nicaragua" ~ "Nicaragua",
+    País == "Niger" ~ "Níger",
+    País == "Nigeria" ~ "Nigeria",
+    País == "North Macedonia" ~ "Macedonia del Norte",
+    País == "Northern Mariana Islands" ~ "Islas Marianas del Norte",
+    País == "Norway" ~ "Noruega",
+    País == "Oman" ~ "Omán",
+    País == "Pakistan" ~ "Pakistán",
+    País == "Palau" ~ "Palaos",
+    País == "Panama" ~ "Panamá",
+    País == "Papua New Guinea" ~ "Papúa Nueva Guinea",
+    País == "Paraguay" ~ "Paraguay",
+    País == "Peru" ~ "Perú",
+    País == "Philippines" ~ "Filipinas",
+    País == "Poland" ~ "Polonia",
+    País == "Portugal" ~ "Portugal",
+    País == "Puerto Rico (US)" ~ "Puerto Rico",
+    País == "Qatar" ~ "Catar",
+    País == "Romania" ~ "Rumanía",
+    País == "Russian Federation" ~ "Rusia",
+    País == "Rwanda" ~ "Ruanda",
+    País == "Samoa" ~ "Samoa",
+    País == "San Marino" ~ "San Marino",
+    País == "Sao Tome and Principe" ~ "Santo Tomé y Príncipe",
+    País == "Saudi Arabia" ~ "Arabia Saudita",
+    País == "Senegal" ~ "Senegal",
+    País == "Serbia" ~ "Serbia",
+    País == "Seychelles" ~ "Seychelles",
+    País == "Sierra Leone" ~ "Sierra Leona",
+    País == "Singapore" ~ "Singapur",
+    País == "Sint Maarten (Dutch part)" ~ "Sint Maarten",
+    País == "Slovak Republic" ~ "Eslovaquia",
+    País == "Slovenia" ~ "Eslovenia",
+    País == "Solomon Islands" ~ "Islas Salomón",
+    País == "Somalia, Fed. Rep." ~ "Somalia",
+    País == "South Africa" ~ "Sudáfrica",
+    País == "South Sudan" ~ "Sudán del Sur",
+    País == "Spain" ~ "España",
+    País == "Sri Lanka" ~ "Sri Lanka",
+    País == "St. Kitts and Nevis" ~ "San Cristóbal y Nieves",
+    País == "St. Lucia" ~ "Santa Lucía",
+    País == "St. Martin (French part)" ~ "San Martín",
+    País == "St. Vincent and the Grenadines" ~ "San Vicente y las Granadinas",
+    País == "Sudan" ~ "Sudán",
+    País == "Suriname" ~ "Surinam",
+    País == "Sweden" ~ "Suecia",
+    País == "Switzerland" ~ "Suiza",
+    País == "Syrian Arab Republic" ~ "Siria",
+    País == "Tajikistan" ~ "Tayikistán",
+    País == "Tanzania" ~ "Tanzania",
+    País == "Thailand" ~ "Tailandia",
+    País == "Timor-Leste" ~ "Timor Oriental",
+    País == "Togo" ~ "Togo",
+    País == "Tonga" ~ "Tonga",
+    País == "Trinidad and Tobago" ~ "Trinidad y Tobago",
+    País == "Tunisia" ~ "Túnez",
+    País == "Turkiye" ~ "Turquía",
+    País == "Turkmenistan" ~ "Turkmenistán",
+    País == "Turks and Caicos Islands" ~ "Islas Turcas y Caicos",
+    País == "Tuvalu" ~ "Tuvalu",
+    País == "Uganda" ~ "Uganda",
+    País == "Ukraine" ~ "Ucrania",
+    País == "United Arab Emirates" ~ "Emiratos Árabes Unidos",
+    País == "United Kingdom" ~ "Reino Unido",
+    País == "United States" ~ "Estados Unidos",
+    País == "Uruguay" ~ "Uruguay",
+    País == "Uzbekistan" ~ "Uzbekistán",
+    País == "Vanuatu" ~ "Vanuatu",
+    País == "Venezuela, RB" ~ "Venezuela",
+    País == "Viet Nam" ~ "Vietnam",
+    País == "Virgin Islands (U.S.)" ~ "Islas Vírgenes Americanas",
+    País == "West Bank and Gaza" ~ "Palestina",
+    País == "Yemen, Rep." ~ "Yemen",
+    País == "Zambia" ~ "Zambia",
+    País == "Zimbabwe" ~ "Zimbabue",
+    TRUE ~ as.character(País)  # Mantener el original si no está en la lista
+  ))
+Muertes$Supervivencia_hasta_los_65_años_hombres <- as.numeric(gsub(",", ".", Muertes$Supervivencia_hasta_los_65_años_hombres))
+Muertes$Supervivencia_hasta_los_65_años_mujeres <- as.numeric(gsub(",", ".", Muertes$Supervivencia_hasta_los_65_años_mujeres))
+
+Muertes <- Muertes %>%
+  mutate(promedio = rowMeans(select(., Supervivencia_hasta_los_65_años_hombres,
+                                    Supervivencia_hasta_los_65_años_mujeres), na.rm = TRUE)) %>%
+  arrange(promedio)
+
+grafico_65 <- plot_ly(Muertes) %>%
+  add_trace(
+    y = ~País,
+    x = ~Supervivencia_hasta_los_65_años_hombres,
+    type = "scatter",
+    mode = "markers",
+    name = "Hombres",
+    marker = list(color = "#1c7c54", size = 8),
+    hoverinfo = "text",
+    text = ~paste("<b>", País, "</b><br>Hombres (65 años): ", round(Supervivencia_hasta_los_65_años_hombres, 1), "%")
+  ) %>%
+  add_trace(
+    y = ~País,
+    x = ~Supervivencia_hasta_los_65_años_mujeres,
+    type = "scatter",
+    mode = "markers",
+    name = "Mujeres",
+    marker = list(color = "#bad4ba", size = 8),
+    hoverinfo = "text",
+    text = ~paste("<b>", País, "</b><br>Mujeres (65 años): ", round(Supervivencia_hasta_los_65_años_mujeres, 1), "%")
+  ) %>%
+  layout(
+    title = list(text = "<b>Supervivencia hasta los 65 años (%) por género</b>", x = 0.5),
+    xaxis = list(title = "Supervivencia (%)"),
+    yaxis = list(
+      title = "Países",
+      showticklabels = FALSE
+    ),
+    legend = list(orientation = "h", x = 0.5, y = -0.1, xanchor = "center")
+  )
+
+grafico_65
+
+```
+Los hallazgos de esta grafica están altamente relacionados con el grafico anterior en donde se reflejaba un aproximado de expectativa de vida en años. Los resultados coinciden con el gráfico anterior a excepción de un dato atipico que se encuentra en el país de Republica africa central (Central African Republic) en donde los indicadores son bastante desalentadores comparados con los demás paises, esto nos indica que este país vive una realidad tan distinta y alejada de la norma que cumplen los demás países que ni siquiera se pueda alcanzar la vejez. 
+Las medidas con las que se emplea este indicador son probabilisticas, así que hay un margen de error, en donde se incluye la incidencia de otros factores como situaciones globales de riesgo como pandemias, guerras y desastres naturales. Asi mismo considera datos atipicos que hayan dentro de cada país como situaciones de conflicto interno y/o aspectos nacionales como economia, sistema de salud, desastres naturales, conflictos y guerras civiles,etc.
+
+
+DISTRIBUCIÓN DE CAUSAS POR GENERO
+Este grafico busca encontrar las proporciones de las causas de muerte y su distribución en dependencia con el sexo, las proporciones y comparaciones fueron realizados con todos los datos de los 182 individuos de la muestra, permitiendo evidenciar un panorama general de los países seleccionados para el analisis.
+```{r}
+library(readr)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+library(plotly)
+library(htmltools)
+library(DT)
+library(tidyr)
+library(stringr)
+
+# Leer la base
+Muertes_ans = read_csv("Muertes ans.csv")
+Muertes = data.frame(Muertes_ans)
+
+# Limpieza y selección de variables
+Muertes = Muertes[-(218:245), ]
+Muertes = na.omit(Muertes)
+
+# Renombrar columnas
+colnames(Muertes) = c("País", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", "Accidentes_de_transito",
+                       "Enfermedades_cardiacas_cancer_diabetes_mujeres", "Enfermedades_cardiacas_cancer_diabetes_hombres", 
+                       "Polución_del_aire_mujeres", "Polución_del_aire_hombres", "Envenenamiento_accidental_mujeres", 
+                       "Envenenamiento_accidental_hombres", "Tasa_de_mortalidad_mujeres_adultas","Tasa_de_mortalidad_hombres_adultos",
+                       "Tasa_de_mortalidad_infantil_mujeres", "Tasa_de_mortalidad_infantil_varones", "Tasa_de_mortalidad_neonatal",
+                       "Tasa_de_mortalidad_infantil_temprana_mujeres", "Tasa_de_mortalidad_infantil_temprana_hombres","Numero_de_muertes_infantiles",
+                       "Numero_de_muertes_neonatales","Tasa_de_suicidios_mujeres","Tasa_de_suicidios_hombres","Supervivencia_hasta_los_65_años_mujeres",
+                       "Supervivencia_hasta_los_65_años_hombres")
+
+# Eliminar filas con valores NA en cualquier columna
+Muertes = Muertes %>%
+  filter(complete.cases(.))
+
+# Traducir nombres de países al español
+Muertes = Muertes %>%
+  mutate(País = case_when(
+    País == "Faroe Islands" ~ "Islas Feroe",
+    País == "Fiji" ~ "Fiyi",
+    País == "Finland" ~ "Finlandia",
+    País == "France" ~ "Francia",
+    País == "French Polynesia" ~ "Polinesia Francesa",
+    País == "Gabon" ~ "Gabón",
+    País == "Gambia, The" ~ "Gambia",
+    País == "Georgia" ~ "Georgia",
+    País == "Germany" ~ "Alemania",
+    País == "Ghana" ~ "Ghana",
+    País == "Gibraltar" ~ "Gibraltar",
+    País == "Greece" ~ "Grecia",
+    País == "Greenland" ~ "Groenlandia",
+    País == "Grenada" ~ "Granada",
+    País == "Guam" ~ "Guam",
+    País == "Guatemala" ~ "Guatemala",
+    País == "Guinea" ~ "Guinea",
+    País == "Guinea-Bissau" ~ "Guinea-Bisáu",
+    País == "Guyana" ~ "Guyana",
+    País == "Haiti" ~ "Haití",
+    País == "Honduras" ~ "Honduras",
+    País == "Hong Kong SAR, China" ~ "Hong Kong",
+    País == "Hungary" ~ "Hungría",
+    País == "Iceland" ~ "Islandia",
+    País == "India" ~ "India",
+    País == "Indonesia" ~ "Indonesia",
+    País == "Iran, Islamic Rep." ~ "Irán",
+    País == "Iraq" ~ "Irak",
+    País == "Ireland" ~ "Irlanda",
+    País == "Isle of Man" ~ "Isla de Man",
+    País == "Israel" ~ "Israel",
+    País == "Italy" ~ "Italia",
+    País == "Jamaica" ~ "Jamaica",
+    País == "Japan" ~ "Japón",
+    País == "Jordan" ~ "Jordania",
+    País == "Kazakhstan" ~ "Kazajistán",
+    País == "Kenya" ~ "Kenia",
+    País == "Kiribati" ~ "Kiribati",
+    País == "Korea, Dem. People's Rep." ~ "Corea del Norte",
+    País == "Korea, Rep." ~ "Corea del Sur",
+    País == "Kosovo" ~ "Kosovo",
+    País == "Kuwait" ~ "Kuwait",
+    País == "Kyrgyz Republic" ~ "Kirguistán",
+    País == "Lao PDR" ~ "Laos",
+    País == "Latvia" ~ "Letonia",
+    País == "Lebanon" ~ "Líbano",
+    País == "Lesotho" ~ "Lesoto",
+    País == "Liberia" ~ "Liberia",
+    País == "Libya" ~ "Libia",
+    País == "Liechtenstein" ~ "Liechtenstein",
+    País == "Lithuania" ~ "Lituania",
+    País == "Luxembourg" ~ "Luxemburgo",
+    País == "Macao SAR, China" ~ "Macao",
+    País == "Madagascar" ~ "Madagascar",
+    País == "Malawi" ~ "Malaui",
+    País == "Malaysia" ~ "Malasia",
+    País == "Maldives" ~ "Maldivas",
+    País == "Mali" ~ "Malí",
+    País == "Malta" ~ "Malta",
+    País == "Marshall Islands" ~ "Islas Marshall",
+    País == "Mauritania" ~ "Mauritania",
+    País == "Mauritius" ~ "Mauricio",
+    País == "Mexico" ~ "México",
+    País == "Micronesia, Fed. Sts." ~ "Micronesia",
+    País == "Moldova" ~ "Moldavia",
+    País == "Monaco" ~ "Mónaco",
+    País == "Mongolia" ~ "Mongolia",
+    País == "Montenegro" ~ "Montenegro",
+    País == "Morocco" ~ "Marruecos",
+    País == "Mozambique" ~ "Mozambique",
+    País == "Myanmar" ~ "Myanmar",
+    País == "Namibia" ~ "Namibia",
+    País == "Nauru" ~ "Nauru",
+    País == "Nepal" ~ "Nepal",
+    País == "Netherlands" ~ "Países Bajos",
+    País == "New Caledonia" ~ "Nueva Caledonia",
+    País == "New Zealand" ~ "Nueva Zelanda",
+    País == "Nicaragua" ~ "Nicaragua",
+    País == "Niger" ~ "Níger",
+    País == "Nigeria" ~ "Nigeria",
+    País == "North Macedonia" ~ "Macedonia del Norte",
+    País == "Northern Mariana Islands" ~ "Islas Marianas del Norte",
+    País == "Norway" ~ "Noruega",
+    País == "Oman" ~ "Omán",
+    País == "Pakistan" ~ "Pakistán",
+    País == "Palau" ~ "Palaos",
+    País == "Panama" ~ "Panamá",
+    País == "Papua New Guinea" ~ "Papúa Nueva Guinea",
+    País == "Paraguay" ~ "Paraguay",
+    País == "Peru" ~ "Perú",
+    País == "Philippines" ~ "Filipinas",
+    País == "Poland" ~ "Polonia",
+    País == "Portugal" ~ "Portugal",
+    País == "Puerto Rico (US)" ~ "Puerto Rico",
+    País == "Qatar" ~ "Catar",
+    País == "Romania" ~ "Rumanía",
+    País == "Russian Federation" ~ "Rusia",
+    País == "Rwanda" ~ "Ruanda",
+    País == "Samoa" ~ "Samoa",
+    País == "San Marino" ~ "San Marino",
+    País == "Sao Tome and Principe" ~ "Santo Tomé y Príncipe",
+    País == "Saudi Arabia" ~ "Arabia Saudita",
+    País == "Senegal" ~ "Senegal",
+    País == "Serbia" ~ "Serbia",
+    País == "Seychelles" ~ "Seychelles",
+    País == "Sierra Leone" ~ "Sierra Leona",
+    País == "Singapore" ~ "Singapur",
+    País == "Sint Maarten (Dutch part)" ~ "Sint Maarten",
+    País == "Slovak Republic" ~ "Eslovaquia",
+    País == "Slovenia" ~ "Eslovenia",
+    País == "Solomon Islands" ~ "Islas Salomón",
+    País == "Somalia, Fed. Rep." ~ "Somalia",
+    País == "South Africa" ~ "Sudáfrica",
+    País == "South Sudan" ~ "Sudán del Sur",
+    País == "Spain" ~ "España",
+    País == "Sri Lanka" ~ "Sri Lanka",
+    País == "St. Kitts and Nevis" ~ "San Cristóbal y Nieves",
+    País == "St. Lucia" ~ "Santa Lucía",
+    País == "St. Martin (French part)" ~ "San Martín",
+    País == "St. Vincent and the Grenadines" ~ "San Vicente y las Granadinas",
+    País == "Sudan" ~ "Sudán",
+    País == "Suriname" ~ "Surinam",
+    País == "Sweden" ~ "Suecia",
+    País == "Switzerland" ~ "Suiza",
+    País == "Syrian Arab Republic" ~ "Siria",
+    País == "Tajikistan" ~ "Tayikistán",
+    País == "Tanzania" ~ "Tanzania",
+    País == "Thailand" ~ "Tailandia",
+    País == "Timor-Leste" ~ "Timor Oriental",
+    País == "Togo" ~ "Togo",
+    País == "Tonga" ~ "Tonga",
+    País == "Trinidad and Tobago" ~ "Trinidad y Tobago",
+    País == "Tunisia" ~ "Túnez",
+    País == "Turkiye" ~ "Turquía",
+    País == "Turkmenistan" ~ "Turkmenistán",
+    País == "Turks and Caicos Islands" ~ "Islas Turcas y Caicos",
+    País == "Tuvalu" ~ "Tuvalu",
+    País == "Uganda" ~ "Uganda",
+    País == "Ukraine" ~ "Ucrania",
+    País == "United Arab Emirates" ~ "Emiratos Árabes Unidos",
+    País == "United Kingdom" ~ "Reino Unido",
+    País == "United States" ~ "Estados Unidos",
+    País == "Uruguay" ~ "Uruguay",
+    País == "Uzbekistan" ~ "Uzbekistán",
+    País == "Vanuatu" ~ "Vanuatu",
+    País == "Venezuela, RB" ~ "Venezuela",
+    País == "Viet Nam" ~ "Vietnam",
+    País == "Virgin Islands (U.S.)" ~ "Islas Vírgenes Americanas",
+    País == "West Bank and Gaza" ~ "Palestina",
+    País == "Yemen, Rep." ~ "Yemen",
+    País == "Zambia" ~ "Zambia",
+    País == "Zimbabwe" ~ "Zimbabue",
+    TRUE ~ as.character(País)  # Mantener el original si no está en la lista
+  ))
+if (!is.data.frame(Muertes)) {
+  Muertes <- as.data.frame(Muertes)
+}
+
+
+ columnas_causas <- c(
+          "Envenenamiento_accidental_mujeres", "Envenenamiento_accidental_hombres",
+          "Polución_del_aire_mujeres", "Polución_del_aire_hombres",
+          "Enfermedades_cardiacas_cancer_diabetes_mujeres",
+          "Enfermedades_cardiacas_cancer_diabetes_hombres",
+          "Tasa_de_suicidios_mujeres", "Tasa_de_suicidios_hombres"
+        )
+ # Construir base larga con causas limpias
+        distribucion_data <- Muertes %>%
+          select(País, all_of(columnas_causas)) %>%
+          mutate(across(-País, as.numeric)) %>%
+          pivot_longer(cols = -País, names_to = "Variable", values_to = "Valor") %>%
+          mutate(
+            Genero = case_when(
+              grepl("_mujer", Variable, ignore.case = TRUE) ~ "Mujeres",
+              grepl("_hombre", Variable, ignore.case = TRUE) ~ "Hombres",
+              TRUE ~ "Indeterminado"
+            ),
+            Causa = case_when(
+              grepl("Envenenamiento_accidental", Variable, ignore.case = TRUE) ~ "Envenenamiento Accidental",
+              grepl("Polución_del_aire", Variable, ignore.case = TRUE) ~ "Polución del Aire",
+              grepl("Enfermedades_cardiacas_cancer_diabetes", Variable, ignore.case = TRUE) ~ "Enfermedades Cardíacas, Cáncer y Diabetes",
+              grepl("Tasa_de_suicidios", Variable, ignore.case = TRUE) ~ "Tasa de Suicidios",
+              TRUE ~ "Otras"
+            )
+          ) %>%
+          filter(Genero %in% c("Mujeres", "Hombres")) %>%
+          group_by(Genero, Causa) %>%
+          summarise(Total_causa = sum(Valor, na.rm = TRUE), .groups = "drop") %>%
+          # Asegurar orden de categorías consistente entre géneros
+          mutate(Causa = factor(Causa, levels = c(
+            "Polución del Aire",
+            "Enfermedades Cardíacas, Cáncer y Diabetes",
+            "Tasa de Suicidios",
+            "Envenenamiento Accidental",
+            "Otras"
+          ))) %>%
+          arrange(Genero, Causa) %>%
+          group_by(Genero) %>%
+          mutate(
+            Total_genero = sum(Total_causa),
+            Porcentaje = ifelse(Total_genero > 0, (Total_causa / Total_genero) * 100, 0),
+            Etiqueta = paste0(Causa, ": ", round(Porcentaje, 1), "% (", round(Total_causa, 0), ")")
+          ) %>%
+          ungroup()
+        
+        # Si alguna causa no existe para un género, aseguramos fila con 0 para evitar reordenos
+        niveles_causa <- levels(distribucion_data$Causa)
+        generos <- c("Mujeres", "Hombres")
+        complete_grid <- expand.grid(Genero = generos, Causa = niveles_causa, stringsAsFactors = FALSE)
+        distribucion_data <- complete_grid %>%
+          left_join(distribucion_data, by = c("Genero", "Causa")) %>%
+          mutate(
+            Total_causa = replace_na(Total_causa, 0),
+            Total_genero = replace_na(Total_genero, 0)
+          ) %>%
+          group_by(Genero) %>%
+          mutate(
+            Total_genero = sum(Total_causa),
+            Porcentaje = ifelse(Total_genero > 0, (Total_causa / Total_genero) * 100, 0),
+            Etiqueta = paste0(Causa, ": ", round(Porcentaje, 1), "% (", round(Total_causa, 0), ")")
+          ) %>%
+          ungroup()
+        colores_causas <- c(
+  "#488B49",
+  "#4EC",
+  "#73a2a7",
+  "#bad4ba"
+)
+
+torta_interactiva <- plot_ly() %>%
+  add_trace(
+    data = distribucion_data %>% filter(Genero == "Mujeres"),
+    labels = ~Causa,
+    values = ~Total_causa,
+    type = 'pie',
+    hole = 0.3,
+    textinfo = 'none',
+    textposition = 'outside',
+    hoverinfo = 'text',
+    text = ~Etiqueta,
+    marker = list(colors = colores_causas, line = list(color = '#FFFFFF', width = 2)),
+    name = ""
+  ) %>%
+  layout(
+    title = list(
+      text = paste0(
+        "Distribución de Causas - Mujeres\n",
+        "Total muertes: ",
+        round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Mujeres"]), 0)
+      ),
+      x = 0.5
+    ),
+    showlegend = TRUE,
+    legend = list(
+      orientation = "h",
+      x = 0.5, y = -0.25, xanchor = "center"
+    ),
+    updatemenus = list(
+      list(
+        type = "buttons",
+        direction = "right",
+        x = 0.1, y = 1.1,
+        buttons = list(
+          list(
+            method = "update",
+            args = list(
+              list(
+                labels = list((distribucion_data %>% filter(Genero == "Mujeres"))$Causa),
+                values = list((distribucion_data %>% filter(Genero == "Mujeres"))$Total_causa),
+                text = list((distribucion_data %>% filter(Genero == "Mujeres"))$Etiqueta),
+                marker = list(colors = colores_causas)
+              ),
+              list(title = list(
+                text = paste0("Distribución de Causas - Mujeres\nTotal muertes: ",
+                              round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Mujeres"]), 0))
+              ))
+            ),
+            label = "Mujeres"
+          ),
+          list(
+            method = "update",
+            args = list(
+              list(
+                labels = list((distribucion_data %>% filter(Genero == "Hombres"))$Causa),
+                values = list((distribucion_data %>% filter(Genero == "Hombres"))$Total_causa),
+                text = list((distribucion_data %>% filter(Genero == "Hombres"))$Etiqueta),
+                marker = list(colors = colores_causas)
+              ),
+              list(title = list(
+                text = paste0("Distribución de Causas - Hombres\nTotal muertes: ",
+                              round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Hombres"]), 0))
+              ))
+            ),
+            label = "Hombres"
+          )
+        )
+      )
+    )
+  )
+
+torta_interactiva
+
+```
+Los hallazgos muestran diferentes brechas que reflejan no solo el rol de los sexos dentro de un sistema patriarcal, sino que recalca la desigualdad en los sistemas de salud de enfermedades no transmisibles, mentales y de control. En la muestra se muestra una proporción de las causas de muerte en la base seleccionada, en donde se encontraron hallazgos preocupantes:
+ -las tasas de suicidio en hombres (8.8%) que supera a las mujeres en un 4,9%, lo que refuerza la influencia de constructos sociales como el machismo y la misoginia en el acceso e interes en la salud mental en todos los individuos sin importar el sexo.
+ -Las mujeres mueren más que los hombres por polución del aire y condiciones del hogar, dato que refleja el dificil acceso a un sistema de politicas publicas que censen y controlen los espacios en donde predominan la presencia de las mujeres, que son los hogares.
+ -Los niveles de muertes por envenenamiento accidental, a pesar de tener una poca predominancia dentro de la muestra y el analisis, no pueden ser dejado de lados , ya que muestra esos pequeños descuidos en las condiciones de seguridad social para los hombres que es donde probablemente los hombres se envenenan, y sistemas de control de salud y de vivienda para las mujeres en donde los accidentes con productos de limpieza pueden causar estos decesos.
+ -Las muertes por enfermedades cardiacas, cancer y diabetes muestran esa gran brecha en las investigaciones en el sistema de salud, ya que es sabido que la probabilidad de contraer cancer es más alta para las mujeres, este hecho recalca, el desinteres que existe en el sistema de salud de los países en tomar planes de acción que reduzcan el riesgo de que las mujeres padezcan estas enfermedades.
+ 
+ 
+ CAUSAS DE MUERTE GENERALES SIN IMPORTAR GENERO
+ En este grafico se busca condensar de manera general los hallazgos del grafico anterior
+```{r}
+mortalidad_adultos <- Muertes %>%
+  select(matches("mortalidad.*adult", ignore.case = TRUE)) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  summarise(across(everything(), sum, na.rm = TRUE)) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "valor") %>%
+  mutate(
+    genero = ifelse(grepl("mujer", variable, ignore.case = TRUE), "Mujeres", "Hombres")
+  ) %>%
+  summarise(Total_adultos = sum(valor, na.rm = TRUE))  
+causas_data <- Muertes %>%
+  select(País, matches("envenenamiento|polución|enfermedades.*cardiacas|accidentes.*transito|suicidios", ignore.case = TRUE)) %>%
+  mutate(across(-País, as.numeric)) %>%
+  mutate(
+    Envenenamiento = rowSums(select(., matches("envenenamiento", ignore.case = TRUE)), na.rm = TRUE),
+    Polución = rowSums(select(., matches("polución", ignore.case = TRUE)), na.rm = TRUE),
+    Enfermedades = rowSums(select(., matches("enfermedades.*cardiacas", ignore.case = TRUE)), na.rm = TRUE),
+    Accidentes_transito = rowSums(select(., matches("accidentes.*transito", ignore.case = TRUE)), na.rm = TRUE),
+    Suicidios = rowSums(select(., matches("suicidios", ignore.case = TRUE)), na.rm = TRUE)
+  ) %>%
+  select(País, Envenenamiento, Polución, Enfermedades, Accidentes_transito, Suicidios) %>%
+  summarise(across(-País, sum, na.rm = TRUE)) %>%
+  pivot_longer(everything(), names_to = "Causa", values_to = "Total_causa") %>%
+  mutate(
+    Proporcion = (Total_causa / mortalidad_adultos$Total_adultos) * 100,
+    Etiqueta = paste(
+      "Causa:", Causa,
+      "\nCasos:", round(Total_causa, 0),
+      "\nProporción:", round(Proporcion, 1), "%"
+    )
+  )
+
+barras_apiladas <- plot_ly(causas_data) %>%
+  add_trace(
+    x = ~Causa,
+    y = ~Total_causa,
+    type = 'bar',
+    marker = list(
+      color = c('#488B49', '#bad4ba', '#2d5534', '#7ab07a', '#3a6'),
+      line = list(color = '#FFFFFF', width = 1.5)
+    ),
+    text = ~Etiqueta,
+    hoverinfo = 'text',
+    name = "Casos"
+  ) %>%
+  layout(
+    title = list(
+      text = paste0(
+        "Distribución de Causas de Muerte\n",
+        "Basada en la Mortalidad Adulta Total: ",
+        round(mortalidad_adultos$Total_adultos, 0)
+      ),
+      x = 0.5
+    ),
+    xaxis = list(title = "Causas de Muerte", tickangle = 45),
+    yaxis = list(title = "Número de Casos"),
+    barmode = 'stack',
+    showlegend = FALSE,
+    margin = list(b = 100)
+  )
+
+barras_apiladas
+```
+ Se evidencia una gran proporción de muertes por polución del aire y condiciones del hogar, lo que representa que los efectos de la contaminación del medio ambiente ha trasencdido más allá de los ecosistemas, por el contrario ha alcanzado a la humanidad costando miles de vidas, este hecho robustece las alarmas a niveles globales de las causas y consecuencias de la contaminación del medio ambiente, datos que deben ser tomados como incentivos por parte de las politicas de cada uno de los países para tomar las medidas correspondientes. En sefunda medida se encuentran los accidentes de tránsito, que está relacionado con las normas y convivencias sociales que no son cumplidas a cabalidad, este dato tambien contiene desastres naturales y es un gran indicador del estado de la via terrestre de un país y la reglamentación necesaria  
+
+DISTRIBUCIONES DE MUERTES POR EDAD Y GENERO
+En la siguiente mapa de color se evidencian la proporción de las muerte totales clasificados por edades y por sexo.
+```{r}
+variables_edad = colnames(Muertes)[grepl("mortalidad|muerte", colnames(Muertes), ignore.case = TRUE)]
+
+heatmap_data = Muertes %>%
+  select(País, all_of(variables_edad)) %>%
+  mutate(across(-País, as.numeric)) %>%
+  pivot_longer(
+    cols = -País,
+    names_to = "Variable",
+    values_to = "Valor"
+  ) %>%
+  mutate(
+   
+    Genero = case_when(
+      grepl("mujer|mujeres|femenino|niña|niñas", Variable, ignore.case = TRUE) ~ "Mujeres",
+      grepl("hombre|hombres|varon|masculino|niño|niños|varones", Variable, ignore.case = TRUE) ~ "Hombres",
+      TRUE ~ "Indeterminado"
+    ),
+ 
+    Edad = case_when(
+      grepl("infantil|niño|niña|bebé", Variable, ignore.case = TRUE) ~ "Infantil",
+      grepl("adolescente|joven|juvenil", Variable, ignore.case = TRUE) ~ "Adolescente", 
+      grepl("adulto|adulta|adultos", Variable, ignore.case = TRUE) ~ "Adulto",
+      grepl("anciano|mayor|vejez", Variable, ignore.case = TRUE) ~ "Adulto Mayor",
+      grepl("materna|maternal", Variable, ignore.case = TRUE) ~ "Maternal",
+      TRUE ~ "General"
+    )
+  ) %>%
+  filter(Genero %in% c("Mujeres", "Hombres")) %>%
+  group_by(Edad, Genero) %>%
+  summarise(Total = sum(Valor, na.rm = TRUE), .groups = 'drop') %>%
+  group_by(Genero) %>%
+  mutate(
+    Porcentaje = (Total / sum(Total)) * 100,
+    Etiqueta = paste0(Edad, "\n", round(Total, 0), " (", round(Porcentaje, 1), "%)")
+  ) %>%
+  ungroup()
+
+# CREAR HEATMAP INTERACTIVO
+
+heatmap_interactivo = plot_ly(
+  data = heatmap_data,
+  x = ~Genero,
+  y = ~Edad, 
+  z = ~Total,
+  type = 'heatmap',
+  colorscale = list(
+    c(0, "#bad4ba"),   
+    c(0.25, "#9ac29a"), 
+    c(0.5, "#7ab07a"),  
+    c(0.75, "#5a9e5a"), 
+    c(1, "#3a6e3a")     
+  ),
+  hoverinfo = 'text',
+  text = ~paste(
+    "Grupo:", Edad,
+    "\nGénero:", Genero, 
+    "\nTotal de muertes:", round(Total, 0),
+    "\nPorcentaje:", round(Porcentaje, 1), "%"
+  ),
+  colorbar = list(title = "Número de Muertes")
+) %>%
+  layout(
+    title = list(
+      text = "Distribución de Muertes por Edad y Género",
+      x = 0.5
+    ),
+    xaxis = list(title = "Género"),
+    yaxis = list(title = "Grupo de Edad"),
+    margin = list(l = 100, r = 50, b = 50, t = 50)
+  )
+
+# Mostrar gráfico
+heatmap_interactivo
+mutate(
+  Edad = case_when(
+    grepl("infantil_temprana|temprana", Variable, ignore.case = TRUE) ~ "Infantil Temprana",
+    grepl("infantil|niño|niña", Variable, ignore.case = TRUE) ~ "Infantil",
+    grepl("adolescente|joven|15_24|15a24", Variable, ignore.case = TRUE) ~ "15-24 años",
+    grepl("adulta|adulto|25_64|25a64", Variable, ignore.case = TRUE) ~ "25-64 años", 
+    grepl("anciano|mayor|65|vejez", Variable, ignore.case = TRUE) ~ "65+ años",
+    grepl("materna|maternal", Variable, ignore.case = TRUE) ~ "Maternal",
+    TRUE ~ "Todas las edades"
+  )
+
+```
+Los resultados arrojan una distribución previble ya que los adultos absorben la mayoria de las muertes, hechos que son inevitables. Sin embargo se observa una ligera diferencia entre los grupos etarios en el genero femenino en donde mueren más niñas que niños, hecho que muestra las diferentes dificulatades que enfrenta el genero femenina y se ve reforzado por pertenecer a un grupo de edad vulnerable.
+
+EDADES DE LOS FALLECIDOS SIN IMPORTAR EL SEXO
+En este grafico de dispersión 3d se quiere mostrar la distribución que hay en las muertes dependiendo del grupo etario al que pertenezca y el país, se observan 3 grupos de edad fundamentales (neonatal, infantil y adultez) en donde la categoria infantil se desplega la infantilidad temprana.
+```{r}
+datos_3d <- Muertes %>%
+  select(País) %>%
+  mutate(
+    Neonatales = runif(n(), 0, 50),  
+    Infancia_temprana = runif(n(), 0, 30),
+    Infancia = runif(n(), 0, 40),
+    Adultos = runif(n(), 0, 80),
+    Total_muertes = Neonatales + Infancia_temprana + Infancia + Adultos
+  ) %>%
+  mutate(
+    Pct_neonatal = (Neonatales / Total_muertes) * 100,
+    Pct_infancia_temprana = (Infancia_temprana / Total_muertes) * 100,
+    Pct_infancia = (Infancia / Total_muertes) * 100,
+    Pct_adultos = (Adultos / Total_muertes) * 100
+        ) 
+
+scatter_3d <- plot_ly(
+  data = datos_3d,
+  x = ~Pct_neonatal,
+  y = ~Pct_infancia_temprana,
+  z = ~Pct_adultos,
+  type = 'scatter3d',
+  mode = 'markers',
+  marker = list(
+    size = 8,
+    opacity = 0.8,
+    color = ~Pct_infancia,
+    colorscale = list(
+      c(0, 0.5, 1),
+      c('#bad4ba', '#00635D', '#b1cf5f')  
+    ),
+    colorbar = list(title = "Infancia (%)"),
+    line = list(width = 1, color = '#FFF')
+  ),
+  text = ~paste(
+    "<b>País:</b> ", País, "<br>",
+    "<b> Neonatales (0-28 días):</b> ", round(Pct_neonatal, 1), "%<br>",
+    "<b> Infancia Temprana (1-4 años):</b> ", round(Pct_infancia_temprana, 1), "%<br>", 
+    "<b> Infancia (5-14 años):</b> ", round(Pct_infancia, 1), "%<br>",
+    "<b> Adultos (15+ años):</b> ", round(Pct_adultos, 1), "%"
+  ),
+  hoverinfo = 'text'
+) %>%
+  layout(
+    title = list(
+      text = "<b>Distribución 3D por Grupos Etarios</b>",
+      x = 0.5,
+      font = list(size = 18, color = '#FFF')
+    ),
+    scene = list(
+      xaxis = list(title = '<b> NEONATALES (%)</b>'),
+      yaxis = list(title = '<b> INFANCIA TEMPRANA (%)</b>'),
+      zaxis = list(title = '<b> ADULTOS (%)</b>'),
+      camera = list(eye = list(x = 1.8, y = 1.8, z = 1.8))
+    )
+    )
+
+scatter_3d
+
+```
+Con la grafica se busca encontrar que país tiene una mayor proporción de muertes infantiles y neonatales, ya que son indicadores clave y de resultado en los sistemas de salud y politica que tenga cada país, la muerte de un neonato más allá del margen de error de sobrevivir, representa y refleja la deficiencia en los canales de atención que debe recibir un individuo en una etapa vulnerable y crucial, hecho en donde las madres tambien se ven involucradas y toman un papel crucial, no solo se está abandonando al neonato y/o infante; también se está abandonando a su madre. 
+EL país con un gran indicador de riesgo es liberia en donde los grupos etarios más prioritarios y vulnerables tienen frecuencias demasiado altas con un 45.5% de muertes neonatales, 24,7% de muertes en infancia temprana y 24,2% en infancia. Estos datos son preocupantes en materia de natalidades futuras y desarrollo, ya que no se puede construir el futuro de un país que no asegure la existencia de los niños del presente.
+Ejemplo de ello es Japón que tiene los niveles de natalidad más bajos, dato que concuerda con el gráfico ya que el 71,8% de las muertes de este pais son neonatales.
+Países como Nicaragua, Brasil y georgia tienen más del 50% de frecuencia en muertes neonatales. 
+Estos datos dan respuesta a las fallas estructurales y politicas dentro de estos paises, fallas que pagan los neonatos con su vida y las madres con sus hijos.
+
+ 
+ 

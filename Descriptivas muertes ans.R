@@ -191,70 +191,25 @@ View(Muertes)
 colnames(Muertes)
 #MAPA MUNDIAL INTERACTIVO (PRIMER GRÁFICO)-----
 
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(sf)
-library(viridis)
-library(gganimate)
-library(gifski)
+world <- ne_countries(scale = "medium", returnclass = "sf")
 
-print("Estructura de world:")
-print(class(world))
-print(dim(world))
-
-print("Estructura de Muertes:")
-print(class(Muertes))
-print(dim(Muertes))
-
-if (!inherits(world, "sf")) {
-  stop("El objeto 'world' no es un objeto sf válido")
-}
-
-if (!"geometry" %in% names(world)) {
-  stop("El objeto 'world' no tiene columna geometry")
-}
-
-world_clean = world %>%
-  st_make_valid() %>%  
-  filter(!st_is_empty(geometry))  
-
-
-Muertes_clean = Muertes %>%
-  
-  mutate(across(-País, ~ {
-    result = suppressWarnings(as.numeric(.))
-    ifelse(is.na(result), NA, result)
-  })) %>%
-  
+Muertes_clean <- Muertes %>%
+  mutate(across(-País, ~ suppressWarnings(as.numeric(.)))) %>%
   filter(rowSums(!is.na(select(., -País))) > 0)
 
-
-variables_analisis = c(
-  "Expectativa_de_vida_mujer", "Expectativa_de-vida_hombres",
-  "Enfermedades_cardiacas_cancer_diabetes_mujeres", "Enfermedades_cardiacas_cancer_diabetes_hombres",
-  "Polución_del_aire_mujeres", "Polución_del_aire_hombres", 
-  "Envenenamiento_accidental_mujeres", "Envenenamiento_accidental_hombres",
-  "Tasa_de_mortalidad_mujeres_adultas", "Tasa_de_mortalidad_hombres_adultos",
+variables_analisis <- c(
+  "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres","Supervivencia_hasta_los_65_años_hombres",
+  "Supervivencia_hasta_los_65_años_mujeres",
   "Tasa_de_mortalidad_infantil_mujeres", "Tasa_de_mortalidad_infantil_varones",
   "Tasa_de_mortalidad_infantil_temprana_mujeres", "Tasa_de_mortalidad_infantil_temprana_hombres",
-  "Tasa_de_suicidios_mujeres", "Tasa_de_suicidios_hombres",
-  "Supervivencia_hasta_los_65_años(%)_mujeres", "Supervivencia_hasta_los_65_años(%)_hombres"
-)
+  "Tasa_de_mortalidad_mujeres_adultas", "Tasa_de_mortalidad_hombres_adultos","Envenenamiento_accidental_mujeres",
+  "Envenenamiento_accidental_hombres","Enfermedades_cardiacas_cancer_diabetes_mujeres",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres")
 
-# Verificar que las variables existen en los datos
-variables_existentes = variables_analisis[variables_analisis %in% names(Muertes_clean)]
-if (length(variables_existentes) == 0) {
-  stop("Ninguna de las variables especificadas existe en los datos")
-}
-
-print(paste("Variables encontradas:", length(variables_existentes)))
-
-
-base_larga = Muertes_clean %>%
-  select(País, all_of(variables_existentes)) %>%
+base_larga <- Muertes_clean %>%
+  select(País, all_of(variables_analisis)) %>%
   pivot_longer(
-    cols = all_of(variables_existentes),
+    cols = all_of(variables_analisis),
     names_to = "variable",
     values_to = "valor"
   ) %>%
@@ -268,86 +223,24 @@ base_larga = Muertes_clean %>%
     variable_limpia = gsub("_", " ", variable_limpia),
     variable_limpia = tools::toTitleCase(variable_limpia)
   ) %>%
-  filter(sexo != "Otro", !is.na(valor))  
-
-
-print(paste("Filas en base_larga:", nrow(base_larga)))
-print("Variables únicas:")
-print(unique(base_larga$variable_limpia))
-print("Conteo por sexo:")
-print(table(base_larga$sexo))
-
-
-mapa_completo = world_clean %>%
-  left_join(base_larga, by = c("sovereignt" = "País")) %>%
-  filter(!is.na(variable_limpia), !is.na(sexo))  
-
-
-print("Estructura de mapa_completo:")
-print(dim(mapa_completo))
-print("Conteo por variable en mapa_completo:")
-print(table(mapa_completo$variable_limpia))
-
-tryCatch({
-  animacion = ggplot(mapa_completo) +
-    geom_sf(aes(fill = valor), color = "white", size = 0.1) +
-    facet_wrap(~ sexo, ncol = 2) +
-    scale_fill_viridis(
-      option = "magma", 
-      direction = -1, 
-      name = "Valor",
-      na.value = "grey90"
-    ) +
-    theme_minimal() +
-    labs(
-      title = "Indicadores de Salud: {closest_state}",
-      subtitle = "Comparación por sexo - Año 2019",
-      caption = "Fuente: Indicadores de Desarrollo Mundial (Banco Mundial)"
-    ) +
-    transition_states(
-      variable_limpia,
-      transition_length = 2,
-      state_length = 2
-    ) +
-    ease_aes("linear")
-  
-  
-  animacion_final = animate(
-    animacion,
-    nframes = 100,  # Reducir frames para prueba
-    fps = 5,        # Reducir fps para prueba
-    width = 800,
-    height = 500,
-    renderer = gifski_renderer()
+  filter(sexo != "Otro") %>%
+  pivot_wider(
+    names_from = sexo,
+    values_from = valor
   )
+
+library(sf)
+library(dplyr)
+library(tidyr)
+library(plotly)
+library(rnaturalearth)
+
+# Asumo que Muertes_clean y variables_analisis ya están definidos como en tu código.
+
+# Unimos la base larga con el mapa world usando left_join para mantener todos los países
+
   
-  # Mostrar animación
-  animacion_final
-  
-  # Guardar animación
-  anim_save("mapa_muertes_2019.gif", animation = animacion_final)
-  
-}, error = function(e) {
-  print(paste("Error en la animación:", e$message))
-  
-  
-  print("Creando versión estática para diagnóstico...")
-  
-  # Probar con una sola variable primero
-  variable_prueba = unique(base_larga$variable_limpia)[1]
-  datos_prueba = mapa_completo %>% 
-    filter(variable_limpia == variable_prueba)
-  
-  mapa_estatico = ggplot(datos_prueba) +
-    geom_sf(aes(fill = valor), color = "white", size = 0.1) +
-    facet_wrap(~ sexo) +
-    scale_fill_viridis(option = "magma", direction = -1) +
-    theme_minimal() +
-    labs(title = variable_prueba)
-  
-  print(mapa_estatico)
-  ggsave("mapa_prueba_estatico.png", mapa_estatico, width = 10, height = 6)
-})
+
 #MUERTES TOTALES POR SEXO.------
 
 muertes_sexo = base_larga %>%
@@ -365,21 +258,15 @@ ggplot(muertes_sexo, aes(x = sexo, y = total, fill = sexo)) +
 
 
 #RELACIÓN PAÍS- SUPERVIVENCIA-GENERO----
-library(dplyr)
-library(tidyr)
-library(plotly)
 
-# Asegurar conversión numérica
 Muertes$Supervivencia_hasta_los_65_años_hombres <- as.numeric(gsub(",", ".", Muertes$Supervivencia_hasta_los_65_años_hombres))
 Muertes$Supervivencia_hasta_los_65_años_mujeres <- as.numeric(gsub(",", ".", Muertes$Supervivencia_hasta_los_65_años_mujeres))
 
-# Reordenar países por promedio
 Muertes <- Muertes %>%
   mutate(promedio = rowMeans(select(., Supervivencia_hasta_los_65_años_hombres,
                                     Supervivencia_hasta_los_65_años_mujeres), na.rm = TRUE)) %>%
   arrange(promedio)
 
-# Gráfico interactivo horizontal
 grafico_65 <- plot_ly(Muertes) %>%
   add_trace(
     y = ~País,
@@ -387,7 +274,7 @@ grafico_65 <- plot_ly(Muertes) %>%
     type = "scatter",
     mode = "markers",
     name = "Hombres",
-    marker = list(color = "rgba(54, 162, 235, 0.8)", size = 8),
+    marker = list(color = "#1c7c54", size = 8),
     hoverinfo = "text",
     text = ~paste("<b>", País, "</b><br>Hombres (65 años): ", round(Supervivencia_hasta_los_65_años_hombres, 1), "%")
   ) %>%
@@ -397,14 +284,17 @@ grafico_65 <- plot_ly(Muertes) %>%
     type = "scatter",
     mode = "markers",
     name = "Mujeres",
-    marker = list(color = "rgba(75, 192, 192, 0.8)", size = 8),
+    marker = list(color = "#bad4ba", size = 8),
     hoverinfo = "text",
     text = ~paste("<b>", País, "</b><br>Mujeres (65 años): ", round(Supervivencia_hasta_los_65_años_mujeres, 1), "%")
   ) %>%
   layout(
     title = list(text = "<b>Supervivencia hasta los 65 años (%) por género</b>", x = 0.5),
     xaxis = list(title = "Supervivencia (%)"),
-    yaxis = list(title = "", categoryorder = "array", categoryarray = Muertes$País),
+    yaxis = list(
+      title = "Países",
+      showticklabels = FALSE
+    ),
     legend = list(orientation = "h", x = 0.5, y = -0.1, xanchor = "center")
   )
 
@@ -412,6 +302,9 @@ grafico_65
 
 
 #RELACIÓN PAÍS-EXPECTATIVA DE VIDA-GENERO-----
+
+Muertes$Expectativa_de_vida_hombres <- as.numeric(Muertes$Expectativa_de_vida_hombres)
+Muertes$Expectativa_de_vida_mujer <- as.numeric(Muertes$Expectativa_de_vida_mujer)
 
 fig <- plot_ly(
   data = Muertes,
@@ -453,103 +346,6 @@ fig <- fig %>% layout(
 )
 
 fig
-
-
-#TABLA INTERACTIVA------
-Muertes_tabla = Muertes %>% 
-  select(-País) %>%
-  mutate(across(everything(), as.numeric)) %>%
-  scale()
-rownames(Muertes) = Muertes$País
-
-
-crear_tabla_genero_automatica = function(Muertes) {
-  
-  # Identificar variables por patrones en los nombres
-  vars_mujer = names(Muertes)[grepl("mujer|mujeres|femenino|woman|female", names(Muertes), ignore.case = TRUE)]
-  vars_hombre = names(Muertes)[grepl("hombre|hombres|varones|masculino|man|male", names(Muertes), ignore.case = TRUE)]
-  
-  # Verificar que se encontraron variables
-  if(length(vars_mujer) == 0 | length(vars_hombre) == 0) {
-    stop("No se encontraron variables con patrones de género en los nombres")
-  }
-  
-  cat("Variables mujer encontradas:", paste(vars_mujer, collapse = ", "), "\n")
-  cat("Variables hombre encontradas:", paste(vars_hombre, collapse = ", "), "\n")
-  
-  # Pivotear datos para mujer
-  datos_mujer = Muertes %>%
-    select(País, all_of(vars_mujer)) %>%
-    pivot_longer(
-      cols = -País,
-      names_to = "Variable_Original",
-      values_to = "Valor"
-    ) %>%
-    mutate(Genero = "Mujer")
-  
-  # Pivotear datos para hombre
-  datos_hombre = Muertes %>%
-    select(País, all_of(vars_hombre)) %>%
-    pivot_longer(
-      cols = -País,
-      names_to = "Variable_Original",
-      values_to = "Valor"
-    ) %>%
-    mutate(Genero = "Hombre")
-  
-  # Combinar y limpiar nombres de variables
-  datos_combinados = bind_rows(datos_mujer, datos_hombre) %>%
-    mutate(
-      Variable = gsub("mujer|mujeres|femenino|hombre|hombres|varon|masculino", "", 
-                      Variable_Original, ignore.case = TRUE) %>%
-        trimws() %>%
-        gsub("_+", "_", .) %>%
-        gsub("^_|_$", "", .)
-    )
-  
-  # Calcular estadísticas
-  estadisticas = datos_combinados %>%
-    group_by(País, Genero, Variable) %>%
-    summarise(
-      N = sum(!is.na(Valor)),
-      Media = mean(Valor, na.rm = TRUE),
-      Mediana = median(Valor, na.rm = TRUE),
-      Desviacion = sd(Valor, na.rm = TRUE),
-      Minimo = min(Valor, na.rm = TRUE),
-      Maximo = max(Valor, na.rm = TRUE),
-      .groups = 'drop'
-    ) %>%
-    ungroup() %>%
-    arrange(País, Variable, Genero)
-  
-  # Crear tabla interactiva
-  datatable(
-    estadisticas,
-    rownames = FALSE,
-    extensions = c('Buttons', 'Scroller'),
-    options = list(
-      dom = 'Bfrtip',
-      buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
-      scrollX = TRUE,
-      scrollY = "600px",
-      scroller = TRUE,
-      pageLength = 50
-    ),
-    caption = htmltools::tags$caption(
-      style = 'caption-side: top; text-align: center;',
-      'Estadísticas por País y Género (Detección Automática)'
-    )
-  ) %>%
-    formatRound(columns = c('Media', 'Desviacion'), digits = 3) %>%
-    formatRound(columns = 'Mediana', digits = 1) %>%
-    formatStyle(
-      'Genero',
-      backgroundColor = styleEqual(
-        c('Hombre', 'Mujer'), 
-        c('lightblue', 'lightpink')
-      )
-    )
-}
 
 #TORTAS------
 
@@ -707,10 +503,9 @@ if (!is.data.frame(Muertes)) {
         
         # Mostrar resultado final
         torta_genero_final
-        ndado
-      )
-    )
-  )
+      
+    
+  
 
 # Mostrar
 torta_genero
@@ -718,10 +513,10 @@ torta_genero
 # TORTA INTERACTIVA CON BOTONES 2--------------
 
 colores_causas <- c(
-  "#FF6B6B",
-  "#4ECDC4",
-  "#42A5F5",
-  "#AB47BC"
+  "#488B49",
+  "#4EC",
+  "#73a2a7",
+  "#1c7c54"
 )
 
 torta_interactiva <- plot_ly() %>%
@@ -847,11 +642,11 @@ heatmap_interactivo = plot_ly(
   z = ~Total,
   type = 'heatmap',
   colorscale = list(
-    c(0, "#E8F8F5"),   
-    c(0.25, "#A3E4D7"), 
-    c(0.5, "#48C9B0"),  
-    c(0.75, "#17A589"), 
-    c(1, "#0E6251")     
+    c(0, "#bad4ba"),   
+    c(0.25, "#9ac29a"), 
+    c(0.5, "#7ab07a"),  
+    c(0.75, "#5a9e5a"), 
+    c(1, "#3a6e3a")     
   ),
   hoverinfo = 'text',
   text = ~paste(
@@ -887,8 +682,7 @@ mutate(
 
 
 
-#CAUSAS DE MUERTE GENERALES SIN IMPORTAR GENERO.---------
-
+#CAUSAS DE MUERTE GENERALES SIN IMPORTAR GENERO---------
 mortalidad_adultos <- Muertes %>%
   select(matches("mortalidad.*adult", ignore.case = TRUE)) %>%
   mutate(across(everything(), as.numeric)) %>%
@@ -897,8 +691,7 @@ mortalidad_adultos <- Muertes %>%
   mutate(
     genero = ifelse(grepl("mujer", variable, ignore.case = TRUE), "Mujeres", "Hombres")
   ) %>%
-  summarise(Total_adultos = sum(valor, na.rm = TRUE)
-
+  summarise(Total_adultos = sum(valor, na.rm = TRUE))  # ← cierre correcto aquí
 
 causas_data <- Muertes %>%
   select(País, matches("envenenamiento|polución|enfermedades.*cardiacas|accidentes.*transito|suicidios", ignore.case = TRUE)) %>%
@@ -922,14 +715,13 @@ causas_data <- Muertes %>%
     )
   )
 
-
 barras_apiladas <- plot_ly(causas_data) %>%
   add_trace(
     x = ~Causa,
     y = ~Total_causa,
     type = 'bar',
     marker = list(
-      color = c('#47FF47', '#4ECDC4', '#FF709B', '#FEE485', '#AB47BC'),
+      color = c('#488B49', '#bad4ba', '#2d5534', '#7ab07a', '#3a6'),
       line = list(color = '#FFFFFF', width = 1.5)
     ),
     text = ~Etiqueta,
@@ -951,8 +743,8 @@ barras_apiladas <- plot_ly(causas_data) %>%
     showlegend = FALSE,
     margin = list(b = 100)
   )
-barras_apiladas
 
+barras_apiladas
 
 #EDADES DE LOS FALLECIDOS SIN IMPORTAR EL SEXO---------------
 
@@ -970,10 +762,8 @@ datos_3d <- Muertes %>%
     Pct_infancia_temprana = (Infancia_temprana / Total_muertes) * 100,
     Pct_infancia = (Infancia / Total_muertes) * 100,
     Pct_adultos = (Adultos / Total_muertes) * 100
-  )
+        ) 
 
-# Gráfico 3D con colores personalizados y etiquetas mejoradas
-# VERSIÓN CON COLORES VIBRANTES
 scatter_3d <- plot_ly(
   data = datos_3d,
   x = ~Pct_neonatal,
@@ -987,7 +777,7 @@ scatter_3d <- plot_ly(
     color = ~Pct_infancia,
     colorscale = list(
       c(0, 0.5, 1),
-      c('#B3E', '#00635D', '#00A5E0')  
+      c('#bad4ba', '#00635D', '#b1cf5f')  
     ),
     colorbar = list(title = "Infancia (%)"),
     line = list(width = 1, color = '#FFF')
@@ -1013,6 +803,6 @@ scatter_3d <- plot_ly(
       zaxis = list(title = '<b> ADULTOS (%)</b>'),
       camera = list(eye = list(x = 1.8, y = 1.8, z = 1.8))
     )
-  )
+    )
 
 scatter_3d
