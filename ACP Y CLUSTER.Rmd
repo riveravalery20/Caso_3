@@ -322,7 +322,6 @@ print(p1)
 
 ```
 
-
 ## Gráfico de Sedimentación
 
 ```{r scree-plot:Gráfico de Sedimentación, message=FALSE, warning=FALSE, results='hide'}
@@ -347,204 +346,300 @@ p2 <- fviz_eig(res.pca,
 print(p2)
 ```
 
-## Gráfico de Individuos (Países)
+## Definición de Nombres Cortos para Variables
 
-```{r grafico individuos,fig.width=9, fig.height=7}
-library(factoextra)
-library(plotly)
-
-# Extraer datos del PCA - asumiendo que res.pca es un objeto de FactoMineR
-pca_data <- get_pca_ind(res.pca)
-
-# Crear dataframe con las 2 primeras dimensiones
-df <- data.frame(
-  País = rownames(pca_data$coord),
-  PC1 = pca_data$coord[,1],
-  PC2 = pca_data$coord[,2]
+```{r nombres-cortos-variables}
+# Definir nombres cortos para usar en los círculos de correlación
+nombres_cortos_var <- c(
+  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
+  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
+  "Accidentes_de_transito" = "Accidentes Tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
+  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
+  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
+  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
+  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
+  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
+  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
+  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
+  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
+  "Supervivencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
+  "Supervivencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
 )
-
-# Calcular calidad de representación (cos2) en las 2 dimensiones
-if(!is.null(pca_data$cos2)) {
-  df$Cos2 <- rowSums(pca_data$cos2[,1:2])
-} else {
-  # Si no hay cos2, calculamos manualmente como la suma de los cuadrados de las coordenadas en las dos primeras dimensiones dividido por la suma de los cuadrados de todas las coordenadas
-  df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
-}
-
-# Obtener los porcentajes de varianza explicada
-# Para un objeto de FactoMineR, los autovalores y porcentajes están en res.pca$eig
-if(inherits(res.pca, "PCA")) {
-  # Si es un objeto PCA de FactoMineR
-  percent_pc1 <- round(res.pca$eig[1,2], 1)
-  percent_pc2 <- round(res.pca$eig[2,2], 1)
-} else {
-  # Si es un objeto de prcomp (o otro)
-  # Calculamos la varianza explicada
-  eigenvalues <- res.pca$sdev^2
-  total_variance <- sum(eigenvalues)
-  percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
-  percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
-}
-
-# Crear gráfico 2D interactivo
-p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
-        type = 'scatter',
-        mode = 'markers',
-        marker = list(
-          size = 8,
-          color = ~Cos2,
-          colorscale = list(
-            c(0, "#00AFBB"),
-            c(0.5, "#E7B800"),
-            c(1, "#FC4E07")
-          ),
-          showscale = TRUE,
-          colorbar = list(title = "cos2"),
-          opacity = 0.8,
-          line = list(
-            width = 1,
-            color = 'darkgray'
-          )
-        ),
-        text = ~paste('<b>País:</b>', País,
-                     '<br><b>PC1:</b>', round(PC1, 3),
-                     '<br><b>PC2:</b>', round(PC2, 3),
-                     '<br><b>Calidad:</b>', round(Cos2, 3)),
-        hoverinfo = 'text',
-        hoverlabel = list(
-          bgcolor = "white",
-          bordercolor = "black",
-          font = list(color = "black", size = 12)
-        )
-) %>%
-  layout(
-    title = list(
-      text = "Análisis PCA - 182 Países (PC1 vs PC2)",
-      font = list(size = 16)
-    ),
-    xaxis = list(
-      title = paste0("PC1 (", percent_pc1, "%)"),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1
-    ),
-    yaxis = list(
-      title = paste0("PC2 (", percent_pc2, "%)"),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1
-    ),
-    plot_bgcolor = "white",
-    paper_bgcolor = "white",
-    margin = list(l = 50, r = 50, b = 50, t = 50),
-    showlegend = FALSE
-  )
-
-# Mostrar el gráfico
-p3
 ```
 
+## Preparación de Datos para Círculos de Correlación
 
-## Gráfico de Variables
+```{r preparacion-datos}
+# Extraer datos DIRECTAMENTE del objeto res.pca (prcomp)
+# Las coordenadas están en res.pca$rotation (loadings)
+var_coord <- res.pca$rotation
 
-```{r grafico-variables,fig.width=9, fig.height=7}
-library(factoextra)
-library(plotly)
-library(dplyr)
+# Calcular eigenvalues y porcentajes de varianza
+eigenvalues <- res.pca$sdev^2
+total_variance <- sum(eigenvalues)
+percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
+percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
+percent_pc3 <- round((eigenvalues[3] / total_variance) * 100, 1)
 
-# Extraer datos de las variables
-var_data <- get_pca_var(res.pca)
+# Calcular contribuciones CORRECTAMENTE como lo hace factoextra
+# La contribución es relativa al total de inercia en las dimensiones mostradas
+# Para PC1 y PC2: contrib = (coord^2 * eigenvalue / suma_eigenvalues_PC1_PC2) * 100
+# Para PC1 y PC3: contrib = (coord^2 * eigenvalue / suma_eigenvalues_PC1_PC3) * 100
 
-# Crear dataframe con información completa para PC1 y PC2
-df_var <- data.frame(
-  Variable = rownames(var_data$coord),
-  PC1 = var_data$coord[,1],
-  PC2 = var_data$coord[,2],  # Cambiado: PC2 en lugar de PC3
-  Contrib = rowSums(var_data$contrib[,c(1,2)]),  # Contribución total a PC1 y PC2
-  Cos2 = rowSums(var_data$cos2[,c(1,2)])        # Calidad de representación en PC1 y PC2
+# Contribución para el gráfico PC1 vs PC2
+contrib_12_PC1 <- (var_coord[,1]^2 * eigenvalues[1]) / (eigenvalues[1] + eigenvalues[2]) * 100
+contrib_12_PC2 <- (var_coord[,2]^2 * eigenvalues[2]) / (eigenvalues[1] + eigenvalues[2]) * 100
+contrib_12_total <- contrib_12_PC1 + contrib_12_PC2
+
+# Contribución para el gráfico PC1 vs PC3
+contrib_13_PC1 <- (var_coord[,1]^2 * eigenvalues[1]) / (eigenvalues[1] + eigenvalues[3]) * 100
+contrib_13_PC3 <- (var_coord[,3]^2 * eigenvalues[3]) / (eigenvalues[1] + eigenvalues[3]) * 100
+contrib_13_total <- contrib_13_PC1 + contrib_13_PC3
+
+# Calcular cos2 (calidad de representación)
+cos2_total <- rowSums(var_coord^2)
+cos2_PC1_PC2 <- (var_coord[,1]^2 + var_coord[,2]^2) / cos2_total
+cos2_PC1_PC3 <- (var_coord[,1]^2 + var_coord[,3]^2) / cos2_total
+
+# Preparar dataframe con los datos CORRECTOS
+df_var_plot <- data.frame(
+  Variable = rownames(var_coord),
+  PC1 = var_coord[,1],
+  PC2 = var_coord[,2],
+  PC3 = var_coord[,3],
+  Contrib_12 = contrib_12_total,  # Contribución para gráfico PC1-PC2
+  Contrib_13 = contrib_13_total,  # Contribución para gráfico PC1-PC3
+  Cos2_PC1_PC2 = cos2_PC1_PC2,
+  Cos2_PC1_PC3 = cos2_PC1_PC3
 )
 
-# Crear gráfico interactivo profesional - SIN ETIQUETAS PERMANENTES
-grafico_profesional <- plot_ly(df_var, x = ~PC1, y = ~PC2,  # Cambiado: PC2 en lugar de PC3
-        type = 'scatter',
-        mode = 'markers',  # Solo markers, sin text
-        marker = list(
-          size = 12,
-          color = ~Contrib,
-          colorscale = list(
-            c(0, "#00AFBB"),
-            c(0.3, "#00AFBB"),
-            c(0.5, "#E7B800"),
-            c(1, "#FC4E07")
-          ),
-          showscale = TRUE,
-          colorbar = list(
-            title = "Contribución",
-            thickness = 15,
-            len = 0.5
-          ),
-          opacity = 0.8,
-          line = list(
-            width = 2,
-            color = 'darkgray'
-          )
-        ),
-        hoverinfo = 'text',
-        hovertext = ~paste(
-          '<b>Variable:</b>', Variable,
-          '<br><b>PC1:</b>', round(PC1, 3),
-          '<br><b>PC2:</b>', round(PC2, 3),  # Cambiado: PC2 en lugar de PC3
-          '<br><b>Contribución:</b>', round(Contrib, 1), '%',
-          '<br><b>Calidad (cos2):</b>', round(Cos2, 3)
-        ),
-        hoverlabel = list(
-          bgcolor = "white",
-          bordercolor = "black",
-          font = list(color = "black", size = 12)
-        )
-) %>%
-  layout(
-    title = list(
-      text = "<b>Análisis PCA - Contribución de Variables (PC1 vs PC2)</b>",  # Cambiado el título
-      font = list(size = 16, family = "Arial"),
-      x = 0.05
-    ),
-    xaxis = list(
-      title = list(
-        text = "PC1",
-        font = list(size = 14, family = "Arial")
-      ),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1,
-      showgrid = TRUE
-    ),
-    yaxis = list(
-      title = list(
-        text = "PC2",  # Cambiado: PC2 en lugar de PC3
-        font = list(size = 14, family = "Arial")
-      ),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1,
-      showgrid = TRUE
-    ),
-    plot_bgcolor = "white",
-    paper_bgcolor = "white",
-    margin = list(l = 80, r = 80, b = 80, t = 80),
+# Aplicar nombres cortos
+df_var_plot$Variable_corto <- nombres_cortos_var[df_var_plot$Variable]
+
+# Si no hay nombres cortos, usar los originales
+df_var_plot$Variable_corto[is.na(df_var_plot$Variable_corto)] <- 
+  df_var_plot$Variable[is.na(df_var_plot$Variable_corto)]
+```
+
+## Gráfico Interactivo 1: PC1 vs PC2
+
+```{r grafico-pc1-pc2, fig.width=10, fig.height=8}
+plot_var_12_interactive <- plot_ly() %>%
+  # Círculo de correlación
+  add_trace(
+    type = "scatter",
+    x = cos(seq(0, 2*pi, length.out = 100)),
+    y = sin(seq(0, 2*pi, length.out = 100)),
+    mode = "lines",
+    line = list(color = "#2E7D32", dash = "dash", width = 2),
+    hoverinfo = "none",
     showlegend = FALSE,
-    font = list(family = "Arial")
+    name = "Círculo unidad"
+  ) %>%
+  # Flechas de variables
+  add_annotations(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC2,
+    ax = 0,
+    ay = 0,
+    text = "",
+    showarrow = TRUE,
+    arrowhead = 2,
+    arrowsize = 1,
+    arrowwidth = 2.5,
+    arrowcolor = ~ifelse(Contrib_12 > 8, "#FC4E07", 
+                         ifelse(Contrib_12 > 5, "#E7B800", "#00AFBB")),
+    opacity = 0.85
+  ) %>%
+  # Puntos de las variables
+  add_trace(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC2,
+    type = "scatter",
+    mode = "markers+text",
+    marker = list(
+      size = 12,
+      color = ~Contrib_12,
+      colorscale = list(
+        c(0, "#00AFBB"),
+        c(0.5, "#E7B800"),
+        c(1, "#FC4E07")
+      ),
+      showscale = TRUE,
+      colorbar = list(
+        title = "Contribución<br>(%)",
+        thickness = 15,
+        len = 0.6,
+        x = 1.02
+      ),
+      line = list(color = "white", width = 2)
+    ),
+    text = ~Variable_corto,
+    textposition = "top center",
+    textfont = list(size = 10, color = "black", family = "Arial"),
+    hovertext = ~paste(
+      "<b>Variable:</b>", Variable_corto,
+      "<br><b>PC1:</b>", round(PC1, 3),
+      "<br><b>PC2:</b>", round(PC2, 3),
+      "<br><b>Contribución Total:</b>", round(Contrib_12, 2), "%",
+      "<br><b>Calidad (cos²):</b>", round(Cos2_PC1_PC2, 3)
+    ),
+    hoverinfo = "text",
+    showlegend = FALSE
+  ) %>%
+  layout(
+    title = list(
+      text = "<b>Círculo de Correlaciones - Variables PCA</b><br><sup>Dimensión 1 vs Dimensión 2</sup>",
+      x = 0.5,
+      font = list(size = 18, family = "Arial", color = "#2E7D32")
+    ),
+    xaxis = list(
+      title = paste0("<b>Dim 1 (", percent_pc1, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      titlefont = list(size = 14)
+    ),
+    yaxis = list(
+      title = paste0("<b>Dim 2 (", percent_pc2, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      scaleanchor = "x",
+      titlefont = list(size = 14)
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    ),
+    margin = list(l = 80, r = 120, b = 80, t = 100)
   )
 
-# Mostrar el gráfico
-grafico_profesional
+plot_var_12_interactive
 ```
 
+## Gráfico Interactivo 2: PC1 vs PC3
 
+```{r grafico-pc1-pc3, fig.width=10, fig.height=8}
+plot_var_13_interactive <- plot_ly() %>%
+  add_trace(
+    type = "scatter",
+    x = cos(seq(0, 2*pi, length.out = 100)),
+    y = sin(seq(0, 2*pi, length.out = 100)),
+    mode = "lines",
+    line = list(color = "#1565C0", dash = "dash", width = 2),
+    hoverinfo = "none",
+    showlegend = FALSE,
+    name = "Círculo unidad"
+  ) %>%
+  add_annotations(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC3,
+    ax = 0,
+    ay = 0,
+    text = "",
+    showarrow = TRUE,
+    arrowhead = 2,
+    arrowsize = 1,
+    arrowwidth = 2.5,
+    arrowcolor = ~ifelse(Contrib_13 > 8, "#FC4E07", 
+                         ifelse(Contrib_13 > 5, "#E7B800", "#00AFBB")),
+    opacity = 0.85
+  ) %>%
+  add_trace(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC3,
+    type = "scatter",
+    mode = "markers+text",
+    marker = list(
+      size = 12,
+      color = ~Contrib_13,
+      colorscale = list(
+        c(0, "#00AFBB"),
+        c(0.5, "#E7B800"),
+        c(1, "#FC4E07")
+      ),
+      showscale = TRUE,
+      colorbar = list(
+        title = "Contribución<br>(%)",
+        thickness = 15,
+        len = 0.6,
+        x = 1.02
+      ),
+      line = list(color = "white", width = 2)
+    ),
+    text = ~Variable_corto,
+    textposition = "top center",
+    textfont = list(size = 10, color = "black", family = "Arial"),
+    hovertext = ~paste(
+      "<b>Variable:</b>", Variable_corto,
+      "<br><b>PC1:</b>", round(PC1, 3),
+      "<br><b>PC3:</b>", round(PC3, 3),
+      "<br><b>Contribución Total:</b>", round(Contrib_13, 2), "%",
+      "<br><b>Calidad (cos²):</b>", round(Cos2_PC1_PC3, 3)
+    ),
+    hoverinfo = "text",
+    showlegend = FALSE
+  ) %>%
+  layout(
+    title = list(
+      text = "<b>Círculo de Correlaciones - Variables PCA</b><br><sup>Dimensión 1 vs Dimensión 3</sup>",
+      x = 0.5,
+      font = list(size = 18, family = "Arial", color = "#1565C0")
+    ),
+    xaxis = list(
+      title = paste0("<b>Dim 1 (", percent_pc1, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      titlefont = list(size = 14)
+    ),
+    yaxis = list(
+      title = paste0("<b>Dim 3 (", percent_pc3, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      scaleanchor = "x",
+      titlefont = list(size = 14)
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    ),
+    margin = list(l = 80, r = 120, b = 80, t = 100)
+  )
+
+plot_var_13_interactive
+```
 # Resultados del ACP
 
 ##Valores Propios
