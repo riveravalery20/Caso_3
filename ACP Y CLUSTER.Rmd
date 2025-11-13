@@ -399,7 +399,7 @@ p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
             c(1, "#FC4E07")
           ),
           showscale = TRUE,
-          colorbar = list(title = "Calidad (cos2)"),
+          colorbar = list(title = "cos2"),
           opacity = 0.8,
           line = list(
             width = 1,
