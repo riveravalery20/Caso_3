@@ -11,10 +11,17 @@ output:
 
 ```{=html}
 <script>
-// Función para mostrar/ocultar TODO el código R
+// Función mejorada para mostrar/ocultar TODO el código R
 function toggleAllCode() {
-  var codeContainers = document.querySelectorAll('pre.r, pre.python, pre.sql, pre.bash');
+  // Seleccionar TODOS los contenedores de código que R Markdown genera
+  var codeContainers = document.querySelectorAll('pre:not(.r-output), div.sourceCode pre');
   var button = document.querySelector('.floating-code-btn');
+  
+  if (!button || codeContainers.length === 0) {
+    console.warn('No se encontraron bloques de código o el botón');
+    return;
+  }
+  
   var allHidden = true;
   
   // Verificar si algún código está visible
@@ -24,14 +31,24 @@ function toggleAllCode() {
     }
   });
   
-  // Mostrar u ocultar todo el código R
+  // Mostrar u ocultar todo el código
   codeContainers.forEach(function(container) {
     if (allHidden) {
       container.style.display = 'block';
       container.classList.add('code-visible');
+      // Animación suave
+      container.style.opacity = '0';
+      setTimeout(function() {
+        container.style.transition = 'opacity 0.3s ease';
+        container.style.opacity = '1';
+      }, 10);
     } else {
-      container.style.display = 'none';
-      container.classList.remove('code-visible');
+      container.style.transition = 'opacity 0.3s ease';
+      container.style.opacity = '0';
+      setTimeout(function() {
+        container.style.display = 'none';
+        container.classList.remove('code-visible');
+      }, 300);
     }
   });
   
@@ -43,26 +60,39 @@ function toggleAllCode() {
   }
 }
 
-// Ocultar código al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
+// Ocultar código al cargar la página - MEJORADO
+window.addEventListener('load', function() {
   setTimeout(function() {
-    var codeContainers = document.querySelectorAll('pre.r, pre.python, pre.sql, pre.bash');
+    var codeContainers = document.querySelectorAll('pre:not(.r-output), div.sourceCode pre');
+    console.log('Bloques de código encontrados:', codeContainers.length);
+    
     codeContainers.forEach(function(container) {
       container.style.display = 'none';
+      // Agregar clase para identificación
+      container.classList.add('r-code-block');
     });
-  }, 100);
+    
+    // Verificar que el botón existe
+    var button = document.querySelector('.floating-code-btn');
+    if (button) {
+      console.log('Botón de toggle encontrado y funcional');
+    } else {
+      console.error('¡Botón no encontrado!');
+    }
+  }, 500); // Aumentado el delay para asegurar que todo esté cargado
 });
 </script>
 ```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = FALSE,
+  echo = TRUE,  # ⭐ CAMBIADO A TRUE - ESTO ES CRÍTICO
   warning = FALSE,
   message = FALSE,
   fig.align = "center",
   fig.width = 10,
-  fig.height = 6
+  fig.height = 6,
+  class.source = "r-code-chunk"  # ⭐ AGREGADO: clase CSS personalizada
 )
 
 library(ggplot2)
@@ -70,10 +100,8 @@ library(dplyr)
 library(knitr)
 library(kableExtra)
 library(tibble)
-library(dplyr)
-library(knitr)
-library(kableExtra)
 options(kableExtra.html.bsTable = TRUE)
+
 # =============================================================================
 # CONFIGURACIÓN AUTOMÁTICA PARA GRÁFICOS GGPLOT2
 # =============================================================================
@@ -317,7 +345,7 @@ invisible(list2env(par_default, envir = .GlobalEnv))
 <p>Se incluyen medidas de expectativa de vida al nacer y supervivencia acumulada hasta los 65 años, desagregadas por sexo. Estos indicadores sintéticos capturan el impacto integrado de todas las causas de muerte a lo largo del ciclo vital y constituyen medidas ampliamente reconocidas del estado general de salud y desarrollo socioeconómico de las poblaciones. La desagregación por sexo permite identificar inequidades de género en longevidad, un aspecto fundamental para políticas de equidad en salud.
 </p>
 
-```{r dimension 1, echo=FALSE}
+```{r dimension 1}
 expectativa_vida <- data.frame(
   Variable = c(
     "Expectativa de vida al nacer (mujeres)",
@@ -547,7 +575,7 @@ Este procedimiento de limpieza resultó en una muestra final de 182 países con 
 
 </p>
 
-```{r base de datos interactiva, echo=FALSE}
+```{r base de datos interactiva}
 library(readr)
 library(tidyverse)
 library(FactoMineR)

@@ -1,3 +1,7 @@
+/* DESACTIVAR ESTILOS DE HIGHLIGHT.JS */
+.hljs { background: #ffffff !important; color: #000000 !important; }
+.hljs-subst { color: #000000 !important; }
+
 /* ==========================================================================
    RESET Y CONFIGURACIÓN GENERAL - LIMPIO
    ========================================================================== */
@@ -224,34 +228,140 @@ body {
 }
 
 /* ==========================================================================
-   COMPONENTES ESPECIALES
+   ESTILOS PARA CHUNKS DE CÓDIGO R - FONDO BLANCO CON TEXTO NEGRO
    ========================================================================== */
-/* BOTÓN FLOTANTE */
+
+/* FORZAR FONDO BLANCO Y TEXTO NEGRO EN TODO EL CÓDIGO */
+pre, 
+pre.sourceCode,
+div.sourceCode,
+div.sourceCode pre,
+pre code,
+code.sourceCode {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-radius: 10px !important;
+  padding: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+  border: 1px solid #d1fae5 !important;
+  border-left: 4px solid #488B49 !important;
+  box-shadow: 0 2px 8px rgba(72, 139, 73, 0.1) !important;
+  transition: all 0.3s ease !important;
+  overflow-x: auto !important;
+  font-family: 'Courier New', Monaco, 'Lucida Console', monospace !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+/* Asegurar que el texto dentro del código sea NEGRO */
+pre *,
+pre code *,
+div.sourceCode *,
+div.sourceCode pre *,
+code.sourceCode * {
+  color: #000000 !important;
+  background: transparent !important;
+}
+
+/* Efecto hover */
+pre:hover, 
+div.sourceCode:hover {
+  transform: translateX(5px) !important;
+  box-shadow: 0 4px 12px rgba(72, 139, 73, 0.2) !important;
+  border-left-color: #73e2a7 !important;
+  background: #f9fffe !important;
+}
+
+/* Animación */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.code-visible {
+  border-left: 4px solid #73e2a7 !important;
+  animation: slideIn 0.3s ease !important;
+}
+
+/* Salidas de código (output) */
+pre.r-output {
+  background: #f8f9fa !important;
+  color: #333 !important;
+  border-left: 4px solid #73e2a7 !important;
+}
+
+/* OPCIONAL: Si quieres colores de sintaxis, descomenta esto */
+/*
+span.kw { color: #9333ea !important; font-weight: 600 !important; }
+span.st { color: #16a34a !important; }
+span.dv, span.fl { color: #0284c7 !important; }
+span.co { color: #6b7280 !important; font-style: italic !important; }
+span.fu { color: #dc2626 !important; }
+*/
+
+/* ==========================================================================
+   BOTÓN FLOTANTE PARA MOSTRAR/OCULTAR CÓDIGO
+   ========================================================================== */
 .floating-code-btn {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  background: #488B49;
+  background: linear-gradient(135deg, #488B49 0%, #3a6e3a 100%);
   color: white;
   border: none;
   border-radius: 50px;
-  padding: 16px 24px;
+  padding: 16px 28px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 0.3px;
 }
 
 .floating-code-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(72, 139, 73, 0.6);
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 10px 30px rgba(72, 139, 73, 0.6);
+  background: linear-gradient(135deg, #3a6e3a 0%, #2d5534 100%);
 }
 
+.floating-code-btn:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Efecto de pulso para llamar la atención */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
+  }
+  50% {
+    box-shadow: 0 6px 30px rgba(72, 139, 73, 0.7);
+  }
+}
+
+.floating-code-btn {
+  animation: pulse 2s infinite;
+}
+
+.floating-code-btn:hover {
+  animation: none;
+}
+
+/* ==========================================================================
+   COMPONENTES ESPECIALES
+   ========================================================================== */
 /* CONTENEDORES DE GRÁFICOS */
 .plot-container,
 .ggplot-container,
@@ -390,70 +500,4 @@ table caption {
   table td {
     padding: 0.8rem;
   }
-}
-
-/* ==========================================================================
-   ESTILOS PARA CHUNKS DE CÓDIGO R (BOTÓN MOSTRAR/OCULTAR)
-   ========================================================================== */
-
-pre.r, pre.python, pre.sql, pre.bash {
-  background: #2d3748 !important;
-  color: #e2e8f0 !important;
-  border-radius: 8px !important;
-  padding: 1.5rem !important;
-  margin: 1rem 0 !important;
-  border-left: 4px solid #488B49 !important;
-  font-family: 'Courier New', Monaco, monospace !important;
-  font-size: 13px !important;
-  line-height: 1.4 !important;
-  overflow-x: auto !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-  transition: all 0.3s ease !important;
-}
-
-/* Efecto hover para chunks de código */
-pre.r:hover, pre.python:hover, pre.sql:hover, pre.bash:hover {
-  transform: translateX(5px) !important;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15) !important;
-}
-
-/* Resaltar sintaxis dentro del código */
-pre.r code, pre.python code, pre.sql code, pre.bash code {
-  background: transparent !important;
-  color: inherit !important;
-  padding: 0 !important;
-  font-family: inherit !important;
-}
-
-/* Indicador visual cuando el código está visible */
-.code-visible {
-  border-left: 4px solid #73e2a7 !important;
-}
-
-/* Botón flotante mejorado */
-.floating-code-btn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: #488B49;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 16px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
-  transition: all 0.3s ease;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-.floating-code-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(72, 139, 73, 0.6);
-  background: #3a6e3a;
 }
