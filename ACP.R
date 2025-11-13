@@ -1,3 +1,4 @@
+library(factoextra)
 # Preparar base para ACP
 Muertes_df <- Muertes %>% 
   select(-Pais) %>%
@@ -31,7 +32,7 @@ fviz_pca_var(res.pca,
              col.var = "contrib", # Color por contribuciones a los CP
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = TRUE,
-             axes = c(1,3) # Evitar superposición de texto
+             axes = c(1,2) # Evitar superposición de texto
 )
 
 # Biplot: visualización conjunta de individuos y variables
@@ -48,6 +49,7 @@ library(factoextra)
 # Valores propios (Eigenvalues)
 eig.val <- get_eigenvalue(res.pca)
 eig.val
+
 
 # Resultados para Variables
 res.var <- get_pca_var(res.pca)
