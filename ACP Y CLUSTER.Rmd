@@ -866,7 +866,7 @@ top5_pc3 %>%
            general_title = "Nota:")
 ```
 
-```{r top 5 mas pc3,fig.width=9, fig.height=7}
+```{r top 5 menos pc3,fig.width=9, fig.height=7}
 
 # Crear tabla del top 5 de menor contribución a PC3 por países
 bottom5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
