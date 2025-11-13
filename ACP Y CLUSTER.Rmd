@@ -430,7 +430,106 @@ df_var_plot$Variable_corto[is.na(df_var_plot$Variable_corto)] <-
   df_var_plot$Variable[is.na(df_var_plot$Variable_corto)]
 ```
 
-## Gráfico Interactivo 1: PC1 vs PC2
+
+```{r grafico individuos,fig.width=9, fig.height=7}
+library(factoextra)
+library(plotly)
+
+# Extraer datos del PCA - asumiendo que res.pca es un objeto de FactoMineR
+pca_data <- get_pca_ind(res.pca)
+
+# Crear dataframe con las 2 primeras dimensiones
+df <- data.frame(
+  País = rownames(pca_data$coord),
+  PC1 = pca_data$coord[,1],
+  PC2 = pca_data$coord[,2]
+)
+
+# Calcular calidad de representación (cos2) en las 2 dimensiones
+if(!is.null(pca_data$cos2)) {
+  df$Cos2 <- rowSums(pca_data$cos2[,1:2])
+} else {
+  # Si no hay cos2, calculamos manualmente como la suma de los cuadrados de las coordenadas en las dos primeras dimensiones dividido por la suma de los cuadrados de todas las coordenadas
+  df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
+}
+
+# Obtener los porcentajes de varianza explicada
+# Para un objeto de FactoMineR, los autovalores y porcentajes están en res.pca$eig
+if(inherits(res.pca, "PCA")) {
+  # Si es un objeto PCA de FactoMineR
+  percent_pc1 <- round(res.pca$eig[1,2], 1)
+  percent_pc2 <- round(res.pca$eig[2,2], 1)
+} else {
+  # Si es un objeto de prcomp (o otro)
+  # Calculamos la varianza explicada
+  eigenvalues <- res.pca$sdev^2
+  total_variance <- sum(eigenvalues)
+  percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
+  percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
+}
+
+# Crear gráfico 2D interactivo
+p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
+              type = 'scatter',
+              mode = 'markers',
+              marker = list(
+                size = 8,
+                color = ~Cos2,
+                colorscale = list(
+                  c(0, "#00AFBB"),
+                  c(0.5, "#E7B800"),
+                  c(1, "#FC4E07")
+                ),
+                showscale = TRUE,
+                colorbar = list(title = "cos2"),
+                opacity = 0.8,
+                line = list(
+                  width = 1,
+                  color = 'darkgray'
+                )
+              ),
+              text = ~paste('<b>País:</b>', País,
+                            '<br><b>PC1:</b>', round(PC1, 3),
+                            '<br><b>PC2:</b>', round(PC2, 3),
+                            '<br><b>Calidad:</b>', round(Cos2, 3)),
+              hoverinfo = 'text',
+              hoverlabel = list(
+                bgcolor = "white",
+                bordercolor = "black",
+                font = list(color = "black", size = 12)
+              )
+) %>%
+  layout(
+    title = list(
+      text = "Análisis PCA - 182 Países (PC1 vs PC2)",
+      font = list(size = 16)
+    ),
+    xaxis = list(
+      title = paste0("PC1 (", percent_pc1, "%)"),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    yaxis = list(
+      title = paste0("PC2 (", percent_pc2, "%)"),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    margin = list(l = 50, r = 50, b = 50, t = 50),
+    showlegend = FALSE
+  )
+
+# Mostrar el gráfico
+p3
+```
+
+
+## Gráfico Interactivo 1: PC1 vs PC2 variables
 
 ```{r grafico-pc1-pc2, fig.width=10, fig.height=8}
 plot_var_12_interactive <- plot_ly() %>%
