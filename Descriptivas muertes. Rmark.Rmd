@@ -5,9 +5,309 @@ date: "2025-11-12"
 output: html_document
 ---
 
-Este mapa se ve representado con frecuencias en donde los tonos más oscuros equivalen a más frecuencia y los más claros a frecuencias más debiles, las variables que se encuentran representadas en el mapa son aquellas que están diferenciadas por sexo, cuya tematica se encuentra en causas de muerte, tasas en diferentes edades e indicadores de expectativa de vida 
+Este mapa se ve representado con frecuencias en donde los tonos más oscuros equivalen a más frecuencia y los más claros a frecuencias más debiles, las variables que se encuentran representadas en el mapa  están diferenciadas por sexo, cuya tematica se encuentra en causas de muerte, tasas en diferentes edades e indicadores de expectativa de vida. Del mismo modo tambien se encuentran las frecuencias, en las variables que no tienen esa caracterización 
+```{r setup, include=FALSE}
+
+library(leaflet)
+library(dplyr)
+library(sf)
+library(rworldmap)
+library(readr)
+library(countrycode)
+
+# Leer la base de datos
+datos <-Muertes
+datos <- datos %>%
+  mutate(across(.cols = -País, .fns = ~as.numeric(.)))
+
+# Preparar datos
+datos <- datos %>%
+  select(
+    País = País,
+    expectativa_vida_mujer = Expectativa_de_vida_mujer,
+    expectativa_vida_hombres = Expectativa_de_vida_hombres,
+    accidentes_transito = Accidentes_de_transito,
+    enfermedades_cvd_mujeres = Enfermedades_cardiacas_cancer_diabetes_mujeres,
+    enfermedades_cvd_hombres = Enfermedades_cardiacas_cancer_diabetes_hombres,
+    polucion_aire_mujeres = Polución_del_aire_mujeres,
+    polucion_aire_hombres = Polución_del_aire_hombres,
+    envenenamiento_mujeres = Envenenamiento_accidental_mujeres,
+    envenenamiento_hombres = Envenenamiento_accidental_hombres,
+    mortalidad_adultos_mujeres = Tasa_de_mortalidad_mujeres_adultas,
+    mortalidad_adultos_hombres = Tasa_de_mortalidad_hombres_adultos,
+    mortalidad_infantil_mujeres = Tasa_de_mortalidad_infantil_mujeres,
+    mortalidad_infantil_varones = Tasa_de_mortalidad_infantil_varones,
+    mortalidad_neonatal = Tasa_de_mortalidad_neonatal,
+    mortalidad_infantil_temprana_mujeres = Tasa_de_mortalidad_infantil_temprana_mujeres,
+    mortalidad_infantil_temprana_hombres = Tasa_de_mortalidad_infantil_temprana_hombres,
+    numero_muertes_infantiles = Numero_de_muertes_infantiles,
+    numero_muertes_neonatales = Numero_de_muertes_neonatales,
+    suicidios_mujeres = Tasa_de_suicidios_mujeres,
+    suicidios_hombres = Tasa_de_suicidios_hombres,
+    supervivencia_65_mujeres = Supervivencia_hasta_los_65_años_mujeres,
+    supervivencia_65_hombres = Supervivencia_hasta_los_65_años_hombres
+  ) %>%
+  mutate(
+    frecuencia_expectativa_vida = expectativa_vida_mujer + expectativa_vida_hombres,
+    frecuencia_accidentes = accidentes_transito,
+    frecuencia_enfermedades_cvd = enfermedades_cvd_mujeres + enfermedades_cvd_hombres,
+    frecuencia_polucion = polucion_aire_mujeres + polucion_aire_hombres,
+    frecuencia_envenenamiento = envenenamiento_mujeres + envenenamiento_hombres,
+    frecuencia_mortalidad_adultos = mortalidad_adultos_mujeres + mortalidad_adultos_hombres,
+    frecuencia_mortalidad_infantil = mortalidad_infantil_mujeres + mortalidad_infantil_varones,
+    frecuencia_mortalidad_neonatal = mortalidad_neonatal,
+    frecuencia_mortalidad_temprana = mortalidad_infantil_temprana_mujeres + mortalidad_infantil_temprana_hombres,
+    frecuencia_numero_infantiles = numero_muertes_infantiles,
+    frecuencia_numero_neonatales = numero_muertes_neonatales,
+    frecuencia_suicidios = suicidios_mujeres + suicidios_hombres,
+    frecuencia_supervivencia_65 = supervivencia_65_mujeres + supervivencia_65_hombres,
+    iso3 = countrycode(País, "country.name", "iso3c", warn = FALSE)
+  ) %>%
+  mutate(
+    iso3 = recode(País,
+                  "Japón" = "JPN",
+                  "Jamaica" = "JAM",
+                  "México" = "MEX",
+                  "Estados Unidos" = "USA",
+                  "Reino Unido" = "GBR",
+                  "Francia" = "FRA",
+                  "Alemania" = "DEU",
+                  "Italia" = "ITA",
+                  "España" = "ESP",
+                  "Brasil" = "BRA",
+                  "Argentina" = "ARG",
+                  "Chile" = "CHL",
+                  "Colombia" = "COL",
+                  "Perú" = "PER",
+                  "Venezuela" = "VEN",
+                  "Ecuador" = "ECU",
+                  "Bolivia" = "BOL",
+                  "Paraguay" = "PRY",
+                  "Uruguay" = "URY",
+                  "Panamá" = "PAN",
+                  "Costa Rica" = "CRI",
+                  "Nicaragua" = "NIC",
+                  "Honduras" = "HND",
+                  "El Salvador" = "SLV",
+                  "Guatemala" = "GTM",
+                  "Belice" = "BLZ",
+                  "Cuba" = "CUB",
+                  "República Dominicana" = "DOM",
+                  "Haití" = "HTI",
+                  "Puerto Rico" = "PRI",
+                  "Canadá" = "CAN",
+                  "Australia" = "AUS",
+                  "Nueva Zelanda" = "NZL",
+                  "China" = "CHN",
+                  "India" = "IND",
+                  "Rusia" = "RUS",
+                  "Sudáfrica" = "ZAF",
+                  .default = iso3
+    )
+  ) %>%
+  filter(!is.na(iso3))
+
+# Lista de variables
+variables <- c(
+  "Expectativa de Vida" = "frecuencia_expectativa_vida",
+  "Accidentes de Tránsito" = "frecuencia_accidentes",
+  "Enfermedades Cardíacas, Cáncer, Diabetes" = "frecuencia_enfermedades_cvd",
+  "Polución del Aire" = "frecuencia_polucion",
+  "Envenenamiento Accidental" = "frecuencia_envenenamiento",
+  "Tasa de Mortalidad Adultos" = "frecuencia_mortalidad_adultos",
+  "Tasa de Mortalidad Infantil" = "frecuencia_mortalidad_infantil",
+  "Tasa de Mortalidad Neonatal" = "frecuencia_mortalidad_neonatal",
+  "Tasa de Mortalidad Infantil Temprana" = "frecuencia_mortalidad_temprana",
+  "Número de Muertes Infantiles" = "frecuencia_numero_infantiles",
+  "Número de Muertes Neonatales" = "frecuencia_numero_neonatales",
+  "Tasa de Suicidios" = "frecuencia_suicidios",
+  "Supervivencia hasta los 65 Años" = "frecuencia_supervivencia_65"
+)
+
+# Obtener datos geoespaciales
+world <- getMap(resolution = "low")
+world_sf <- st_as_sf(world)
+
+# Función para crear el mapa
+crear_mapa <- function(variable_seleccionada) {
+  # Definir variable_seleccionada en el entorno de la función
+  assign("variable_seleccionada", variable_seleccionada, envir = environment())
+  
+  col_frecuencia <- variables[variable_seleccionada]
+  
+  # Definir col_hombres y col_mujeres al inicio
+  col_hombres <- NA
+  col_mujeres <- NA
+  if (variable_seleccionada == "Expectativa de Vida") {
+    col_hombres <- "expectativa_vida_hombres"
+    col_mujeres <- "expectativa_vida_mujer"
+  } else if (variable_seleccionada == "Enfermedades Cardíacas, Cáncer, Diabetes") {
+    col_hombres <- "enfermedades_cvd_hombres"
+    col_mujeres <- "enfermedades_cvd_mujeres"
+  } else if (variable_seleccionada == "Polución del Aire") {
+    col_hombres <- "polucion_aire_hombres"
+    col_mujeres <- "polucion_aire_mujeres"
+  } else if (variable_seleccionada == "Envenenamiento Accidental") {
+    col_hombres <- "envenenamiento_hombres"
+    col_mujeres <- "envenenamiento_mujeres"
+  } else if (variable_seleccionada == "Tasa de Mortalidad Adultos") {
+    col_hombres <- "mortalidad_adultos_hombres"
+    col_mujeres <- "mortalidad_adultos_mujeres"
+  } else if (variable_seleccionada == "Tasa de Mortalidad Infantil") {
+    col_hombres <- "mortalidad_infantil_varones"
+    col_mujeres <- "mortalidad_infantil_mujeres"
+  } else if (variable_seleccionada == "Tasa de Mortalidad Infantil Temprana") {
+    col_hombres <- "mortalidad_infantil_temprana_hombres"
+    col_mujeres <- "mortalidad_infantil_temprana_mujeres"
+  } else if (variable_seleccionada == "Tasa de Suicidios") {
+    col_hombres <- "suicidios_hombres"
+    col_mujeres <- "suicidios_mujeres"
+  } else if (variable_seleccionada == "Supervivencia hasta los 65 Años") {
+    col_hombres <- "supervivencia_65_hombres"
+    col_mujeres <- "supervivencia_65_mujeres"
+  }
+  
+  # Preparar expresiones en el entorno de la función
+  if (!is.na(col_hombres)) {
+    assign("hombres_col", sym(col_hombres), envir = environment())
+  } else {
+    assign("hombres_col", NA, envir = environment())
+  }
+  if (!is.na(col_mujeres)) {
+    assign("mujeres_col", sym(col_mujeres), envir = environment())
+  } else {
+    assign("mujeres_col", NA, envir = environment())
+  }
+  assign("frecuencia_col", sym(col_frecuencia), envir = environment())
+  
+  world_sf <- world_sf %>%
+    left_join(datos, by = c("ISO3" = "iso3"))
+  
+  # Preparar valores seguros para tooltip (aplicado a todo world_sf)
+  world_sf <- world_sf %>%
+    mutate(
+      hombres_val = if (!is.na(hombres_col)) !!hombres_col else NA_real_,
+      mujeres_val = if (!is.na(mujeres_col)) !!mujeres_col else NA_real_,
+      frecuencia_val = !!frecuencia_col
+    )
+  
+  pal <- colorNumeric(palette = "Greens", domain = world_sf$frecuencia_val, na.color = "#cccccc")
+  
+  mapa <- leaflet(world_sf) %>%
+    addTiles() %>%
+    addPolygons(
+      fillColor = ~pal(frecuencia_val),
+      weight = 1,
+      opacity = 1,
+      color = "white",
+      dashArray = "3",
+      fillOpacity = 0.7,
+      highlight = highlightOptions(
+        weight = 5,
+        color = "#666",
+        dashArray = "",
+        fillOpacity = 0.7,
+        bringToFront = TRUE
+      ),
+      label = ~paste0(
+        "<strong>País:</strong> ", NAME, "<br>",
+        ifelse(!is.na(hombres_val), paste0("<strong>Hombres:</strong> ", hombres_val, "<br>"), ""),
+        ifelse(!is.na(mujeres_val), paste0("<strong>Mujeres:</strong> ", mujeres_val), ""),
+        ifelse(is.na(hombres_val) & is.na(mujeres_val), paste0("<strong>Total:</strong> ", ifelse(is.na(frecuencia_val), "Sin datos", frecuencia_val)), "")
+      ) %>% lapply(htmltools::HTML),
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "13px",
+        direction = "auto"
+      )
+    ) %>%
+    addLegend(pal = pal, values = ~frecuencia_val, opacity = 0.7, title = paste("Frecuencia -", variable_seleccionada),
+              position = "bottomright")
+  
+  return(mapa)
+}
+  
+  # Definir col_hombres y col_mujeres al inicio
+  col_hombres <- NA
+  col_mujeres <- NA
+  if (variable_seleccionada == "Expectativa de Vida") {
+    col_hombres <- "expectativa_vida_hombres"
+    col_mujeres <- "expectativa_vida_mujer"
+  } else if (variable_seleccionada == "Enfermedades Cardíacas, Cáncer, Diabetes") {
+    col_hombres <- "enfermedades_cvd_hombres"
+    col_mujeres <- "enfermedades_cvd_mujeres"
+  } else if (variable_seleccionada == "Polución del Aire") {
+    col_hombres <- "polucion_aire_hombres"
+    col_mujeres <- "polucion_aire_mujeres"
+  } else if (variable_seleccionada == "Envenenamiento Accidental") {
+    col_hombres <- "envenenamiento_hombres"
+    col_mujeres <- "envenenamiento_mujeres"
+  } else if (variable_seleccionada == "Tasa de Mortalidad Adultos") {
+    col_hombres <- "mortalidad_adultos_hombres"
+    col_mujeres <- "mortalidad_adultos_mujeres"
+  } else if (variable_seleccionada == "Tasa de Mortalidad Infantil") {
+    col_hombres <- "mortalidad_infantil_varones"
+    col_mujeres <- "mortalidad_infantil_mujeres"
+  } else if (variable_seleccionada == "Tasa de Mortalidad Infantil Temprana") {
+    col_hombres <- "mortalidad_infantil_temprana_hombres"
+    col_mujeres <- "mortalidad_infantil_temprana_mujeres"
+  } else if (variable_seleccionada == "Tasa de Suicidios") {
+    col_hombres <- "suicidios_hombres"
+    col_mujeres <- "suicidios_mujeres"
+  } else if (variable_seleccionada == "Supervivencia hasta los 65 Años") {
+    col_hombres <- "supervivencia_65_hombres"
+    col_mujeres <- "supervivencia_65_mujeres"
+  }
+  
+  world_sf <- world_sf %>%
+    left_join(datos, by = c("ISO3" = "iso3"))
+  
+  # Preparar expresiones en el entorno de la función
+  if (!is.na(col_hombres)) {
+    assign("hombres_col", sym(col_hombres), envir = environment())
+  } else {
+    assign("hombres_col", NA, envir = environment())
+  }
+  if (!is.na(col_mujeres)) {
+    assign("mujeres_col", sym(col_mujeres), envir = environment())
+  } else {
+    assign("mujeres_col", NA, envir = environment())
+  }
+  assign("frecuencia_col", sym(col_frecuencia), envir = environment())
+  
+  # Preparar valores seguros para tooltip (aplicado a todo world_sf)
+  world_sf <- world_sf %>%
+    mutate(
+      hombres_val = if (!is.na(hombres_col)) !!hombres_col else NA_real_,
+      mujeres_val = if (!is.na(mujeres_col)) !!mujeres_col else NA_real_,
+      frecuencia_val = !!frecuencia_col
+    )
+# Mapa inicial
+mapa_inicial <- crear_mapa("Expectativa de Vida")
+mapa_inicial
+
+# Shiny para selector
+library(shiny)
+ui <- fluidPage(
+  selectInput("variable", "Selecciona Variable:", choices = names(variables)),
+  leafletOutput("mapa")
+)
+server <- function(input, output) {
+  output$mapa <- renderLeaflet({
+    crear_mapa(input$variable)
+  })
+}
+shinyApp(ui, server)
+
+```
+Los paises mas resaltables dentro de todas las variables son: Rusia, Japon, Republica centro africana (Central African Republic) Mongolia y Uruguay.
+Estos paises son los más llamativos segun la categoria en la que se encuentre, su resltez se le atribuye en la proporción de paises con frecuencias que distan demasiado y su ubicación contienental.
+Ejemplo de ello es Urugay que es el pais americano con más frecuencia en tasa de suicidios, Rusia como el pais con mayor tasa de envenenamiento accidental en función de otros paises europeos, la republica centro africana como el país con menor expectativa de vida en Africa, Mongolia como el país con mayor procentaje de muertes atribuidas a la polución del aire en Asia y Japon como el país con más expectativa de vida en todo el continente Asiatico
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 El objetivo de este grafico es representar como diferentes indicadores cambian dependiendo del sexo y ubicación geografica, estableciendo la comparación es posible determinar planes de acción pertinentes, en donde los beneficios  se vean reflejados al publico objetivo, y por consiguiente a los países.
 Los indicadores muestran sobre que paises e individuos efectuar acciones que reduzcan la frecuencia de casos evitables, como suicidios, mortalidades infantiles e infantiles tempranas, envenenamientos, y polución del aire; indicadores que traducen el desarrollo de un pais sobre su control demografico y calidad de vida que es capaz de ofrecer, se sobreentiende que las muertes hacen parte del ciclo de vida, de las decisiones de individuo, pero así mismo las condiciones en materia de salud, economia y ecologicas están arraigadas directamente en que una muerte evitable se retrase.
