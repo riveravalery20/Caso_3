@@ -1016,7 +1016,7 @@ Los resultados arrojan una distribución previble ya que los adultos absorben la
 
 EDADES DE LOS FALLECIDOS SIN IMPORTAR EL SEXO
 En este grafico de dispersión 3d se quiere mostrar la distribución que hay en las muertes dependiendo del grupo etario al que pertenezca y el país, se observan 3 grupos de edad fundamentales (neonatal, infantil y adultez) en donde la categoria infantil se desplega la infantilidad temprana.
-```{r}
+  ``{r}
 datos_3d <- Muertes %>%
   select(País) %>%
   mutate(
@@ -1076,7 +1076,7 @@ scatter_3d <- plot_ly(
 
 scatter_3d
 
-```
+``
 Con la grafica se busca encontrar que país tiene una mayor proporción de muertes infantiles y neonatales, ya que son indicadores clave y de resultado en los sistemas de salud y politica que tenga cada país, la muerte de un neonato más allá del margen de error de sobrevivir, representa y refleja la deficiencia en los canales de atención que debe recibir un individuo en una etapa vulnerable y crucial, hecho en donde las madres tambien se ven involucradas y toman un papel crucial, no solo se está abandonando al neonato y/o infante; también se está abandonando a su madre. 
 EL país con un gran indicador de riesgo es liberia en donde los grupos etarios más prioritarios y vulnerables tienen frecuencias demasiado altas con un 45.5% de muertes neonatales, 24,7% de muertes en infancia temprana y 24,2% en infancia. Estos datos son preocupantes en materia de natalidades futuras y desarrollo, ya que no se puede construir el futuro de un país que no asegure la existencia de los niños del presente.
 Ejemplo de ello es Japón que tiene los niveles de natalidad más bajos, dato que concuerda con el gráfico ya que el 71,8% de las muertes de este pais son neonatales.
