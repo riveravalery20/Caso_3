@@ -1088,6 +1088,52 @@ bottom5_pc3 %>%
 
 ```
 
+```{r tabla resumen nombres dim, echo=FALSE, message=FALSE, warning=FALSE}
+library(kableExtra)
+
+# Crear tabla con mejor espaciado y colores profesionales
+data.frame(
+  Dimensión = c("**Dim1**", "**Dim2**", "**Dim3**"),
+  `Nombre Simplificado` = c("Calidad de Salud", "Edad de Mortalidad", "Escala Poblacional"),
+  `Lo que Mide` = c(
+    "Cuán bueno es el sistema de salud del país", 
+    "¿Dónde muere la gente? (bebés vs adultos)", 
+    "¿Números totales o tasas/porcentajes?"
+  ),
+  Varianza = c("62.3%", "11.6%", "Pequeña"),
+  `Variable Más Importante` = c(
+    "Esperanza de vida (+) Mortalidad infantil (-)", 
+    "Mortalidad temprana (+) Enfermedades crónicas (-)", 
+    "Muertes Neonatales (números absolutos)"
+  )
+) %>%
+  kbl(
+    caption = "Análisis de Dimensiones en Indicadores de Salud Pública",
+    align = "l",
+    col.names = c("Dimensión", "Nombre Simplificado", "Lo que Mide", "Varianza", "Variable Más Importante"),
+    linesep = "\\addlinespace"  # Añade espacio entre filas
+  ) %>%
+  kable_paper(
+    full_width = FALSE, 
+    font_size = 11,
+    html_font = "Arial"
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#3D5A80", color = "white") %>%
+  row_spec(1:3, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE, width = "3em") %>%
+  column_spec(2, width = "8em") %>%
+  column_spec(3, width = "12em") %>%
+  column_spec(4, width = "4em") %>%
+  column_spec(5, width = "10em") %>%
+  footnote(
+    general = "Análisis de componentes principales aplicado a indicadores de salud global. Los signos (+) y (-) indican la dirección de la correlación.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+```
+
+
+
 # CLUSTER
 
 ## Análisis de Componentes Principales
