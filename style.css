@@ -1,6 +1,22 @@
-/* DESACTIVAR ESTILOS DE HIGHLIGHT.JS */
-.hljs { background: #ffffff !important; color: #000000 !important; }
-.hljs-subst { color: #000000 !important; }
+/* ==========================================================================
+   RESET PARA HIGHLIGHT.JS - CRÍTICO
+   ========================================================================== */
+.hljs,
+.hljs-subst,
+pre code.hljs {
+  background: #ffffff !important;
+  color: #000000 !important;
+  display: block !important;
+  overflow-x: auto !important;
+  padding: 0 !important;
+}
+
+/* Desactivar TODOS los estilos de highlight.js */
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-section, .hljs-link { color: #000000 !important; }
+.hljs-string, .hljs-title, .hljs-name, .hljs-type { color: #000000 !important; }
+.hljs-attribute, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #000000 !important; }
+.hljs-variable, .hljs-template-tag, .hljs-template-variable { color: #000000 !important; }
+.hljs-comment, .hljs-quote, .hljs-deletion, .hljs-meta { color: #6b7280 !important; font-style: italic !important; }
 
 /* ==========================================================================
    RESET Y CONFIGURACIÓN GENERAL - LIMPIO
@@ -228,140 +244,9 @@ body {
 }
 
 /* ==========================================================================
-   ESTILOS PARA CHUNKS DE CÓDIGO R - FONDO BLANCO CON TEXTO NEGRO
-   ========================================================================== */
-
-/* FORZAR FONDO BLANCO Y TEXTO NEGRO EN TODO EL CÓDIGO */
-pre, 
-pre.sourceCode,
-div.sourceCode,
-div.sourceCode pre,
-pre code,
-code.sourceCode {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  color: #000000 !important;
-  border-radius: 10px !important;
-  padding: 1.5rem !important;
-  margin: 1.5rem 0 !important;
-  border: 1px solid #d1fae5 !important;
-  border-left: 4px solid #488B49 !important;
-  box-shadow: 0 2px 8px rgba(72, 139, 73, 0.1) !important;
-  transition: all 0.3s ease !important;
-  overflow-x: auto !important;
-  font-family: 'Courier New', Monaco, 'Lucida Console', monospace !important;
-  font-size: 13px !important;
-  line-height: 1.6 !important;
-}
-
-/* Asegurar que el texto dentro del código sea NEGRO */
-pre *,
-pre code *,
-div.sourceCode *,
-div.sourceCode pre *,
-code.sourceCode * {
-  color: #000000 !important;
-  background: transparent !important;
-}
-
-/* Efecto hover */
-pre:hover, 
-div.sourceCode:hover {
-  transform: translateX(5px) !important;
-  box-shadow: 0 4px 12px rgba(72, 139, 73, 0.2) !important;
-  border-left-color: #73e2a7 !important;
-  background: #f9fffe !important;
-}
-
-/* Animación */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.code-visible {
-  border-left: 4px solid #73e2a7 !important;
-  animation: slideIn 0.3s ease !important;
-}
-
-/* Salidas de código (output) */
-pre.r-output {
-  background: #f8f9fa !important;
-  color: #333 !important;
-  border-left: 4px solid #73e2a7 !important;
-}
-
-/* OPCIONAL: Si quieres colores de sintaxis, descomenta esto */
-/*
-span.kw { color: #9333ea !important; font-weight: 600 !important; }
-span.st { color: #16a34a !important; }
-span.dv, span.fl { color: #0284c7 !important; }
-span.co { color: #6b7280 !important; font-style: italic !important; }
-span.fu { color: #dc2626 !important; }
-*/
-
-/* ==========================================================================
-   BOTÓN FLOTANTE PARA MOSTRAR/OCULTAR CÓDIGO
-   ========================================================================== */
-.floating-code-btn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: linear-gradient(135deg, #488B49 0%, #3a6e3a 100%);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 16px 28px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'Segoe UI', sans-serif;
-  letter-spacing: 0.3px;
-}
-
-.floating-code-btn:hover {
-  transform: translateY(-4px) scale(1.08);
-  box-shadow: 0 10px 30px rgba(72, 139, 73, 0.6);
-  background: linear-gradient(135deg, #3a6e3a 0%, #2d5534 100%);
-}
-
-.floating-code-btn:active {
-  transform: translateY(-2px) scale(1.05);
-}
-
-/* Efecto de pulso para llamar la atención */
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
-  }
-  50% {
-    box-shadow: 0 6px 30px rgba(72, 139, 73, 0.7);
-  }
-}
-
-.floating-code-btn {
-  animation: pulse 2s infinite;
-}
-
-.floating-code-btn:hover {
-  animation: none;
-}
-
-/* ==========================================================================
    COMPONENTES ESPECIALES
    ========================================================================== */
+
 /* CONTENEDORES DE GRÁFICOS */
 .plot-container,
 .ggplot-container,
@@ -464,6 +349,166 @@ table caption {
 }
 
 /* ==========================================================================
+   ESTILOS PARA CHUNKS DE CÓDIGO R - CORREGIDO PARA MOSTRAR COMPLETO
+   ========================================================================== */
+
+/* CRÍTICO: Contenedor principal del código */
+div.sourceCode {
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  padding: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+  border: 1px solid #d1fae5 !important;
+  border-left: 4px solid #488B49 !important;
+  box-shadow: 0 2px 8px rgba(72, 139, 73, 0.1) !important;
+  transition: all 0.3s ease !important;
+  overflow: auto !important;
+  display: block !important;
+  width: 100% !important;
+  max-height: 600px !important;
+  height: auto !important;
+}
+
+/* El pre dentro de div.sourceCode - CLAVE PARA MOSTRAR TODO EL CÓDIGO */
+div.sourceCode pre,
+pre.sourceCode {
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: 'Courier New', Monaco, monospace !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  overflow: visible !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  display: block !important;
+  width: auto !important;
+  min-width: 100% !important;
+  height: auto !important;
+}
+
+/* Código dentro (el elemento <code>) */
+code.sourceCode {
+  background: transparent !important;
+  color: #000000 !important;
+  font-family: 'Courier New', Monaco, monospace !important;
+  display: inline-block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  white-space: pre !important;
+  overflow: visible !important;
+  min-width: 100% !important;
+}
+
+/* Todo el texto dentro del código debe ser NEGRO */
+pre.sourceCode *,
+div.sourceCode *,
+div.sourceCode pre *,
+code.sourceCode,
+code.sourceCode * {
+  color: #000000 !important;
+  background: transparent !important;
+  font-family: 'Courier New', Monaco, monospace !important;
+}
+
+/* Efecto hover */
+pre.sourceCode:hover,
+div.sourceCode:hover {
+  transform: translateX(5px) !important;
+  box-shadow: 0 4px 12px rgba(72, 139, 73, 0.2) !important;
+  border-left-color: #73e2a7 !important;
+  background: #fafffe !important;
+}
+
+/* Animación al mostrar */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.code-visible {
+  animation: slideIn 0.3s ease !important;
+}
+
+/* Outputs de código (resultados) */
+pre:not(.sourceCode) {
+  background: #f8f9fa !important;
+  color: #333 !important;
+  border-left: 4px solid #73e2a7 !important;
+  border: 1px solid #e9ecef !important;
+  padding: 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: 8px !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  white-space: pre-wrap !important;  /* ← AGREGADO */
+}
+
+/* BOTÓN FLOTANTE - DEFINICIÓN ÚNICA Y MEJORADA */
+.floating-code-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, #488B49 0%, #3a6e3a 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 0.3px;
+}
+
+.floating-code-btn:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 10px 30px rgba(72, 139, 73, 0.6);
+  background: linear-gradient(135deg, #3a6e3a 0%, #2d5534 100%);
+  animation: none;
+}
+
+.floating-code-btn:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Efecto de pulso para llamar la atención */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 6px 20px rgba(72, 139, 73, 0.4);
+  }
+  50% {
+    box-shadow: 0 6px 30px rgba(72, 139, 73, 0.7);
+  }
+}
+
+.floating-code-btn {
+  animation: pulse 2s infinite;
+}
+
+/* Resaltado de sintaxis - COLORES PARA FONDO CLARO */
+span.kw { color: #d73a49 !important; font-weight: 600 !important; } /* Keywords */
+span.st { color: #22863a !important; } /* Strings */
+span.dv, span.fl { color: #005cc5 !important; } /* Numbers */
+span.co { color: #6b7280 !important; font-style: italic !important; } /* Comments */
+span.fu { color: #6f42c1 !important; font-weight: 500 !important; } /* Functions */
+span.op { color: #000000 !important; } /* Operators */
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 @media (max-width: 768px) {
@@ -499,5 +544,15 @@ table caption {
   table th,
   table td {
     padding: 0.8rem;
+  }
+  
+  /* Mejorar visualización de código en móviles */
+  div.sourceCode {
+    padding: 1rem !important;
+  }
+  
+  div.sourceCode pre,
+  pre.sourceCode {
+    font-size: 11px !important;
   }
 }
