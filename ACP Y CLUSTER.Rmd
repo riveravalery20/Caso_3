@@ -1096,16 +1096,15 @@ var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
 # Análisis Dendrograma
 
 ```{r dendrograma interactivo, fig.width=9, fig.height=7}
-
 # Cargar librerías
 library(plotly)
 library(viridis)
-library(ggdendro)  # Para extraer datos del dendrograma
+library(ggdendro)
 
-# Función mejorada que incluye el dendrograma visualizado
+# Función corregida con escala correcta del eje Y
 crear_dendrograma_interactivo_mejorado <- function(hc) {
   
-  # Obtener la altura máxima del dendrograma
+  # Obtener la altura máxima REAL del objeto hclust
   altura_max <- max(hc$height)
   
   # Crear secuencia de alturas para el slider
@@ -1114,6 +1113,9 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
   # Extraer datos del dendrograma para visualización
   dend_data <- dendro_data(hc)
   segmentos <- segment(dend_data)
+  
+  # IMPORTANTE: Verificar que los valores Y corresponden a hc$height
+  # Los valores en segmentos$y y segmentos$yend ya deberían estar en la escala correcta
   
   # Crear gráfico base con el dendrograma
   fig <- plot_ly() %>%
@@ -1129,38 +1131,53 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
       title = "Dendrograma Interactivo con Línea de Corte",
       xaxis = list(
         title = "Países", 
-        showticklabels = FALSE,
-        range = c(0, max(segmentos$xend) + 1)
+        showticklabels = TRUE,
+        range = c(0.5, max(segmentos$xend) + 0.5)
       ),
       yaxis = list(
-        title = "Distancia", 
-        range = c(0, altura_max * 1.1)
+        title = "Distancia",
+        # Usar explícitamente la altura máxima de hc$height
+        range = c(0, altura_max * 1.05)
       ),
-      showlegend = FALSE
+      showlegend = FALSE,
+      hovermode = "closest"
     )
   
   # Agregar línea de corte inicial
   fig <- fig %>% add_lines(
-    x = c(0, max(segmentos$xend) + 1),
+    x = c(0.5, max(segmentos$xend) + 0.5),
     y = c(alturas[1], alturas[1]),
     line = list(color = "red", width = 3, dash = "dash"),
-    name = "Línea de corte"
+    name = "Línea de corte",
+    hovertemplate = "Altura: %{y:.2f}<extra></extra>"
   )
   
   # Preparar steps para el slider
   steps <- list()
   
+  # Obtener el número TOTAL de observaciones (países)
+  n_total <- length(hc$order)  # Usar hc$order que es más confiable
+  
+  cat("Número total de observaciones detectadas:", n_total, "\n")
+  
   for (i in 1:length(alturas)) {
     altura_actual <- alturas[i]
+    
+    # Calcular número de clusters a esta altura
+    if (i == 1) {  # Primera posición del slider (altura mínima)
+      n_clusters <- n_total  # Todos son clusters individuales
+    } else {
+      n_clusters <- length(unique(cutree(hc, h = altura_actual)))
+    }
     
     step <- list(
       method = "restyle",
       args = list(
-        "y",  # Propiedad a modificar
-        list(c(altura_actual, altura_actual)),  # Nuevo valor
-        list(1)  # Índice de la traza (la línea de corte)
+        "y",
+        list(c(altura_actual, altura_actual)),
+        list(1)  # Índice de la línea de corte
       ),
-      label = sprintf("%.1f", altura_actual)
+      label = sprintf("%.2f (%d clusters)", altura_actual, n_clusters)
     )
     steps[[i]] <- step
   }
@@ -1170,8 +1187,11 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
     sliders = list(
       list(
         active = 0,
-        currentvalue = list(prefix = "Altura de corte: "),
-        pad = list(t = 50),
+        currentvalue = list(
+          prefix = "Altura de corte: ",
+          font = list(size = 14)
+        ),
+        pad = list(t = 50, b = 10),
         steps = steps
       )
     )
@@ -1181,21 +1201,42 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
 }
 
 # EJECUTAR el código
-if(exists("hc")) {
+# Verificar si existe hclust_result (el objeto real del análisis)
+if(exists("hclust_result")) {
+  cat("=== DIAGNÓSTICO COMPLETO ===\n")
+  cat("Usando hclust_result (datos reales)\n")
+  cat("Número de observaciones (merge + 1):", nrow(as.matrix(hclust_result$merge)) + 1, "\n")
+  cat("Longitud de hclust_result$order:", length(hclust_result$order), "\n")
+  cat("Longitud de hclust_result$labels:", length(hclust_result$labels), "\n")
+  cat("Altura máxima del dendrograma:", max(hclust_result$height), "\n")
+  cat("Rango de alturas:", range(hclust_result$height), "\n")
+  
+  # Verificar también Muertes_df si existe
+  if(exists("Muertes_df")) {
+    cat("Número de filas en Muertes_df:", nrow(Muertes_df), "\n")
+  }
+  
+  dend_interactivo <- crear_dendrograma_interactivo_mejorado(hclust_result)
+  dend_interactivo
+} else if(exists("hc")) {
+  cat("Usando hc\n")
+  cat("Altura máxima del dendrograma:", max(hc$height), "\n")
+  cat("Rango de alturas:", range(hc$height), "\n")
+  
   dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
   dend_interactivo
 } else {
-  # Si hc no existe, crear un ejemplo
+  # Si ninguno existe, crear un ejemplo
   cat("Creando un ejemplo con datos de iris...\n")
   data <- scale(iris[, 1:4])
   dist_matrix <- dist(data)
   hc <- hclust(dist_matrix, method = "ward.D2")
   
+  cat("Altura máxima del dendrograma:", max(hc$height), "\n")
+  
   dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
-
-dend_interactivo
+  dend_interactivo
 }
-
 ```
 
 ```{r dendo,fig.width=9, fig.height=7}
