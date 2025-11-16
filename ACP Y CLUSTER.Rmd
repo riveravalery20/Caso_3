@@ -1827,62 +1827,12 @@ print(plot_clusters_13)
 ```
 
 
-# Análisis de Contribución
-
-
-```{r contribucion_variables, fig.width=9, fig.height=7}
-contrib_data <- acp_var %>%
-  mutate(Contrib1 = abs(Axis1) / sum(abs(Axis1)) * 100,
-         Contrib2 = abs(Axis2) / sum(abs(Axis2)) * 100) %>%
-  pivot_longer(cols = c(Contrib1, Contrib2), 
-               names_to = "Componente", 
-               values_to = "Contribucion")
-
-p6 <- ggplot(contrib_data, aes(x = reorder(Variable, Contribucion), 
-                               y = Contribucion, fill = Componente)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_viridis(discrete = TRUE, begin = 0.3, end = 0.8) +
-  labs(
-    title = "Contribución de Variables a los Componentes Principales",
-    x = "Variables",
-    y = "Contribución Absoluta (%)",
-    fill = "Componente"
-  ) +
-  coord_flip() +
-  theme_minimal()
-
-print(p6)
-```
-
 ## Información General del Análisis
 
 # Resumen Estadístico del Análisis
 
 ## 1. Información General
 
-```{r resumen_general, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-cat("### RESUMEN DEL ANÁLISIS ACP Y CLUSTERING\n\n")
-cat("📊 **Países analizados:**", nrow(NuevaBase), "\n")
-cat("🔢 **Número de clusters identificados:**", length(unique(NuevaBase$Cluster)), "\n")
-cat("📈 **Variables incluidas:**", ncol(NuevaBase) - 2, "\n")
-cat("🎯 **Varianza explicada (PC1+PC2):**", round(sum(var_exp[1:2]), 2), "%\n")
 
-library(knitr)
-library(kableExtra)
-
-# Tabla de distribución
-dist_tabla <- as.data.frame(table(NuevaBase$Cluster))
-colnames(dist_tabla) <- c("Cluster", "N° Países")
-dist_tabla$Porcentaje <- round(dist_tabla$`N° Países` / sum(dist_tabla$`N° Países`) * 100, 1)
-dist_tabla$Porcentaje <- paste0(dist_tabla$Porcentaje, "%")
-
-kable(dist_tabla, 
-      align = c("c", "c", "c"),
-      caption = "Distribución de países por cluster") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE,
-                position = "center") %>%
-  row_spec(0, bold = TRUE, background = "#4CAF50", color = "white")
-```
 
 ---
