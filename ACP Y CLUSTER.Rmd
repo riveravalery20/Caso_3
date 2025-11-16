@@ -1019,9 +1019,9 @@ tabla <- data.frame(
   Dimensión = c("Dim1", "Dim2", "Dim3"),
   `Nombre Simplificado` = c("Calidad de Salud", "Edad de Mortalidad", "Escala Poblacional"),
   `Lo que Mide` = c(
-    "Cuán bueno es el sistema de salud del país", 
-    "¿Dónde muere la gente? (bebés vs adultos)", 
-    "¿Números totales o tasas/porcentajes?"
+    "Desarrollo sanitario: esperanza de vida y mortalidad prevenible", 
+    "Mortalidad temprana versus adulta", 
+    "Efecto del tamaño poblacional en números absolutos de muertes"
   ),
   Varianza = c("62.3%", "11.6%", "Pequeña"),
   `Variable Más Importante` = c(
@@ -1041,9 +1041,7 @@ kbl(tabla, caption = "Análisis de Dimensiones en Indicadores de Salud Pública"
     general = "Análisis de componentes principales aplicado a indicadores de salud global. Los signos (+) y (-) indican la dirección de la correlación.",
     general_title = "Nota:"
   )
-
 ```
-
 
 # CLUSTER
 
