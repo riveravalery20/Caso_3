@@ -1095,7 +1095,7 @@ var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
 
 # Análisis Dendrograma
 
-```{r dendrograma interactivo, fig.width=9, fig.height=7, message=FALSE, warning=FALSE, results='hide'}
+```{r dendrograma interactivo, fig.width=9, fig.height=7}
 
 # Cargar librerías
 library(plotly)
@@ -1192,12 +1192,13 @@ if(exists("hc")) {
   hc <- hclust(dist_matrix, method = "ward.D2")
   
   dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
-  dend_interactivo
+
+dend_interactivo
 }
 
 ```
 
-```{r dendo,fig.width=9, fig.height=7, message=FALSE, warning=FALSE, results='hide'}
+```{r dendo,fig.width=9, fig.height=7}
 library(plotly)
 library(factoextra)
 library(viridis)
