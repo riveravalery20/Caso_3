@@ -1003,9 +1003,165 @@ Para optimizar la calidad del agrupamiento, las puntuaciones de los países en l
 <!-- RESULTADOS DEL MODELO -->
 
 ::: {#resultadosm .content-card}
-<h2>Resultados del Modelo</h2>
+<h2>
+Resultados del Modelo
+</h2>
 
-<p>Análisis de Componentes Principales y Clusterización...</p>
+<p>
+La etapa de resultados integra y aplica las técnicas de aprendizaje no supervisado descritas en la metodología, enfocándose primero en la reducción dimensional a través del Análisis de Componentes Principales (ACP) y posteriormente en la agrupación de países según perfiles de mortalidad con el método de clusterización jerárquica. Se presentan los principales hallazgos obtenidos a partir de estas técnicas, detallando la estructura interna de los datos y las segmentaciones epidemiológicas reveladas.</p>
+
+<h3>
+5.1 Análisis de Componentes Principales (ACP)
+
+</h3>
+
+```{r preparar-acp, message=FALSE, warning=FALSE, results='hide'}
+# Preparar base para ACP
+Muertes_df <- Muertes %>% 
+  select(-Pais) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  scale()
+rownames(Muertes_df) <- Muertes$Pais
+
+# Ver las primeras filas y columnas
+head(Muertes_df[, 1:6])
+
+# Realizar el ACP con datos ya escalados
+res.pca <- prcomp(Muertes_df, scale = FALSE)
+res.pca
+```
+
+<p>
+El ACP constituye la primera fase de análisis, orientada a sintetizar la complejidad de los 22 indicadores de mortalidad en un conjunto reducido de componentes principales que explican la mayor parte de la variabilidad observada entre países. Este procedimiento permite identificar los factores latentes que estructuran los distintos perfiles epidemiológicos, facilitando la interpretación de las relaciones entre variables y preparando el terreno para la clusterización posterior.</p>
+
+<h3>
+Matriz de correlaciones
+
+</h3>
+
+<p>
+
+La matriz de correlaciones es una herramienta estadística fundamental para analizar la intensidad y dirección de la relación lineal entre diferentes variables cuantitativas incluidas en el estudio. La matriz realizada se presenta en la grafica figura 1.</p>
+
+```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=8, fig.height=6}
+library(ggplot2)
+library(reshape2)
+
+# Vector de nombres cortos con los nombres correctos del dataframe:
+nombres_cortos <- c(
+  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
+  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
+  "Accidentes_de_transito" = "Accidentes Tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
+  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
+  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
+  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
+  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
+  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
+  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
+  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
+  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
+  "Supervivencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
+  "Supervivencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
+)
+
+# 1. Selecciona las 22 variables (excluye País)
+variables_requeridas <- names(nombres_cortos)
+Muertes_filtradas <- Muertes[, variables_requeridas]
+Muertes_filtradas[] <- lapply(Muertes_filtradas, as.numeric)
+
+# 2. Renombra columnas a los cortos
+colnames(Muertes_filtradas) <- nombres_cortos
+
+# 3. Elimina filas con NA
+Muertes_filtradas <- na.omit(Muertes_filtradas)
+
+# 4. Calcula la matriz de correlación
+cor_matrix <- cor(Muertes_filtradas, use = "pairwise.complete.obs")
+
+# 5. Prepara datos para graficar sin NA
+library(reshape2)
+cor_melted <- melt(cor_matrix)
+names(cor_melted) <- c("Var1", "Var2", "value")
+
+# 6. Gráfica
+library(ggplot2)
+p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "grey90") +
+  scale_fill_gradient2(
+  low = "#2d5534",    # Verde oscuro para correlaciones negativas
+  high = "#b1cf5f",   # Verde claro para correlaciones positivas  
+  mid = "#f0f0f0",    # Gris muy claro para correlación cero
+  midpoint = 0,
+  limits = c(-1, 1),
+  name = "Correlación"
+) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 12), 
+    panel.grid = element_blank()
+  ) +
+  labs(
+    title = "Figura 1.Matriz de Correlaciones",
+    x = "",
+    y = ""
+  )
+
+print(p1)
+```
+
+<p>
+Se observa que variables como la expectativa de vida y la supervivencia hasta los 65 años muestran correlaciones negativas elevadas con las tasas de mortalidad (general, infantil, neonatal) y las tasas de mortalidad por causas específicas (por ejemplo, enfermedades cardiovasculares, accidentes de tráfico y suicidios). Esto indica que, en los países donde la esperanza de vida y la supervivencia a edades avanzadas son más altas, las tasas de mortalidad, tanto general como por causas específicas, tienden a ser menores. 
+
+Por otra parte, los datos muestran que los lugares con más contaminación del aire suelen tener también tasas más altas de muertes por distintas enfermedades. Es decir, vivir en ambientes más contaminados suele estar asociado a una mayor probabilidad de fallecer a causa de problemas de salud diversos, como enfermedades respiratorias y cardiovasculares.
+
+Asimismo, las diferentes tasas de mortalidad por causas prevenibles (como accidentes, suicidios y envenenamientos accidentales) presentan correlaciones positivas entre sí. Esto sugiere la existencia de factores sociales que tengan relación en estas causas de muerte y que podrían estar reflejando una dimensión de mortalidad evitable.
+</p>
+
+<h3>
+Scree Plot
+</h3>
+
+<p>
+El scree plot es un gráfico fundamental en el análisis de componentes principales (ACP), cuya función principal es mostrar la proporción de varianza total explicada por cada componente extraído a partir de los datos originales.</p>
+
+```{r scree-plot:Gráfico de Sedimentación, message=FALSE, warning=FALSE, results='hide', fig.width=7, fig.height=5}
+p2 <- fviz_eig(res.pca, 
+         addlabels = TRUE,
+         barfill = "#488B49",
+         barcolor = "#488B49",
+         linecolor = "#FF6B35",
+         choice = "variance",  # Mostrar varianza en lugar de eigenvalues
+         geom = "bar",         # Usar barras en lugar de líneas
+         main = "Figura 2.Análisis de componentes principales - Scree Plot",
+         xlab = "Número de Componente Principal",
+         ylab = "Porcentaje de Varianza Explicada",
+         ggtheme = theme_minimal()) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "grey90"),
+    panel.grid.minor = element_blank()
+  )
+print(p2)
+```
+
+<p>
+A medida que se incorporan más componentes principales, el porcentaje adicional de varianza explicada disminuye notablemente, observándose el clásico "codo" del scree plot después de los primeros componentes. Por ejemplo, el primer componente puede explicar alrededor del 62% de la variabilidad de los datos; el segundo y el tercero suman una proporción mucho menor pero aún relevante, y a partir del cuarto componente la ganancia marginal es reducida.
+
+Esto respalda la decisión metodológica de conservar únicamente los tres primeros componentes, ya que juntos encapsulan la mayor parte de la estructura y los patrones subyacentes de los datos. representando un 82,3% de la varianza.
+</p>
+
 :::
 
 <!-- CONCLUSIONES -->
