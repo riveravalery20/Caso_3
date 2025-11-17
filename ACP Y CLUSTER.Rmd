@@ -1669,6 +1669,308 @@ plotly_biplot <- plotly_biplot %>%
 plotly_biplot
 ```
 
+
+```{r estadisticas-descriptivas-clusters}
+library(dplyr)
+library(tidyr)
+library(gt)
+library(stringr)
+
+# Diccionario de nombres descriptivos para las variables
+nombres_variables <- c(
+  "Expectativa_de_vida_mujer" = "Esperanza de vida - Mujeres",
+  "Expectativa_de_vida_hombres" = "Esperanza de vida - Hombres",
+  "Accidentes_de_transito" = "Muertes por accidentes de tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf. crónicas - Mujeres",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf. crónicas - Hombres",
+  "Polucion_del_aire_mujeres" = "Muertes por polución - Mujeres",
+  "Polucion_del_aire_hombres" = "Muertes por polución - Hombres",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento - Mujeres",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento - Hombres",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mortalidad adulta - Mujeres",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mortalidad adulta - Hombres",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mortalidad infantil - Mujeres",
+  "Tasa_de_mortalidad_infantil_varones" = "Mortalidad infantil - Hombres",
+  "Tasa_de_mortalidad_neonatal" = "Mortalidad neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mortalidad temprana - Mujeres",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mortalidad temprana - Hombres",
+  "Numero_de_muertes_infantiles" = "Número de muertes infantiles",
+  "Numero_de_muertes_neonatales" = "Número de muertes neonatales",
+  "Tasa_de_suicidios_mujeres" = "Tasa de suicidios - Mujeres",
+  "Tasa_de_suicidios_hombres" = "Tasa de suicidios - Hombres",
+  "Supervivencia_hasta_los_65_anos_mujeres" = "Supervivencia a 65 años - Mujeres",
+  "Supervivencia_hasta_los_65_anos_hombres" = "Supervivencia a 65 años - Hombres"
+)
+
+# Calcular estadísticas descriptivas por cluster
+estadisticas_clusters <- NuevaBase %>%
+  group_by(Cluster) %>%
+  summarise(across(
+    where(is.numeric),
+    list(
+      Media = ~mean(., na.rm = TRUE),
+      Mediana = ~median(., na.rm = TRUE),
+      DE = ~sd(., na.rm = TRUE),
+      Min = ~min(., na.rm = TRUE),
+      Max = ~max(., na.rm = TRUE)
+    ),
+    .names = "{.col}_{.fn}"
+  )) %>%
+  pivot_longer(
+    cols = -Cluster,
+    names_to = "Variable_Estadistica",
+    values_to = "Valor"
+  ) %>%
+  mutate(
+    Estadistica = str_extract(Variable_Estadistica, "[^_]+$"),
+    Variable = str_remove(Variable_Estadistica, "_[^_]+$"),
+    Valor = as.numeric(Valor)
+  ) %>%
+  select(-Variable_Estadistica) %>%
+  pivot_wider(
+    names_from = Estadistica,
+    values_from = Valor
+  )
+
+# Crear tabla con formato profesional
+tabla_estadisticas <- estadisticas_clusters %>%
+  mutate(
+    Variable_Descriptiva = nombres_variables[Variable],
+    Cluster = paste("Cluster", Cluster)
+  ) %>%
+  select(Cluster, Variable_Descriptiva, Media, Mediana, DE, Min, Max) %>%
+  arrange(Cluster, Variable_Descriptiva) %>%
+  gt(groupname_col = "Cluster") %>%
+  tab_header(
+    title = md("**ESTADÍSTICAS DESCRIPTIVAS POR CLUSTER**"),
+    subtitle = "Análisis de Indicadores de Mortalidad Global"
+  ) %>%
+  cols_label(
+    Variable_Descriptiva = md("**Variable**"),
+    Media = md("**Media**"),
+    Mediana = md("**Mediana**"),
+    DE = md("**D.E.**"),
+    Min = md("**Mín**"),
+    Max = md("**Máx**")
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(Media, Mediana, DE, Min, Max)
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Variable_Descriptiva
+  ) %>%
+  fmt_number(
+    columns = c(Media, Mediana, DE, Min, Max),
+    decimals = 2
+  ) %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold", size = "medium"),
+      cell_fill(color = "white")
+    ),
+    locations = cells_column_labels()
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = c("top", "bottom"),
+      color = "black",
+      weight = px(1)
+    ),
+    locations = list(
+      cells_column_labels(),
+      cells_body()
+    )
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = "right",
+      color = "gray80",
+      weight = px(1)
+    ),
+    locations = cells_body(columns = c(Variable_Descriptiva, Media, Mediana, DE, Min))
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = Variable_Descriptiva)
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#E8F5E8"),
+    locations = cells_row_groups()
+  ) %>%
+  tab_options(
+    table.font.names = "Times New Roman",
+    table.width = pct(100),
+    table.border.top.style = "none",
+    table.border.bottom.style = "none",
+    column_labels.border.top.style = "none",
+    column_labels.border.bottom.width = px(2),
+    column_labels.border.bottom.color = "black",
+    table_body.border.bottom.style = "none",
+    table_body.border.top.style = "none",
+    data_row.padding = px(6),
+    heading.title.font.size = 16,
+    heading.subtitle.font.size = 14,
+    heading.padding = px(8),
+    footnotes.padding = px(6)
+  ) %>%
+  tab_source_note(
+    source_note = md("**Fuente:** Elaboración propia con base en datos de mortalidad global")
+  )
+
+tabla_estadisticas
+```
+
+```{r comparacion-medias-clusters}
+# Tabla comparativa de medias entre clusters
+tabla_comparativa <- estadisticas_clusters %>%
+  filter(!is.na(Media)) %>%
+  mutate(
+    Variable_Descriptiva = nombres_variables[Variable],
+    Cluster = paste("Cluster", Cluster),
+    Media = round(Media, 2)
+  ) %>%
+  select(Cluster, Variable_Descriptiva, Media) %>%
+  pivot_wider(
+    names_from = Cluster,
+    values_from = Media
+  ) %>%
+  arrange(Variable_Descriptiva) %>%
+  gt() %>%
+  tab_header(
+    title = md("**COMPARACIÓN DE CLUSTERS - MEDIAS POR VARIABLE**"),
+    subtitle = "Análisis comparativo de indicadores de mortalidad entre clusters"
+  ) %>%
+  cols_label(
+    Variable_Descriptiva = md("**Variable**")
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = -Variable_Descriptiva
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Variable_Descriptiva
+  ) %>%
+  fmt_number(
+    columns = -Variable_Descriptiva,
+    decimals = 2
+  ) %>%
+  data_color(
+    columns = -Variable_Descriptiva,
+    colors = scales::col_numeric(
+      palette = c("#FFC0CB", "#FFFFFF", "#90EE90"),
+      domain = NULL
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold", size = "medium"),
+      cell_fill(color = "white")
+    ),
+    locations = cells_column_labels()
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = c("top", "bottom"),
+      color = "black",
+      weight = px(1)
+    ),
+    locations = list(
+      cells_column_labels(),
+      cells_body()
+    )
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = "right",
+      color = "gray80",
+      weight = px(1)
+    ),
+    locations = cells_body(columns = Variable_Descriptiva)
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = Variable_Descriptiva)
+  ) %>%
+  tab_options(
+    table.font.names = "Times New Roman",
+    table.width = pct(100),
+    table.border.top.style = "none",
+    table.border.bottom.style = "none",
+    column_labels.border.top.style = "none",
+    column_labels.border.bottom.width = px(2),
+    column_labels.border.bottom.color = "black",
+    table_body.border.bottom.style = "none",
+    table_body.border.top.style = "none",
+    data_row.padding = px(6),
+    heading.title.font.size = 16,
+    heading.subtitle.font.size = 14,
+    heading.padding = px(8)
+  ) %>%
+  tab_source_note(
+    source_note = md("**Nota:** Los colores indican valores relativos - verde para valores altos, rosa para valores bajos")
+  )
+
+tabla_comparativa
+```
+
+```{r resumen-clusters}
+# Resumen general de los clusters
+resumen_clusters <- NuevaBase %>%
+  group_by(Cluster) %>%
+  summarise(
+    `Número de Países` = n(),
+    `Esperanza Vida (Media)` = round(mean(Expectativa_de_vida_mujer, na.rm = TRUE), 1),
+    `Mortalidad Infantil (Media)` = round(mean(Tasa_de_mortalidad_infantil_mujeres, na.rm = TRUE), 1),
+    `Mortalidad Adulta (Media)` = round(mean(Tasa_de_mortalidad_mujeres_adultas, na.rm = TRUE), 1),
+    `Supervivencia 65 años (Media)` = round(mean(Supervivencia_hasta_los_65_anos_mujeres, na.rm = TRUE), 1)
+  ) %>%
+  mutate(Cluster = paste("Cluster", Cluster))
+
+tabla_resumen <- resumen_clusters %>%
+  gt() %>%
+  tab_header(
+    title = md("**RESUMEN GENERAL POR CLUSTER**"),
+    subtitle = "Indicadores clave de mortalidad y salud"
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = -Cluster
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Cluster
+  ) %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold"),
+      cell_fill(color = "#488B49", alpha = 0.8),
+      cell_text(color = "white")
+    ),
+    locations = cells_column_labels()
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = Cluster)
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#F8F9FA"),
+    locations = cells_body()
+  ) %>%
+  tab_options(
+    table.font.names = "Times New Roman",
+    table.width = pct(100),
+    heading.title.font.size = 16,
+    heading.subtitle.font.size = 14,
+    data_row.padding = px(8)
+  )
+
+tabla_resumen
+```
+
+
 ## Gráfico PC1 vs PC2 - Clusters
 
 ```{r clusters-pc1-pc2, fig.width=12, fig.height=9}
