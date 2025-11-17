@@ -1269,7 +1269,7 @@ Los resultados arrojan una distribución previble ya que los adultos absorben la
 
 EDADES DE LOS FALLECIDOS SIN IMPORTAR EL SEXO
 En este grafico de dispersión 3d se quiere mostrar la distribución que hay en las muertes dependiendo del grupo etario al que pertenezca y el país, se observan 3 grupos de edad fundamentales (neonatal, infantil y adultez) en donde la categoria infantil se desplega la infantilidad temprana.
-```{r}
+```{r Mapa}
   ``{r}
 datos_3d <- Muertes %>%
   select(País) %>%
