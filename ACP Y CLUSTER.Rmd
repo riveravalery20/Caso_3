@@ -1269,9 +1269,9 @@ g_sil <- fviz_nbclust(
   hc_method = "ward.D2",
   hc_metric = "euclidean",
   k.max = 10,
-  barfill = "#3498DB",     # Azul profesional
-  barcolor = "#2980B9",    # Azul más oscuro para bordes
-  linecolor = "#E74C3C",   # Rojo para la línea
+  barfill = "#3498DB",
+  barcolor = "#2980B9",
+  linecolor = "#E74C3C",
   ggtheme = theme_minimal()
 ) + 
   labs(
@@ -1290,11 +1290,10 @@ g_sil <- fviz_nbclust(
 optimo_clusters <- g_sil$data[which.max(g_sil$data$y), "clusters"]
 max_silueta <- round(max(g_sil$data$y), 3)
 
-# Calcular límites del gráfico para mantener todo dentro del cuadro
-y_max <- max(g_sil$data$y) * 1.15  # 15% más de espacio para la anotación
-x_limits <- c(0.5, 10.5)  # Límites ajustados para eje X
+# Calcular límites del gráfico
+y_max <- max(g_sil$data$y) * 1.15
 
-# Construir gráfico final
+# SOLUCIÓN: Usar scale_x_discrete en lugar de scale_x_continuous
 g_sil_final <- g_sil +
   # Resaltar el punto óptimo
   geom_point(data = g_sil$data[which.max(g_sil$data$y),], 
@@ -1309,17 +1308,17 @@ g_sil_final <- g_sil +
     linewidth = 1,
     alpha = 0.7
   ) +
-  # Anotación del valor óptimo - POSICIÓN AJUSTADA
+  # Anotación del valor óptimo
   annotate("text",
            x = optimo_clusters,
-           y = y_max * 0.95,  # Posición dentro de los límites
+           y = y_max * 0.95,
            label = paste("CLÚSTERES ÓPTIMOS: k =", optimo_clusters),
            color = "#2C3E50",
            fontface = "bold",
            size = 5,
            hjust = 0.5) +
-  # Ajustar escalas para mantener todo dentro del cuadro
-  scale_x_continuous(breaks = 1:10, limits = x_limits) +
+  # CORRECCIÓN: Usar scale_x_discrete para eje X discreto
+  scale_x_discrete(limits = factor(1:10)) +
   scale_y_continuous(limits = c(0, y_max),
                      breaks = seq(0, 0.5, by = 0.1)) +
   # Cuadro alrededor del gráfico
