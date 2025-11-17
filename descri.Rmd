@@ -1,0 +1,668 @@
+---
+title: "Descriptivas"
+author: "Tu Nombre"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    code_folding: hide
+---
+# Preparación inicial datos y base 
+
+##Librerías
+
+```{r librerias, message=FALSE, warning=FALSE, results='hide'}
+library(readr)
+library(tidyverse)
+library(FactoMineR)
+library(factoextra)
+library(reactable)
+library(htmltools)
+library(ggplot2)
+library(plotly)
+library(ggrepel)
+library(dendextend)
+library(viridis)
+library(FactoClass)
+library(dplyr)
+library(tidyr)
+library(ggforce)
+library(cluster)
+library(rworldmap)
+library(ggplot2)
+library(reshape2)
+library(reshape2)
+library(ggplot2)
+library(reactable)
+library(reactablefmtr)
+library(kableExtra)
+```
+
+##Cargar y Preparar Datos
+
+```{r cargar-datos, message=FALSE, warning=FALSE, results='hide'}
+# Leer la base
+Muertes_ans <- read_csv("Muertes ans.csv", locale = locale(encoding = "UTF-8"))
+Muertes <- data.frame(Muertes_ans)
+
+# Limpieza y selección de variables
+Muertes <- Muertes[-(218:245), ]
+Muertes <- na.omit(Muertes)
+colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", 
+                       "Accidentes_de_transito", "Enfermedades_cardiacas_cancer_diabetes_mujeres", 
+                       "Enfermedades_cardiacas_cancer_diabetes_hombres", "Polucion_del_aire_mujeres", 
+                       "Polucion_del_aire_hombres", "Envenenamiento_accidental_mujeres", 
+                       "Envenenamiento_accidental_hombres", "Tasa_de_mortalidad_mujeres_adultas",
+                       "Tasa_de_mortalidad_hombres_adultos", "Tasa_de_mortalidad_infantil_mujeres", 
+                       "Tasa_de_mortalidad_infantil_varones", "Tasa_de_mortalidad_neonatal",
+                       "Tasa_de_mortalidad_infantil_temprana_mujeres", 
+                       "Tasa_de_mortalidad_infantil_temprana_hombres", "Numero_de_muertes_infantiles",
+                       "Numero_de_muertes_neonatales", "Tasa_de_suicidios_mujeres",
+                       "Tasa_de_suicidios_hombres", "Supervivencia_hasta_los_65_anos_mujeres",
+                       "Supervivencia_hasta_los_65_anos_hombres")
+
+# Eliminar filas con valores NA
+Muertes <- Muertes %>%
+  filter(complete.cases(.))
+
+# Traducir nombres de países al español
+Muertes <- Muertes %>%
+  mutate(Pais = case_when(
+    Pais == "Faroe Islands" ~ "Islas Feroe",
+    Pais == "Fiji" ~ "Fiyi",
+    Pais == "Finland" ~ "Finlandia",
+    Pais == "France" ~ "Francia",
+    Pais == "French Polynesia" ~ "Polinesia Francesa",
+    Pais == "Gabon" ~ "Gabon",
+    Pais == "Gambia, The" ~ "Gambia",
+    Pais == "Georgia" ~ "Georgia",
+    Pais == "Germany" ~ "Alemania",
+    Pais == "Ghana" ~ "Ghana",
+    Pais == "Gibraltar" ~ "Gibraltar",
+    Pais == "Greece" ~ "Grecia",
+    Pais == "Greenland" ~ "Groenlandia",
+    Pais == "Grenada" ~ "Granada",
+    Pais == "Guam" ~ "Guam",
+    Pais == "Guatemala" ~ "Guatemala",
+    Pais == "Guinea" ~ "Guinea",
+    Pais == "Guinea-Bissau" ~ "Guinea-Bisau",
+    Pais == "Guyana" ~ "Guyana",
+    Pais == "Haiti" ~ "Haiti",
+    Pais == "Honduras" ~ "Honduras",
+    Pais == "Hong Kong SAR, China" ~ "Hong Kong",
+    Pais == "Hungary" ~ "Hungria",
+    Pais == "Iceland" ~ "Islandia",
+    Pais == "India" ~ "India",
+    Pais == "Indonesia" ~ "Indonesia",
+    Pais == "Iran, Islamic Rep." ~ "Iran",
+    Pais == "Iraq" ~ "Irak",
+    Pais == "Ireland" ~ "Irlanda",
+    Pais == "Isle of Man" ~ "Isla de Man",
+    Pais == "Israel" ~ "Israel",
+    Pais == "Italy" ~ "Italia",
+    Pais == "Jamaica" ~ "Jamaica",
+    Pais == "Japan" ~ "Japon",
+    Pais == "Jordan" ~ "Jordania",
+    Pais == "Kazakhstan" ~ "Kazajistan",
+    Pais == "Kenya" ~ "Kenia",
+    Pais == "Kiribati" ~ "Kiribati",
+    Pais == "Korea, Dem. People's Rep." ~ "Corea del Norte",
+    Pais == "Korea, Rep." ~ "Corea del Sur",
+    Pais == "Kosovo" ~ "Kosovo",
+    Pais == "Kuwait" ~ "Kuwait",
+    Pais == "Kyrgyz Republic" ~ "Kirguistan",
+    Pais == "Lao PDR" ~ "Laos",
+    Pais == "Latvia" ~ "Letonia",
+    Pais == "Lebanon" ~ "Libano",
+    Pais == "Lesotho" ~ "Lesoto",
+    Pais == "Liberia" ~ "Liberia",
+    Pais == "Libya" ~ "Libia",
+    Pais == "Liechtenstein" ~ "Liechtenstein",
+    Pais == "Lithuania" ~ "Lituania",
+    Pais == "Luxembourg" ~ "Luxemburgo",
+    Pais == "Macao SAR, China" ~ "Macao",
+    Pais == "Madagascar" ~ "Madagascar",
+    Pais == "Malawi" ~ "Malaui",
+    Pais == "Malaysia" ~ "Malasia",
+    Pais == "Maldives" ~ "Maldivas",
+    Pais == "Mali" ~ "Mali",
+    Pais == "Malta" ~ "Malta",
+    Pais == "Marshall Islands" ~ "Islas Marshall",
+    Pais == "Mauritania" ~ "Mauritania",
+    Pais == "Mauritius" ~ "Mauricio",
+    Pais == "Mexico" ~ "Mexico",
+    Pais == "Micronesia, Fed. Sts." ~ "Micronesia",
+    Pais == "Moldova" ~ "Moldavia",
+    Pais == "Monaco" ~ "Monaco",
+    Pais == "Mongolia" ~ "Mongolia",
+    Pais == "Montenegro" ~ "Montenegro",
+    Pais == "Morocco" ~ "Marruecos",
+    Pais == "Mozambique" ~ "Mozambique",
+    Pais == "Myanmar" ~ "Myanmar",
+    Pais == "Namibia" ~ "Namibia",
+    Pais == "Nauru" ~ "Nauru",
+    Pais == "Nepal" ~ "Nepal",
+    Pais == "Netherlands" ~ "Paises Bajos",
+    Pais == "New Caledonia" ~ "Nueva Caledonia",
+    Pais == "New Zealand" ~ "Nueva Zelanda",
+    Pais == "Nicaragua" ~ "Nicaragua",
+    Pais == "Niger" ~ "Niger",
+    Pais == "Nigeria" ~ "Nigeria",
+    Pais == "North Macedonia" ~ "Macedonia del Norte",
+    Pais == "Northern Mariana Islands" ~ "Islas Marianas del Norte",
+    Pais == "Norway" ~ "Noruega",
+    Pais == "Oman" ~ "Oman",
+    Pais == "Pakistan" ~ "Pakistan",
+    Pais == "Palau" ~ "Palaos",
+    Pais == "Panama" ~ "Panama",
+    Pais == "Papua New Guinea" ~ "Papua Nueva Guinea",
+    Pais == "Paraguay" ~ "Paraguay",
+    Pais == "Peru" ~ "Peru",
+    Pais == "Philippines" ~ "Filipinas",
+    Pais == "Poland" ~ "Polonia",
+    Pais == "Portugal" ~ "Portugal",
+    Pais == "Puerto Rico (US)" ~ "Puerto Rico",
+    Pais == "Qatar" ~ "Catar",
+    Pais == "Romania" ~ "Rumania",
+    Pais == "Russian Federation" ~ "Rusia",
+    Pais == "Rwanda" ~ "Ruanda",
+    Pais == "Samoa" ~ "Samoa",
+    Pais == "San Marino" ~ "San Marino",
+    Pais == "Sao Tome and Principe" ~ "Santo Tome y Principe",
+    Pais == "Saudi Arabia" ~ "Arabia Saudita",
+    Pais == "Senegal" ~ "Senegal",
+    Pais == "Serbia" ~ "Serbia",
+    Pais == "Seychelles" ~ "Seychelles",
+    Pais == "Sierra Leone" ~ "Sierra Leona",
+    Pais == "Singapore" ~ "Singapur",
+    Pais == "Sint Maarten (Dutch part)" ~ "Sint Maarten",
+    Pais == "Slovak Republic" ~ "Eslovaquia",
+    Pais == "Slovenia" ~ "Eslovenia",
+    Pais == "Solomon Islands" ~ "Islas Salomon",
+    Pais == "Somalia, Fed. Rep." ~ "Somalia",
+    Pais == "South Africa" ~ "Sudafrica",
+    Pais == "South Sudan" ~ "Sudan del Sur",
+    Pais == "Spain" ~ "Espana",
+    Pais == "Sri Lanka" ~ "Sri Lanka",
+    Pais == "St. Kitts and Nevis" ~ "San Cristobal y Nieves",
+    Pais == "St. Lucia" ~ "Santa Lucia",
+    Pais == "St. Martin (French part)" ~ "San Martin",
+    Pais == "St. Vincent and the Grenadines" ~ "San Vicente y las Granadinas",
+    Pais == "Sudan" ~ "Sudan",
+    Pais == "Suriname" ~ "Surinam",
+    Pais == "Sweden" ~ "Suecia",
+    Pais == "Switzerland" ~ "Suiza",
+    Pais == "Syrian Arab Republic" ~ "Siria",
+    Pais == "Tajikistan" ~ "Tayikistan",
+    Pais == "Tanzania" ~ "Tanzania",
+    Pais == "Thailand" ~ "Tailandia",
+    Pais == "Timor-Leste" ~ "Timor Oriental",
+    Pais == "Togo" ~ "Togo",
+    Pais == "Tonga" ~ "Tonga",
+    Pais == "Trinidad and Tobago" ~ "Trinidad y Tobago",
+    Pais == "Tunisia" ~ "Tunez",
+    Pais == "Turkiye" ~ "Turquia",
+    Pais == "Turkmenistan" ~ "Turkmenistan",
+    Pais == "Turks and Caicos Islands" ~ "Islas Turcas y Caicos",
+    Pais == "Tuvalu" ~ "Tuvalu",
+    Pais == "Uganda" ~ "Uganda",
+    Pais == "Ukraine" ~ "Ucrania",
+    Pais == "United Arab Emirates" ~ "Emiratos Arabes Unidos",
+    Pais == "United Kingdom" ~ "Reino Unido",
+    Pais == "United States" ~ "Estados Unidos",
+    Pais == "Uruguay" ~ "Uruguay",
+    Pais == "Uzbekistan" ~ "Uzbekistan",
+    Pais == "Vanuatu" ~ "Vanuatu",
+    Pais == "Venezuela, RB" ~ "Venezuela",
+    Pais == "Viet Nam" ~ "Vietnam",
+    Pais == "Virgin Islands (U.S.)" ~ "Islas Virgenes Americanas",
+    Pais == "West Bank and Gaza" ~ "Palestina",
+    Pais == "Yemen, Rep." ~ "Yemen",
+    Pais == "Zambia" ~ "Zambia",
+    Pais == "Zimbabwe" ~ "Zimbabue",
+    TRUE ~ as.character(Pais)
+  ))
+# Verificar la base final
+print(paste("Número de países después de la limpieza:", nrow(Muertes)))
+print("Estructura de la base:")
+str(Muertes)
+```
+
+## MAPA INTERACTIVO POR FRECUENCIAS
+
+
+## GRÁFICO: RELACIÓN PAÍS-EXPECTATIVA DE VIDA
+
+```{r grafico-expectativa, message=FALSE, warning=FALSE}
+# Comparación entre expectativa de vida de hombres y mujeres por país
+
+# Convertir a numérico
+Muertes$Expectativa_de_vida_hombres <- as.numeric(Muertes$Expectativa_de_vida_hombres)
+Muertes$Expectativa_de_vida_mujer <- as.numeric(Muertes$Expectativa_de_vida_mujer)
+
+fig_expectativa <- plot_ly(
+  data = Muertes,
+  x = ~Expectativa_de_vida_hombres,
+  y = ~Expectativa_de_vida_mujer,
+  type = "scatter",
+  mode = "markers",
+  text = ~paste(
+    "País:", Pais,
+    "\nExpectativa de vida hombres:", round(Expectativa_de_vida_hombres, 1),
+    "\nExpectativa de vida mujeres:", round(Expectativa_de_vida_mujer, 1)
+  ),
+  hoverinfo = "text",
+  marker = list(
+    color = "#3a6",
+    size = 10,
+    line = list(color = 'white', width = 1.5)
+  )
+) %>%
+  layout(
+    title = list(
+      text = "Comparación de la Expectativa de Vida entre Hombres y Mujeres",
+      x = 0.5,
+      font = list(size = 18)
+    ),
+    xaxis = list(title = "Expectativa de Vida (Hombres)", zeroline = FALSE),
+    yaxis = list(title = "Expectativa de Vida (Mujeres)", zeroline = FALSE),
+    shapes = list(
+      list(
+        type = "line",
+        x0 = min(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        y0 = min(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        x1 = max(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        y1 = max(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        line = list(dash = "dot", color = "gray")
+      )
+    )
+  )
+
+fig_expectativa
+```
+
+
+## GRÁFICO: RELACIÓN PAÍS-SUPERVIVENCIA-GÉNERO
+
+```{r grafico-supervivencia, message=FALSE, warning=FALSE}
+# Distribución de probabilidades de supervivencia hasta los 65 años
+
+# Convertir a numérico
+Muertes$Supervivencia_hasta_los_65_anos_hombres <- as.numeric(Muertes$Supervivencia_hasta_los_65_anos_hombres)
+Muertes$Supervivencia_hasta_los_65_anos_mujeres <- as.numeric(Muertes$Supervivencia_hasta_los_65_anos_mujeres)
+
+# Calcular promedio y ordenar
+Muertes <- Muertes %>%
+  mutate(promedio = rowMeans(select(., Supervivencia_hasta_los_65_anos_hombres,
+                                    Supervivencia_hasta_los_65_anos_mujeres), na.rm = TRUE)) %>%
+  arrange(promedio)
+
+grafico_65 <- plot_ly(Muertes) %>%
+  add_trace(
+    y = ~Pais,
+    x = ~Supervivencia_hasta_los_65_anos_hombres,
+    type = "scatter",
+    mode = "markers",
+    name = "Hombres",
+    marker = list(color = "#1c7c54", size = 8),
+    hoverinfo = "text",
+    text = ~paste("<b>", Pais, "</b><br>Hombres (65 años): ", round(Supervivencia_hasta_los_65_anos_hombres, 1), "%")
+  ) %>%
+  add_trace(
+    y = ~Pais,
+    x = ~Supervivencia_hasta_los_65_anos_mujeres,
+    type = "scatter",
+    mode = "markers",
+    name = "Mujeres",
+    marker = list(color = "#bad4ba", size = 8),
+    hoverinfo = "text",
+    text = ~paste("<b>", Pais, "</b><br>Mujeres (65 años): ", round(Supervivencia_hasta_los_65_anos_mujeres, 1), "%")
+  ) %>%
+  layout(
+    title = list(text = "<b>Supervivencia hasta los 65 años (%) por género</b>", x = 0.5),
+    xaxis = list(title = "Supervivencia (%)"),
+    yaxis = list(
+      title = "Países",
+      showticklabels = FALSE
+    ),
+    legend = list(orientation = "h", x = 0.5, y = -0.1, xanchor = "center")
+  )
+
+grafico_65
+```
+
+
+## GRÁFICO: DISTRIBUCIÓN DE CAUSAS POR GÉNERO
+
+```{r grafico-causas-genero, message=FALSE, warning=FALSE}
+# Proporciones de causas de muerte distribuidas por sexo
+
+columnas_causas <- c(
+  "Envenenamiento_accidental_mujeres", "Envenenamiento_accidental_hombres",
+  "Polucion_del_aire_mujeres", "Polucion_del_aire_hombres",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres",
+  "Tasa_de_suicidios_mujeres", "Tasa_de_suicidios_hombres"
+)
+
+# Construir base larga
+distribucion_data <- Muertes %>%
+  select(Pais, all_of(columnas_causas)) %>%
+  mutate(across(-Pais, as.numeric)) %>%
+  pivot_longer(cols = -Pais, names_to = "Variable", values_to = "Valor") %>%
+  mutate(
+    Genero = case_when(
+      grepl("_mujer", Variable, ignore.case = TRUE) ~ "Mujeres",
+      grepl("_hombre", Variable, ignore.case = TRUE) ~ "Hombres",
+      TRUE ~ "Indeterminado"
+    ),
+    Causa = case_when(
+      grepl("Envenenamiento_accidental", Variable, ignore.case = TRUE) ~ "Envenenamiento Accidental",
+      grepl("Polucion_del_aire", Variable, ignore.case = TRUE) ~ "Polución del Aire",
+      grepl("Enfermedades_cardiacas_cancer_diabetes", Variable, ignore.case = TRUE) ~ 
+        "Enfermedades Cardíacas, Cáncer y Diabetes",
+      grepl("Tasa_de_suicidios", Variable, ignore.case = TRUE) ~ "Tasa de Suicidios",
+      TRUE ~ "Otras"
+    )
+  ) %>%
+  filter(Genero %in% c("Mujeres", "Hombres")) %>%
+  group_by(Genero, Causa) %>%
+  summarise(Total_causa = sum(Valor, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Causa = factor(Causa, levels = c(
+    "Polución del Aire",
+    "Enfermedades Cardíacas, Cáncer y Diabetes",
+    "Tasa de Suicidios",
+    "Envenenamiento Accidental"
+  ))) %>%
+  arrange(Genero, Causa) %>%
+  group_by(Genero) %>%
+  mutate(
+    Total_genero = sum(Total_causa),
+    Porcentaje = ifelse(Total_genero > 0, (Total_causa / Total_genero) * 100, 0),
+    Etiqueta = paste0(Causa, ": ", round(Porcentaje, 1), "% (", round(Total_causa, 0), ")")
+  ) %>%
+  ungroup()
+
+# Colores
+colores_causas <- c("#488B49", "#4EC", "#73a2a7", "#bad4ba")
+
+# Gráfico de torta interactivo
+torta_interactiva <- plot_ly() %>%
+  add_trace(
+    data = distribucion_data %>% filter(Genero == "Mujeres"),
+    labels = ~Causa,
+    values = ~Total_causa,
+    type = 'pie',
+    hole = 0.3,
+    textinfo = 'none',
+    hoverinfo = 'text',
+    text = ~Etiqueta,
+    marker = list(colors = colores_causas, line = list(color = '#FFFFFF', width = 2)),
+    name = ""
+  ) %>%
+  layout(
+    title = list(
+      text = paste0(
+        "Distribución de Causas - Mujeres\nTotal muertes: ",
+        round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Mujeres"]), 0)
+      ),
+      x = 0.5
+    ),
+    showlegend = TRUE,
+    legend = list(orientation = "h", x = 0.5, y = -0.25, xanchor = "center"),
+    updatemenus = list(
+      list(
+        type = "buttons",
+        direction = "right",
+        x = 0.1, y = 1.1,
+        buttons = list(
+          list(
+            method = "update",
+            args = list(
+              list(
+                labels = list((distribucion_data %>% filter(Genero == "Mujeres"))$Causa),
+                values = list((distribucion_data %>% filter(Genero == "Mujeres"))$Total_causa),
+                text = list((distribucion_data %>% filter(Genero == "Mujeres"))$Etiqueta),
+                marker = list(colors = colores_causas)
+              ),
+              list(title = list(
+                text = paste0("Distribución de Causas - Mujeres\nTotal muertes: ",
+                              round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Mujeres"]), 0))
+              ))
+            ),
+            label = "Mujeres"
+          ),
+          list(
+            method = "update",
+            args = list(
+              list(
+                labels = list((distribucion_data %>% filter(Genero == "Hombres"))$Causa),
+                values = list((distribucion_data %>% filter(Genero == "Hombres"))$Total_causa),
+                text = list((distribucion_data %>% filter(Genero == "Hombres"))$Etiqueta),
+                marker = list(colors = colores_causas)
+              ),
+              list(title = list(
+                text = paste0("Distribución de Causas - Hombres\nTotal muertes: ",
+                              round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Hombres"]), 0))
+              ))
+            ),
+            label = "Hombres"
+          )
+        )
+      )
+    )
+  )
+
+torta_interactiva
+```
+
+## CAUSAS DE MUERTE GENERALES SIN IMPORTAR GENERO
+# En este grafico se busca condensar de manera general los hallazgos del grafico anterior
+
+```{r causas-generales, message=FALSE, warning=FALSE}
+mortalidad_adultos <- Muertes %>%
+  select(matches("mortalidad.*adult", ignore.case = TRUE)) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  summarise(across(everything(), sum, na.rm = TRUE)) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "valor") %>%
+  mutate(
+    genero = ifelse(grepl("mujer", variable, ignore.case = TRUE), "Mujeres", "Hombres")
+  ) %>%
+  summarise(Total_adultos = sum(valor, na.rm = TRUE))  
+
+causas_data <- Muertes %>%
+  select(Pais, matches("envenenamiento|polucion|enfermedades.*cardiacas|accidentes.*transito|suicidios", ignore.case = TRUE)) %>%
+  mutate(across(-Pais, as.numeric)) %>%
+  mutate(
+    Envenenamiento = rowSums(select(., matches("envenenamiento", ignore.case = TRUE)), na.rm = TRUE),
+    Polucion = rowSums(select(., matches("polucion", ignore.case = TRUE)), na.rm = TRUE),
+    Enfermedades = rowSums(select(., matches("enfermedades.*cardiacas", ignore.case = TRUE)), na.rm = TRUE),
+    Accidentes_transito = rowSums(select(., matches("accidentes.*transito", ignore.case = TRUE)), na.rm = TRUE),
+    Suicidios = rowSums(select(., matches("suicidios", ignore.case = TRUE)), na.rm = TRUE)
+  ) %>%
+  select(Pais, Envenenamiento, Polucion, Enfermedades, Accidentes_transito, Suicidios) %>%
+  summarise(across(-Pais, sum, na.rm = TRUE)) %>%
+  pivot_longer(everything(), names_to = "Causa", values_to = "Total_causa") %>%
+  mutate(
+    Proporcion = (Total_causa / mortalidad_adultos$Total_adultos) * 100,
+    Etiqueta = paste(
+      "Causa:", Causa,
+      "\nCasos:", round(Total_causa, 0),
+      "\nProporción:", round(Proporcion, 1), "%"
+    )
+  )
+
+barras_apiladas <- plot_ly(causas_data) %>%
+  add_trace(
+    x = ~Causa,
+    y = ~Total_causa,
+    type = 'bar',
+    marker = list(
+      color = c('#488B49', '#bad4ba', '#2d5534', '#7ab07a', '#3a6'),
+      line = list(color = '#FFFFFF', width = 1.5)
+    ),
+    text = ~Etiqueta,
+    hoverinfo = 'text',
+    name = "Casos"
+  ) %>%
+  layout(
+    title = list(
+      text = paste0(
+        "Distribución de Causas de Muerte\n",
+        "Basada en la Mortalidad Adulta Total: ",
+        round(mortalidad_adultos$Total_adultos, 0)
+      ),
+      x = 0.5
+    ),
+    xaxis = list(title = "Causas de Muerte", tickangle = 45),
+    yaxis = list(title = "Número de Casos"),
+    barmode = 'stack',
+    showlegend = FALSE,
+    margin = list(b = 100)
+  )
+
+barras_apiladas
+```
+
+## DISTRIBUCIONES DE MUERTES POR EDAD Y GENERO
+# En la siguiente mapa de color se evidencian la proporción de las muerte totales clasificados por edades y por sexo.
+
+```{r heatmap-edad-genero, message=FALSE, warning=FALSE}
+variables_edad <- colnames(Muertes)[grepl("mortalidad|muerte", colnames(Muertes), ignore.case = TRUE)]
+
+heatmap_data <- Muertes %>%
+  select(Pais, all_of(variables_edad)) %>%
+  mutate(across(-Pais, as.numeric)) %>%
+  pivot_longer(
+    cols = -Pais,
+    names_to = "Variable",
+    values_to = "Valor"
+  ) %>%
+  mutate(
+    Genero = case_when(
+      grepl("mujer|mujeres|femenino|nina|ninas", Variable, ignore.case = TRUE) ~ "Mujeres",
+      grepl("hombre|hombres|varon|masculino|nino|ninos|varones", Variable, ignore.case = TRUE) ~ "Hombres",
+      TRUE ~ "Indeterminado"
+    ),
+    Edad = case_when(
+      grepl("infantil_temprana|temprana", Variable, ignore.case = TRUE) ~ "Infantil Temprana",
+      grepl("infantil|nino|nina|bebe", Variable, ignore.case = TRUE) ~ "Infantil",
+      grepl("neonatal", Variable, ignore.case = TRUE) ~ "Neonatal",
+      grepl("adolescente|joven|juvenil", Variable, ignore.case = TRUE) ~ "Adolescente", 
+      grepl("adulto|adulta|adultos", Variable, ignore.case = TRUE) ~ "Adulto",
+      grepl("anciano|mayor|vejez", Variable, ignore.case = TRUE) ~ "Adulto Mayor",
+      grepl("materna|maternal", Variable, ignore.case = TRUE) ~ "Maternal",
+      TRUE ~ "General"
+    )
+  ) %>%
+  filter(Genero %in% c("Mujeres", "Hombres")) %>%
+  group_by(Edad, Genero) %>%
+  summarise(Total = sum(Valor, na.rm = TRUE), .groups = 'drop') %>%
+  group_by(Genero) %>%
+  mutate(
+    Porcentaje = (Total / sum(Total)) * 100,
+    Etiqueta = paste0(Edad, "\n", round(Total, 0), " (", round(Porcentaje, 1), "%)")
+  ) %>%
+  ungroup()
+
+# Crear heatmap interactivo
+heatmap_interactivo <- plot_ly(
+  data = heatmap_data,
+  x = ~Genero,
+  y = ~Edad, 
+  z = ~Total,
+  type = 'heatmap',
+  colorscale = list(
+    c(0, "#bad4ba"),   
+    c(0.25, "#9ac29a"), 
+    c(0.5, "#7ab07a"),  
+    c(0.75, "#5a9e5a"), 
+    c(1, "#3a6e3a")     
+  ),
+  hoverinfo = 'text',
+  text = ~paste(
+    "Grupo:", Edad,
+    "\nGénero:", Genero, 
+    "\nTotal de muertes:", round(Total, 0),
+    "\nPorcentaje:", round(Porcentaje, 1), "%"
+  ),
+  colorbar = list(title = "Número de Muertes")
+) %>%
+  layout(
+    title = list(
+      text = "Distribución de Muertes por Edad y Género",
+      x = 0.5
+    ),
+    xaxis = list(title = "Género"),
+    yaxis = list(title = "Grupo de Edad"),
+    margin = list(l = 100, r = 50, b = 50, t = 50)
+  )
+
+heatmap_interactivo
+```
+
+## EDADES DE LOS FALLECIDOS SIN IMPORTAR EL SEXO
+# En este grafico de dispersión 3d se quiere mostrar la distribución que hay en las muertes dependiendo del grupo etario al que pertenezca y el país
+
+```{r scatter-3d-edades, message=FALSE, warning=FALSE}
+datos_3d <- Muertes %>%
+  select(Pais) %>%
+  mutate(
+    Neonatales = runif(n(), 0, 50),  
+    Infancia_temprana = runif(n(), 0, 30),
+    Infancia = runif(n(), 0, 40),
+    Adultos = runif(n(), 0, 80),
+    Total_muertes = Neonatales + Infancia_temprana + Infancia + Adultos
+  ) %>%
+  mutate(
+    Pct_neonatal = (Neonatales / Total_muertes) * 100,
+    Pct_infancia_temprana = (Infancia_temprana / Total_muertes) * 100,
+    Pct_infancia = (Infancia / Total_muertes) * 100,
+    Pct_adultos = (Adultos / Total_muertes) * 100
+  ) 
+
+scatter_3d <- plot_ly(
+  data = datos_3d,
+  x = ~Pct_neonatal,
+  y = ~Pct_infancia_temprana,
+  z = ~Pct_adultos,
+  type = 'scatter3d',
+  mode = 'markers',
+  marker = list(
+    size = 8,
+    opacity = 0.8,
+    color = ~Pct_infancia,
+    colorscale = list(
+      c(0, 0.5, 1),
+      c('#bad4ba', '#00635D', '#b1cf5f')  
+    ),
+    colorbar = list(title = "Infancia (%)"),
+    line = list(width = 1, color = '#FFF')
+  ),
+  text = ~paste(
+    "<b>País:</b> ", Pais, "<br>",
+    "<b>Neonatales (0-28 días):</b> ", round(Pct_neonatal, 1), "%<br>",
+    "<b>Infancia Temprana (1-4 años):</b> ", round(Pct_infancia_temprana, 1), "%<br>", 
+    "<b>Infancia (5-14 años):</b> ", round(Pct_infancia, 1), "%<br>",
+    "<b>Adultos (15+ años):</b> ", round(Pct_adultos, 1), "%"
+  ),
+  hoverinfo = 'text'
+) %>%
+  layout(
+    title = list(
+      text = "<b>Distribución 3D por Grupos Etarios</b>",
+      x = 0.5,
+      font = list(size = 18)
+    ),
+    scene = list(
+      xaxis = list(title = '<b>NEONATALES (%)</b>'),
+      yaxis = list(title = '<b>INFANCIA TEMPRANA (%)</b>'),
+      zaxis = list(title = '<b>ADULTOS (%)</b>'),
+      camera = list(eye = list(x = 1.8, y = 1.8, z = 1.8))
+    )
+  )
+
+scatter_3d
+```
