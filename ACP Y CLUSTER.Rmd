@@ -30,6 +30,14 @@ library(dplyr)
 library(tidyr)
 library(ggforce)
 library(cluster)
+
+library(ggplot2)
+library(reshape2)
+library(reshape2)
+library(ggplot2)
+library(reactable)
+library(reactablefmtr)
+library(kableExtra)
 ```
 
 ##Cargar y Preparar Datos
@@ -42,8 +50,6 @@ Muertes <- data.frame(Muertes_ans)
 # Limpieza y selección de variables
 Muertes <- Muertes[-(218:245), ]
 Muertes <- na.omit(Muertes)
-
-# Renombrar columnas
 colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", 
                        "Accidentes_de_transito", "Enfermedades_cardiacas_cancer_diabetes_mujeres", 
                        "Enfermedades_cardiacas_cancer_diabetes_hombres", "Polucion_del_aire_mujeres", 
@@ -233,8 +239,6 @@ Muertes_df <- Muertes %>%
   mutate(across(everything(), as.numeric)) %>%
   scale()
 rownames(Muertes_df) <- Muertes$Pais
-
-# Ver las primeras filas y columnas
 head(Muertes_df[, 1:6])
 
 # Realizar el ACP con datos ya escalados
@@ -246,10 +250,7 @@ res.pca
 ##matriz correlaciones
 
 ```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=9, fig.height=7}
-library(ggplot2)
-library(reshape2)
 
-# Vector de nombres cortos con los nombres correctos del dataframe:
 nombres_cortos <- c(
   "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
   "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
@@ -275,27 +276,20 @@ nombres_cortos <- c(
   "Supervivencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
 )
 
-# 1. Selecciona las 22 variables (excluye País)
 variables_requeridas <- names(nombres_cortos)
 Muertes_filtradas <- Muertes[, variables_requeridas]
 Muertes_filtradas[] <- lapply(Muertes_filtradas, as.numeric)
 
-# 2. Renombra columnas a los cortos
 colnames(Muertes_filtradas) <- nombres_cortos
 
-# 3. Elimina filas con NA
 Muertes_filtradas <- na.omit(Muertes_filtradas)
 
-# 4. Calcula la matriz de correlación
 cor_matrix <- cor(Muertes_filtradas, use = "pairwise.complete.obs")
 
-# 5. Prepara datos para graficar sin NA
-library(reshape2)
+
 cor_melted <- melt(cor_matrix)
 names(cor_melted) <- c("Var1", "Var2", "value")
 
-# 6. Gráfica
-library(ggplot2)
 p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
   geom_tile(color = "grey90") +
   scale_fill_gradient2(
@@ -330,8 +324,8 @@ p2 <- fviz_eig(res.pca,
          barfill = "#2E8B57",
          barcolor = "#2E8B57",
          linecolor = "#FF6B35",
-         choice = "variance",  # Mostrar varianza en lugar de eigenvalues
-         geom = "bar",         # Usar barras en lugar de líneas
+         choice = "variance",  
+         geom = "bar",         
          main = "ANÁLISIS DE COMPONENTES PRINCIPALES - SCREE PLOT",
          xlab = "Número de Componente Principal",
          ylab = "Porcentaje de Varianza Explicada",
@@ -349,7 +343,6 @@ print(p2)
 ## Definición de Nombres Cortos para Variables
 
 ```{r nombres-cortos-variables}
-# Definir nombres cortos para usar en los círculos de correlación
 nombres_cortos_var <- c(
   "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
   "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
@@ -379,21 +372,13 @@ nombres_cortos_var <- c(
 ## Preparación de Datos para Círculos de Correlación
 
 ```{r preparacion-datos}
-# Extraer datos DIRECTAMENTE del objeto res.pca (prcomp)
-# Las coordenadas están en res.pca$rotation (loadings)
 var_coord <- res.pca$rotation
-
 # Calcular eigenvalues y porcentajes de varianza
 eigenvalues <- res.pca$sdev^2
 total_variance <- sum(eigenvalues)
 percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
 percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
 percent_pc3 <- round((eigenvalues[3] / total_variance) * 100, 1)
-
-# Calcular contribuciones CORRECTAMENTE como lo hace factoextra
-# La contribución es relativa al total de inercia en las dimensiones mostradas
-# Para PC1 y PC2: contrib = (coord^2 * eigenvalue / suma_eigenvalues_PC1_PC2) * 100
-# Para PC1 y PC3: contrib = (coord^2 * eigenvalue / suma_eigenvalues_PC1_PC3) * 100
 
 # Contribución para el gráfico PC1 vs PC2
 contrib_12_PC1 <- (var_coord[,1]^2 * eigenvalues[1]) / (eigenvalues[1] + eigenvalues[2]) * 100
@@ -433,42 +418,36 @@ df_var_plot$Variable_corto[is.na(df_var_plot$Variable_corto)] <-
 
 ```{r grafico individuos,fig.width=9, fig.height=7}
 library(factoextra)
-library(plotly)
 
-# Extraer datos del PCA - asumiendo que res.pca es un objeto de FactoMineR
 pca_data <- get_pca_ind(res.pca)
 
-# Crear dataframe con las 2 primeras dimensiones
 df <- data.frame(
   País = rownames(pca_data$coord),
   PC1 = pca_data$coord[,1],
   PC2 = pca_data$coord[,2]
 )
 
-# Calcular calidad de representación (cos2) en las 2 dimensiones
 if(!is.null(pca_data$cos2)) {
   df$Cos2 <- rowSums(pca_data$cos2[,1:2])
 } else {
-  # Si no hay cos2, calculamos manualmente como la suma de los cuadrados de las coordenadas en las dos primeras dimensiones dividido por la suma de los cuadrados de todas las coordenadas
+
   df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
 }
 
-# Obtener los porcentajes de varianza explicada
-# Para un objeto de FactoMineR, los autovalores y porcentajes están en res.pca$eig
+
 if(inherits(res.pca, "PCA")) {
-  # Si es un objeto PCA de FactoMineR
+ 
   percent_pc1 <- round(res.pca$eig[1,2], 1)
   percent_pc2 <- round(res.pca$eig[2,2], 1)
 } else {
-  # Si es un objeto de prcomp (o otro)
-  # Calculamos la varianza explicada
+ 
   eigenvalues <- res.pca$sdev^2
   total_variance <- sum(eigenvalues)
   percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
   percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
 }
 
-# Crear gráfico 2D interactivo
+# Gráfico 2D interactivo
 p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
               type = 'scatter',
               mode = 'markers',
@@ -524,7 +503,6 @@ p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
     showlegend = FALSE
   )
 
-# Mostrar el gráfico
 p3
 ```
 
@@ -753,15 +731,10 @@ eig.val
 ```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
 res.var <- get_pca_var(res.pca)
 
-# Coordenadas
 head(res.var$coord)
-
-# Contribuciones a los CPs
 head(res.var$contrib)
-
-# Calidad de representación
 head(res.var$cos2)
-# Visualizar contribuciones de variables a los primeros componentes
+
 colSums(res.var$contrib[,1:2])
 ```
 
@@ -770,40 +743,31 @@ colSums(res.var$contrib[,1:2])
 ```{r resultados-individuos, message=FALSE, warning=FALSE, results='hide'}
 res.ind <- get_pca_ind(res.pca)
 
-# Coordenadas
 head(res.ind$coord)
-
-# Contribuciones a los CPs
 head(res.ind$contrib[,1:3])
-
-# Calidad de representación
 head(res.ind$cos2)
+
 ```
 
 # Tabla Interactiva de Contribuciones
 
 ```{r tabla-contribuciones}
-library(reactable)
-library(reactablefmtr)
 
-# 1. Paleta de color
+
 verde_principal <- "#488B49"
 
-# 2. Función para crear escala de colores: de blanco a verde
 color_scale <- function(values, color_low = "#FFFFFF", color_high = verde_principal) {
   normalized <- (values - min(values)) / (max(values) - min(values))
   colors <- colorRamp(c(color_low, color_high))(normalized)
   rgb(colors[,1], colors[,2], colors[,3], maxColorValue = 255)
 }
 
-# 3. Función auxiliar para determinar color de texto adecuado
 suitable_text_color <- function(hex_color) {
   rgb <- col2rgb(hex_color)/255
   luminance <- 0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]
   if (luminance < 0.5) 'white' else '#2E7D32'
 }
 
-# 4. Crea tu dataframe (ajusta res.ind$contrib según tu análisis)
 contribuciones_df <- data.frame(
   País = rownames(res.ind$contrib),
   PC1 = res.ind$contrib[,1],
@@ -813,12 +777,10 @@ contribuciones_df <- data.frame(
 )
 contribuciones_df <- contribuciones_df[order(contribuciones_df$PC1, decreasing = TRUE), ]
 
-# 5. Genera los colores
 pc1_colors <- color_scale(contribuciones_df$PC1)
 pc2_colors <- color_scale(contribuciones_df$PC2)
 pc3_colors <- color_scale(contribuciones_df$PC3)
 
-# 6. Tabla reactable con estilos correctos y contraste de texto automático
 tabla_contribuciones <- reactable(
   contribuciones_df,
   defaultPageSize = 15,
@@ -927,7 +889,7 @@ tabla_contribuciones
 ```
 
 ```{r top pc1,fig.width=9, fig.height=7}
-# Crear tabla del top 5 de contribución a PC1 por países
+
 top5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
   as.data.frame() %>%
   arrange(desc(.[,1])) %>%
@@ -936,9 +898,6 @@ top5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
   mutate(País = rownames(.)) %>%
   select(País, "Contribución (%)") %>%
   mutate("Contribución (%)" = round(`Contribución (%)`, 3))
-
-# Mostrar tabla formateada
-library(kableExtra)
 
 top5_pc1 %>%
   kbl(align = c('l', 'c'),
@@ -956,7 +915,6 @@ top5_pc1 %>%
 
 
 ```{r top 5 mas pc2,fig.width=9, fig.height=7}
-# Crear tabla del top 5 de contribución a PC2 por países
 top5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
   as.data.frame() %>%
   arrange(desc(.[,1])) %>%
@@ -966,7 +924,6 @@ top5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
   select(País, "Contribución (%)") %>%
   mutate("Contribución (%)" = round(`Contribución (%)`, 3))
 
-# Mostrar tabla formateada
 top5_pc2 %>%
   kbl(align = c('l', 'c'),
       caption = "Top 5 Países por Contribución al Componente Principal 2 (PC2)") %>%
@@ -984,7 +941,6 @@ top5_pc2 %>%
 
 
 ```{r top 5 mas pc3,fig.width=9, fig.height=7}
-# Crear tabla del top 5 de contribución a PC3 por países
 top5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
   as.data.frame() %>%
   arrange(desc(.[,1])) %>%
@@ -994,7 +950,7 @@ top5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
   select(País, "Contribución (%)") %>%
   mutate("Contribución (%)" = round(`Contribución (%)`, 3))
 
-# Mostrar tabla formateada
+
 top5_pc3 %>%
   kbl(align = c('l', 'c'),
       caption = "Top 5 Países por Contribución al Componente Principal 3 (PC3)") %>%
@@ -1539,226 +1495,27 @@ tabla_clusters <- reactable(
 tabla_clusters
 ```
 
-
-## Gráfico de Individuos (Países) - Componentes 1 y 2
-
-```{r grafico_paises_interactivo,fig.width=9, fig.height=7}
-plotly_p1 <- plot_ly(acp_ind, 
-                     x = ~Axis1, y = ~Axis2, 
-                     color = ~Cluster,
-                     colors = viridis_pal()(2),
-                     text = ~paste("País:", Pais, 
-                                   "Cluster:", Cluster,
-                                   "Comp1:", round(Axis1, 2),
-                                   "Comp2:", round(Axis2, 2)),
-                     hoverinfo = "text",
-                     type = "scatter",
-                     mode = "markers",
-                     marker = list(size = 10, opacity = 0.7, line = list(width = 1))) %>%
-  layout(title = "ACP Interactivo - Países por Cluster",
-         xaxis = list(title = paste0("Dimensión 1 (", var_exp[1], "%)")),
-         yaxis = list(title = paste0("Dimensión 2 (", var_exp[2], "%)")),
-         hoverlabel = list(bgcolor = "white"))
-
-plotly_p1
-```
-
-## Círculo de Correlaciones
-
-```{r circulo_correlaciones,fig.width=9, fig.height=7}
-library(plotly)
-
-# Crear nombres cortos para las variables
-nombres_cortos <- c(
-  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
-  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
-  "Accidentes_de_transito" = "Accidentes Tránsito",
-  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
-  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
-  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
-  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
-  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
-  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
-  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
-  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
-  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
-  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
-  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
-  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
-  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
-  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
-  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
-  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
-  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
-  "Supervivenencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
-  "Supervivenencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
-)
-
-# Preparar datos
+## Preparación de datos para Biplot
+```{r preparacion-circle-data}
+# Crear circle_data con las coordenadas de las variables
 circle_data <- data.frame(
-  Axis1 = acp_var[,1],
-  Axis2 = acp_var[,2],
-  Variable = rownames(acp_var)
+  Variable = rownames(acp_var),
+  Axis1 = acp_var$Axis1,
+  Axis2 = acp_var$Axis2,
+  Axis3 = acp_var$Axis3
 )
 
-# Aplicar nombres cortos
-circle_data$NombreCorto <- nombres_cortos[circle_data$Variable]
+# Aplicar nombres cortos a las variables
+circle_data$Variable_corto <- nombres_cortos_var[circle_data$Variable]
 
-# Calcular métricas para tooltips
-circle_data$Longitud <- sqrt(circle_data$Axis1^2 + circle_data$Axis2^2)
-circle_data$Angulo <- round(atan2(circle_data$Axis2, circle_data$Axis1) * 180/pi, 1)
-circle_data$Correlacion <- round(circle_data$Longitud, 3)
-
-# Crear gráfico interactivo profesional
-plot_interactivo <- plot_ly() %>%
-  
-  # Añadir círculo de referencia
-  add_trace(
-    type = "scatter",
-    x = cos(seq(0, 2*pi, length.out = 100)),
-    y = sin(seq(0, 2*pi, length.out = 100)),
-    mode = "lines",
-    line = list(color = "blue", dash = "dash", width = 1),
-    hoverinfo = "none",
-    showlegend = FALSE,
-    name = "Círculo unidad"
-  ) %>%
-  
-  # Añadir flechas
-  add_annotations(
-    x = circle_data$Axis1,
-    y = circle_data$Axis2,
-    ax = 0,
-    ay = 0,
-    text = "",
-    showarrow = TRUE,
-    arrowhead = 2,
-    arrowsize = 1.2,
-    arrowwidth = 2,
-    arrowcolor = "#E41A1C",
-    opacity = 0.8
-  ) %>%
-  
-  # Añadir puntos interactivos
-  add_trace(
-    data = circle_data,
-    x = ~Axis1,
-    y = ~Axis2,
-    type = "scatter",
-    mode = "markers",
-    marker = list(
-      size = 10,
-      color = "#E41A1C",
-      line = list(color = "white", width = 2)
-    ),
-    text = ~paste(
-      "<b>Variable:</b> ", NombreCorto,
-      "<br><b>Correlación Comp. 1:</b> ", round(Axis1, 3),
-      "<br><b>Correlación Comp. 2:</b> ", round(Axis2, 3),
-      "<br><b>Longitud vector:</b> ", round(Longitud, 3),
-      "<br><b>Ángulo:</b> ", Angulo, "°",
-      "<br><b>Variable original:</b><br>", Variable
-    ),
-    hoverinfo = "text",
-    hoverlabel = list(bgcolor = "white", bordercolor = "black"),
-    showlegend = FALSE
-  ) %>%
-  
-  # Añadir etiquetas con nombres cortos
-  add_annotations(
-    x = circle_data$Axis1 * 1.15,
-    y = circle_data$Axis2 * 1.15,
-    text = circle_data$NombreCorto,
-    showarrow = FALSE,
-    font = list(
-      family = "Arial",
-      size = 11,
-      color = "darkred",
-      weight = "bold"
-    ),
-    bgcolor = "rgba(255,255,255,0.85)",
-    bordercolor = "rgba(200,0,0,0.3)",
-    borderwidth = 1,
-    borderpad = 4,
-    opacity = 0.9
-  ) %>%
-  
-  layout(
-    title = list(
-      text = paste0(
-        "<b> CÍRCULO DE CORRELACIONES - </b><br>",
-        "<sup>Dimensión 1 (", var_exp[1], "%) vs Dimensión 2 (", var_exp[2], "%)</sup>"
-      ),
-      x = 0.5,
-      font = list(size = 20, family = "Arial")
-    ),
-    xaxis = list(
-      title = paste0("<b>Dimensión 1 (", var_exp[1], "%)</b>"),
-      range = c(-1.3, 1.3),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1.5,
-      titlefont = list(size = 14)
-    ),
-    yaxis = list(
-      title = paste0("<b>Dimensión 2 (", var_exp[2], "%)</b>"),
-      range = c(-1.3, 1.3),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1.5,
-      scaleanchor = "x",
-      titlefont = list(size = 14)
-    ),
-    plot_bgcolor = "white",
-    paper_bgcolor = "white",
-    font = list(family = "Arial"),
-    hoverlabel = list(
-      bgcolor = "white",
-      bordercolor = "black",
-      font = list(family = "Arial", size = 12)
-    ),
-    showlegend = FALSE,
-    margin = list(t = 100, b = 80, l = 80, r = 80)
-  )
-
-plot_interactivo
+# Si no hay nombre corto disponible, usar el original
+circle_data$Variable_corto[is.na(circle_data$Variable_corto)] <- 
+  circle_data$Variable[is.na(circle_data$Variable_corto)]
 ```
 
 ## Biplot Interactivo
-
-```{r biplot_interactivo,fig.width=9, fig.height=7}
-# Crear nombres cortos para las variables
-nombres_cortos <- c(
-  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
-  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
-  "Accidentes_de_transito" = "Accidentes Tránsito",
-  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
-  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
-  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
-  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
-  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
-  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
-  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
-  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
-  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
-  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
-  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
-  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
-  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
-  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
-  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
-  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
-  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
-  "Supervivenencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
-  "Supervivenencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
-)
-
-# Aplicar nombres cortos a circle_data
-circle_data$Variable_corto <- nombres_cortos[circle_data$Variable]
-
-# Crear lista de anotaciones para las flechas
+```{r biplot_interactivo, fig.width=9, fig.height=7}
+# Preparar anotaciones de flechas
 anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
   list(
     x = circle_data$Axis1[i] * 3,
@@ -1781,19 +1538,22 @@ anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
 # Obtener clusters únicos
 clusters <- unique(acp_ind$Cluster)
 
-# Biplot interactivo profesional CORREGIDO
+# Crear el gráfico base
 plotly_biplot <- plot_ly()
 
-# Agregar un trace por cada cluster
+# Agregar puntos por cluster
 for(cluster in clusters) {
   datos_cluster <- acp_ind[acp_ind$Cluster == cluster, ]
+  color_cluster <- colores_clusters[as.character(cluster)]
   
   plotly_biplot <- plotly_biplot %>%
     add_trace(data = datos_cluster,
               x = ~Axis1, y = ~Axis2,
               type = "scatter",
               mode = "markers",
-              marker = list(size = 9, opacity = 0.7, line = list(width = 1, color = 'darkgray')),
+              marker = list(size = 9, opacity = 0.7, 
+                          line = list(width = 1, color = 'darkgray'),
+                          color = color_cluster),
               name = paste("Cluster", cluster),
               text = ~paste("<b>País:</b>", Pais, 
                             "<br><b>Cluster:</b>", Cluster,
@@ -1804,14 +1564,15 @@ for(cluster in clusters) {
               legendgroup = "paises")
 }
 
-# Agregar variables - TEXTO
+# Agregar las variables (flechas y etiquetas)
 plotly_biplot <- plotly_biplot %>%
   add_trace(data = circle_data,
             x = ~Axis1*3, y = ~Axis2*3,
             text = ~Variable_corto,
             type = "scatter",
             mode = "text",
-            textfont = list(color = "#E41A1C", size = 11, family = "Arial", weight = "bold"),
+            textfont = list(color = "#E41A1C", size = 11, 
+                           family = "Arial", weight = "bold"),
             name = "Variables",
             hoverinfo = "text",
             hovertext = ~paste("<b>Variable:</b>", Variable_corto,
@@ -1820,16 +1581,13 @@ plotly_biplot <- plotly_biplot %>%
             showlegend = TRUE,
             legendgroup = "variables")
 
-# Crear la configuración de visibilidad según número de clusters
+# Preparar vectores de visibilidad para los botones
 n_clusters <- length(clusters)
-# Para "Solo Países": primeros n_clusters traces visibles, último oculto
 visible_solo_paises <- c(rep(TRUE, n_clusters), FALSE)
-# Para "Solo Variables": primeros n_clusters traces ocultos, último visible
 visible_solo_variables <- c(rep(FALSE, n_clusters), TRUE)
-# Para "Ambos": todos visibles
 visible_ambos <- rep(TRUE, n_clusters + 1)
 
-# Layout con botones corregidos
+# Configurar el layout con botones
 plotly_biplot <- plotly_biplot %>%
   layout(
     title = list(
@@ -1865,9 +1623,7 @@ plotly_biplot <- plotly_biplot %>%
       bordercolor = 'gray',
       borderwidth = 1
     ),
-    # Agregar las flechas como anotaciones fijas
     annotations = anotaciones_flechas,
-    # Botones de control CORREGIDOS
     updatemenus = list(
       list(
         type = "buttons",
@@ -1880,7 +1636,6 @@ plotly_biplot <- plotly_biplot %>%
         bordercolor = "#CCCCCC",
         borderwidth = 1,
         buttons = list(
-          # Botón 1: Solo Países
           list(
             method = "update",
             args = list(
@@ -1889,7 +1644,6 @@ plotly_biplot <- plotly_biplot %>%
             ),
             label = "Solo Países"
           ),
-          # Botón 2: Solo Variables
           list(
             method = "update",
             args = list(
@@ -1898,7 +1652,6 @@ plotly_biplot <- plotly_biplot %>%
             ),
             label = "Solo Variables"
           ),
-          # Botón 3: Ambos
           list(
             method = "update",
             args = list(
@@ -1912,9 +1665,9 @@ plotly_biplot <- plotly_biplot %>%
     )
   )
 
+# Mostrar el gráfico
 plotly_biplot
 ```
-
 
 ## Gráfico PC1 vs PC2 - Clusters
 
@@ -1966,10 +1719,10 @@ plot_clusters_12 <- ggplot(df_clusters, aes(x = PC1, y = PC2, color = Cluster, f
   scale_fill_manual(values = colores_clusters, name = "Cluster") +
   # Etiquetas y título
   labs(
-    title = "Análisis de Clusters - Componentes Principales 1 y 2",
+    title = "Análisis de Clusters - Dimensiones Principales 1 y 2",
     subtitle = "Elipses de confianza al 95% con centroides",
-    x = paste0("Componente Principal 1 (", var_exp[1], "%)"),
-    y = paste0("Componente Principal 2 (", var_exp[2], "%)")
+    x = paste0("Dimensión Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Dimensión Principal 2 (", var_exp[2], "%)")
   ) +
   # Tema
   theme_minimal(base_size = 14) +
@@ -2026,10 +1779,10 @@ plot_clusters_13 <- ggplot(df_clusters, aes(x = PC1, y = PC3, color = Cluster, f
   scale_fill_manual(values = colores_clusters, name = "Cluster") +
   # Etiquetas y título
   labs(
-    title = "Análisis de Clusters - Componentes Principales 1 y 3",
+    title = "Análisis de Clusters - Dimensión Principales 1 y 3",
     subtitle = "Elipses de confianza al 95% con centroides",
-    x = paste0("Componente Principal 1 (", var_exp[1], "%)"),
-    y = paste0("Componente Principal 3 (", var_exp[3], "%)")
+    x = paste0("Dimensión Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Dimensión Principal 3 (", var_exp[3], "%)")
   ) +
   # Tema
   theme_minimal(base_size = 14) +
@@ -2053,12 +1806,3 @@ print(plot_clusters_13)
 ```
 
 
-## Información General del Análisis
-
-# Resumen Estadístico del Análisis
-
-## 1. Información General
-
-
-
----
