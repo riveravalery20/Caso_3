@@ -998,7 +998,6 @@ kbl(tabla, caption = "Análisis de Dimensiones en Indicadores de Salud Pública"
     general_title = "Nota:"
   )
 ```
-
 # CLUSTER
 
 ## Análisis de Componentes Principales

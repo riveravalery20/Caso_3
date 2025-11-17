@@ -86,13 +86,16 @@ window.addEventListener('load', function() {
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,  # ⭐ CAMBIADO A TRUE - ESTO ES CRÍTICO
+  echo = TRUE,
   warning = FALSE,
   message = FALSE,
   fig.align = "center",
-  fig.width = 10,
-  fig.height = 6,
-  class.source = "r-code-chunk"  # ⭐ AGREGADO: clase CSS personalizada
+  fig.width = 7,
+  fig.height = 4.5,
+  out.width = "85%",
+  class.source = "r-code-chunk",
+  dev = "png",
+  dpi = 120
 )
 
 library(ggplot2)
@@ -100,132 +103,237 @@ library(dplyr)
 library(knitr)
 library(kableExtra)
 library(tibble)
+library(showtext)
+library(factoextra)
+
+# Configurar fuentes
+font_add_google("Source Serif Pro", "Source Serif Pro")
+font_add_google("Merriweather", "Merriweather")
+font_add_google("Lato", "Lato")
+showtext_auto()
+
 options(kableExtra.html.bsTable = TRUE)
 
 # =============================================================================
-# CONFIGURACIÓN AUTOMÁTICA PARA GRÁFICOS GGPLOT2
+# TEMA GGPLOT2 PERSONALIZADO
 # =============================================================================
 
-# Tema personalizado que se aplicará automáticamente
 theme_custom <- function() {
-  theme_minimal(base_family = "Segoe UI") +
+  theme_minimal(base_size = 11) +
     theme(
-      # Textos y títulos
+      text = element_text(family = "Source Serif Pro", size = 11, color = "#2C3E50"),
+      
       plot.title = element_text(
-        size = 18, 
+        family = "Merriweather",
+        size = 14,
         face = "bold", 
+        hjust = 0.5,
         color = "#488B49",
-        hjust = 0.5,
-        margin = margin(b = 10)
-      ),
-      plot.subtitle = element_text(
-        size = 14, 
-        color = "#6c757d",
-        hjust = 0.5,
         margin = margin(b = 15)
       ),
+      plot.subtitle = element_text(
+        family = "Source Serif Pro",
+        size = 12,
+        hjust = 0.5,
+        color = "#4A6572",
+        margin = margin(b = 12)
+      ),
+      plot.caption = element_text(
+        family = "Lato",
+        size = 9,
+        color = "#4A6572",
+        hjust = 0.5,
+        face = "italic",
+        margin = margin(t = 10)
+      ),
+      
       axis.title = element_text(
-        size = 12, 
-        color = "#488B49",
-        face = "bold"
+        family = "Lato",
+        size = 11,
+        face = "bold",
+        color = "#488B49"
       ),
+      axis.title.x = element_text(margin = margin(t = 10)),
+      axis.title.y = element_text(margin = margin(r = 10)),
       axis.text = element_text(
-        size = 10, 
-        color = "#333333"
-      ),
-      legend.title = element_text(
-        color = "#488B49",
+        family = "Lato",
+        size = 10,
+        color = "#4A6572",
         face = "bold"
+      ),
+      axis.line = element_line(color = "#73e2a7", linewidth = 0.5),
+      axis.ticks = element_line(color = "#73e2a7", linewidth = 0.3),
+      
+      legend.title = element_text(
+        family = "Lato",
+        size = 11,
+        face = "bold",
+        color = "#488B49"
       ),
       legend.text = element_text(
-        color = "#333333"
+        family = "Lato", 
+        size = 10,
+        color = "#4A6572"
       ),
+      legend.background = element_rect(fill = "#F8FCFB", color = "#E1F0ED"),
+      legend.key = element_rect(fill = "#F8FCFB", color = NA),
       
-      # Fondos y grids
-      plot.background = element_rect(fill = "#f8f9fa", color = NA),
+      panel.grid.major = element_line(
+        color = "#E1F0ED", 
+        linewidth = 0.5,
+        linetype = "solid"
+      ),
+      panel.grid.minor = element_line(
+        color = "#F8FCFB", 
+        linewidth = 0.3,
+        linetype = "solid"
+      ),
       panel.background = element_rect(fill = "white", color = NA),
-      panel.grid.major = element_line(color = "#e9ecef", linewidth = 0.5),
-      panel.grid.minor = element_blank(),
-      legend.background = element_rect(fill = "white", color = NA),
+      plot.background = element_rect(fill = "white", color = NA),
       
-      # Márgenes
-      plot.margin = margin(20, 20, 20, 20),
-      panel.spacing = unit(1, "lines")
+      plot.margin = margin(15, 15, 15, 15),
+      panel.spacing = unit(1.5, "lines"),
+      
+      strip.background = element_rect(
+        fill = "#488B49",
+        color = "#488B49",
+        linewidth = 1
+      ),
+      strip.text = element_text(
+        family = "Lato",
+        color = "white",
+        face = "bold",
+        size = 11
+      )
     )
 }
 
-# Aplicar el tema automáticamente a TODOS los gráficos ggplot2
+# ⭐ APLICAR EL TEMA AUTOMÁTICAMENTE A GGPLOT2
 theme_set(theme_custom())
 
-# Paleta de colores personalizada
+# =============================================================================
+# FUNCIÓN WRAPPER PARA FACTOEXTRA - VERSIÓN QUE SÍ FUNCIONA
+# =============================================================================
+
+fviz_eig_custom <- function(...) {
+  p <- fviz_eig(..., ggtheme = theme_void())  # ✅ Limpiar tema base primero
+  p + theme_custom()  # ✅ Aplicar tu tema completo
+}
+
+fviz_pca_custom <- function(...) {
+  p <- fviz_pca(..., ggtheme = theme_void())
+  p + theme_custom()
+}
+
+fviz_pca_ind_custom <- function(...) {
+  p <- fviz_pca_ind(..., ggtheme = theme_void())
+  p + theme_custom()
+}
+
+fviz_pca_var_custom <- function(...) {
+  p <- fviz_pca_var(..., ggtheme = theme_void())
+  p + theme_custom()
+}
+
+fviz_pca_biplot_custom <- function(...) {
+  p <- fviz_pca_biplot(..., ggtheme = theme_void())
+  p + theme_custom()
+}
+
+fviz_dend_custom <- function(...) {
+  p <- fviz_dend(..., ggtheme = theme_void())
+  p + theme_custom()
+}
+
+fviz_cluster_custom <- function(...) {
+  p <- fviz_cluster(..., ggtheme = theme_void())
+  p + theme_custom()
+}
+
+# =============================================================================
+# PALETA DE COLORES VERDE
+# =============================================================================
+
 colores_personalizados <- c(
-  "#488B49", "#73e2a7", "#2d5534", "#1c7c54", "#b1cf5f", 
-  "#3a6e3a", "#5a9e5a", "#7ab07a", "#9ac29a", "#bad4ba"
+  "#488B49",  # Verde principal
+  "#73e2a7",  # Verde claro
+  "#2d5534",  # Verde oscuro
+  "#1c7c54",  # Verde medio
+  "#b1cf5f",  # Verde lima
+  "#3a6e3a",  # Verde bosque
+  "#5a9e5a",  # Verde pasto
+  "#7ab07a",  # Verde salvia
+  "#9ac29a",  # Verde menta
+  "#bad4ba"   # Verde pastel
 )
 
-# Funciones para usar la paleta automáticamente
-scale_color_custom <- function(...) {
-  scale_color_manual(..., values = colores_personalizados)
+scale_color_custom <- function(palette = colores_personalizados, ...) {
+  scale_color_manual(values = palette, ...)
 }
 
-scale_fill_custom <- function(...) {
-  scale_fill_manual(..., values = colores_personalizados)
+scale_fill_custom <- function(palette = colores_personalizados, ...) {
+  scale_fill_manual(values = palette, ...)
 }
 
+scale_fill_gradient_custom <- function(low = "#b1cf5f", high = "#2d5534", ...) {
+  scale_fill_gradient(low = low, high = high, ...)
+}
+
+scale_color_gradient_custom <- function(low = "#b1cf5f", high = "#2d5534", ...) {
+  scale_color_gradient(low = low, high = high, ...)
+}
 
 # =============================================================================
-# CONFIGURACIÓN AUTOMÁTICA PARA TABLAS (FUNCIONAL CON CSS PERSONALIZADO)
+# SOBRESCRIBIR KABLE PARA AUTO-ESTILIZADO
 # =============================================================================
 
-library(kableExtra)
-library(htmltools)
+kable_original <- knitr::kable
 
-# Función base para crear la tabla con estilo kableExtra
-kable_custom <- function(data, caption = NULL, ...) {
-  kbl(data, caption = caption, format = "html", ...) %>%
+kable <- function(x, format = "html", ..., 
+                  bootstrap_options = c("striped", "hover", "condensed"),
+                  full_width = TRUE,
+                  position = "center") {
+  
+  if (inherits(x, "knitr_kable")) {
+    return(x)
+  }
+  
+  tabla <- kable_original(x, format = format, ...) %>%
+    kable_styling(
+      bootstrap_options = bootstrap_options,
+      full_width = full_width,
+      position = position,
+      font_size = 14,
+      html_font = "Source Serif Pro, 'Segoe UI', sans-serif"
+    ) %>%
+    row_spec(0, 
+             bold = TRUE, 
+             background = "#488B49",
+             color = "white",
+             font_size = 14)
+  
+  return(tabla)
+}
+
+kbl_original <- kableExtra::kbl
+
+kbl <- function(x, format = "html", ...) {
+  tabla <- kbl_original(x, format = format, ...) %>%
     kable_styling(
       bootstrap_options = c("striped", "hover", "condensed"),
-      full_width = FALSE,
+      full_width = TRUE,
       position = "center",
       font_size = 14,
-      html_font = "Segoe UI"
+      html_font = "Source Serif Pro, 'Segoe UI', sans-serif"
     ) %>%
-    row_spec(0, bold = TRUE, background = "#2C3E50", color = "white")
+    row_spec(0, 
+             bold = TRUE, 
+             background = "#488B49",
+             color = "white",
+             font_size = 14)
+  
+  return(tabla)
 }
-
-# Añadir clase CSS personalizada al HTML generado
-add_class_to_kable <- function(kable_html, class = "professional-table") {
-  htmltools::HTML(gsub("<table", paste0("<table class='", class, "'"), kable_html))
-}
-
-# Función principal a usar en el documento
-kable_css <- function(data, caption = NULL, ...) {
-  kable_html <- kable_custom(data, caption = caption, ...)
-  add_class_to_kable(kable_html, "professional-table")
-}
-
-
-# =============================================================================
-# CONFIGURACIÓN PARA GRÁFICOS BASE DE R
-# =============================================================================
-
-# Configurar parámetros por defecto para gráficos base
-par_default <- list(
-  family = "Segoe UI",
-  bg = "#f8f9fa",
-  col = "#488B49",
-  col.axis = "#333333",
-  col.lab = "#488B49",
-  fg = "#488B49",
-  font.main = 2,  # bold
-  font.lab = 2,   # bold
-  cex.main = 1.2,
-  cex.lab = 1.1
-)
-
-# Aplicar parámetros por defecto
-invisible(list2env(par_default, envir = .GlobalEnv))
-
 ```
 
 ::::::::::::::::: container
@@ -985,11 +1093,9 @@ Para optimizar la calidad del agrupamiento, las puntuaciones de los países en l
 
 <h3>3.5 Determinación del Número Óptimo de Clusters</h3>
 
-<p>El número óptimo de clusters se determinó mediante inspección visual del dendrograma resultante del método de Ward. Las alturas de fusión consecutivas en el dendrograma revelan puntos de inflexión pronunciados que identifican cortes naturales en la jerarquía, indicando números de clusters potencialmente óptimos. Se examinaron visualmente aquellas alturas donde ocurrían cambios significativos de magnitud, seleccionando el número de clusters que capturaba de forma más equilibrada la estructura subyacente en los datos de mortalidad global.\
+<p>El número óptimo de clusters se determinó mediante inspección visual del dendrograma resultante del método de Ward. Las alturas de fusión consecutivas en el dendrograma revelan puntos de inflexión pronunciados que identifican cortes naturales en la jerarquía, indicando números de clusters potencialmente óptimos. Se examinaron visualmente aquellas alturas donde ocurrían cambios significativos de magnitud, seleccionando el número de clusters que capturaba de forma más equilibrada la estructura subyacente en los datos de mortalidad global.
 
 </p>
-
-<h3>3.6 Caracterización de Clusters</h3>
 ::::
 
 <!-- RESULTADOS DESCRIPTIVOS -->
@@ -1043,7 +1149,7 @@ Matriz de correlaciones
 
 La matriz de correlaciones es una herramienta estadística fundamental para analizar la intensidad y dirección de la relación lineal entre diferentes variables cuantitativas incluidas en el estudio. La matriz realizada se presenta en la grafica figura 1.</p>
 
-```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=8, fig.height=6}
+```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=4, fig.height=3}
 library(ggplot2)
 library(reshape2)
 
@@ -1119,8 +1225,7 @@ p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
 print(p1)
 ```
 
-<p>
-Se observa que variables como la expectativa de vida y la supervivencia hasta los 65 años muestran correlaciones negativas elevadas con las tasas de mortalidad (general, infantil, neonatal) y las tasas de mortalidad por causas específicas (por ejemplo, enfermedades cardiovasculares, accidentes de tráfico y suicidios). Esto indica que, en los países donde la esperanza de vida y la supervivencia a edades avanzadas son más altas, las tasas de mortalidad, tanto general como por causas específicas, tienden a ser menores. 
+<p>Se observa que variables como la expectativa de vida y la supervivencia hasta los 65 años muestran correlaciones negativas elevadas con las tasas de mortalidad (general, infantil, neonatal) y las tasas de mortalidad por causas específicas (por ejemplo, enfermedades cardiovasculares, accidentes de tráfico y suicidios). Esto indica que, en los países donde la esperanza de vida y la supervivencia a edades avanzadas son más altas, las tasas de mortalidad, tanto general como por causas específicas, tienden a ser menores. 
 
 Por otra parte, los datos muestran que los lugares con más contaminación del aire suelen tener también tasas más altas de muertes por distintas enfermedades. Es decir, vivir en ambientes más contaminados suele estar asociado a una mayor probabilidad de fallecer a causa de problemas de salud diversos, como enfermedades respiratorias y cardiovasculares.
 
@@ -1134,7 +1239,7 @@ Scree Plot
 <p>
 El scree plot es un gráfico fundamental en el análisis de componentes principales (ACP), cuya función principal es mostrar la proporción de varianza total explicada por cada componente extraído a partir de los datos originales.</p>
 
-```{r scree-plot:Gráfico de Sedimentación, message=FALSE, warning=FALSE, results='hide', fig.width=7, fig.height=5}
+```{r scree-plot:Gráfico de Sedimentación, message=FALSE, warning=FALSE, results='hide', fig.width=4, fig.height=3}
 p2 <- fviz_eig(res.pca, 
          addlabels = TRUE,
          barfill = "#488B49",
@@ -1145,14 +1250,7 @@ p2 <- fviz_eig(res.pca,
          main = "Figura 2.Análisis de componentes principales - Scree Plot",
          xlab = "Número de Componente Principal",
          ylab = "Porcentaje de Varianza Explicada",
-         ggtheme = theme_minimal()) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    axis.title = element_text(face = "bold", size = 12),
-    axis.text = element_text(size = 10),
-    panel.grid.major = element_line(color = "grey90"),
-    panel.grid.minor = element_blank()
-  )
+         ggtheme = theme_minimal())
 print(p2)
 ```
 
@@ -1161,6 +1259,581 @@ A medida que se incorporan más componentes principales, el porcentaje adicional
 
 Esto respalda la decisión metodológica de conservar únicamente los tres primeros componentes, ya que juntos encapsulan la mayor parte de la estructura y los patrones subyacentes de los datos. representando un 82,3% de la varianza.
 </p>
+
+<h3>Grafico de Individuos</h3>
+
+<p>
+A continuación se presenta el plano factorial del Análisis de Componentes Principales que resume los patrones de mortalidad de 182 países en sus dos dimensiones más significativas. Los resultados se presentan en la figura 3.
+</p>
+
+```{r nombres-cortos-variables}
+nombres_cortos_var <- c(
+  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
+  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
+  "Accidentes_de_transito" = "Accidentes Tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
+  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
+  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
+  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
+  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
+  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
+  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
+  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
+  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
+  "Supervivencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
+  "Supervivencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
+)
+```
+
+```{r preparacion-datos}
+var_coord <- res.pca$rotation
+# Calcular eigenvalues y porcentajes de varianza
+eigenvalues <- res.pca$sdev^2
+total_variance <- sum(eigenvalues)
+percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
+percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
+percent_pc3 <- round((eigenvalues[3] / total_variance) * 100, 1)
+
+# Contribución para el gráfico PC1 vs PC2
+contrib_12_PC1 <- (var_coord[,1]^2 * eigenvalues[1]) / (eigenvalues[1] + eigenvalues[2]) * 100
+contrib_12_PC2 <- (var_coord[,2]^2 * eigenvalues[2]) / (eigenvalues[1] + eigenvalues[2]) * 100
+contrib_12_total <- contrib_12_PC1 + contrib_12_PC2
+
+# Contribución para el gráfico PC1 vs PC3
+contrib_13_PC1 <- (var_coord[,1]^2 * eigenvalues[1]) / (eigenvalues[1] + eigenvalues[3]) * 100
+contrib_13_PC3 <- (var_coord[,3]^2 * eigenvalues[3]) / (eigenvalues[1] + eigenvalues[3]) * 100
+contrib_13_total <- contrib_13_PC1 + contrib_13_PC3
+
+# Calcular cos2 (calidad de representación)
+cos2_total <- rowSums(var_coord^2)
+cos2_PC1_PC2 <- (var_coord[,1]^2 + var_coord[,2]^2) / cos2_total
+cos2_PC1_PC3 <- (var_coord[,1]^2 + var_coord[,3]^2) / cos2_total
+
+# Preparar dataframe con los datos CORRECTOS
+df_var_plot <- data.frame(
+  Variable = rownames(var_coord),
+  PC1 = var_coord[,1],
+  PC2 = var_coord[,2],
+  PC3 = var_coord[,3],
+  Contrib_12 = contrib_12_total,  # Contribución para gráfico PC1-PC2
+  Contrib_13 = contrib_13_total,  # Contribución para gráfico PC1-PC3
+  Cos2_PC1_PC2 = cos2_PC1_PC2,
+  Cos2_PC1_PC3 = cos2_PC1_PC3
+)
+
+# Aplicar nombres cortos
+df_var_plot$Variable_corto <- nombres_cortos_var[df_var_plot$Variable]
+
+# Si no hay nombres cortos, usar los originales
+df_var_plot$Variable_corto[is.na(df_var_plot$Variable_corto)] <- 
+  df_var_plot$Variable[is.na(df_var_plot$Variable_corto)]
+```
+
+
+```{r grafico individuos}
+library(factoextra)
+library(plotly)
+
+pca_data <- get_pca_ind(res.pca)
+
+df <- data.frame(
+  País = rownames(pca_data$coord),
+  PC1 = pca_data$coord[,1],
+  PC2 = pca_data$coord[,2]
+)
+
+if(!is.null(pca_data$cos2)) {
+  df$Cos2 <- rowSums(pca_data$cos2[,1:2])
+} else {
+
+  df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
+}
+
+
+if(inherits(res.pca, "PCA")) {
+ 
+  percent_pc1 <- round(res.pca$eig[1,2], 1)
+  percent_pc2 <- round(res.pca$eig[2,2], 1)
+} else {
+ 
+  eigenvalues <- res.pca$sdev^2
+  total_variance <- sum(eigenvalues)
+  percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
+  percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
+}
+
+# Gráfico 2D interactivo
+p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
+              type = 'scatter',
+              mode = 'markers',
+              marker = list(
+                size = 8,
+                color = ~Cos2,
+                colorscale = list(
+                  c(0, "#00AFBB"),
+                  c(0.5, "#E7B800"),
+                  c(1, "#FC4E07")
+                ),
+                showscale = TRUE,
+                colorbar = list(title = "cos2"),
+                opacity = 0.8,
+                line = list(
+                  width = 1,
+                  color = 'darkgray'
+                )
+              ),
+              text = ~paste('<b>País:</b>', País,
+                            '<br><b>PC1:</b>', round(PC1, 3),
+                            '<br><b>PC2:</b>', round(PC2, 3),
+                            '<br><b>Calidad:</b>', round(Cos2, 3)),
+              hoverinfo = 'text',
+              hoverlabel = list(
+                bgcolor = "white",
+                bordercolor = "black",
+                font = list(color = "black", size = 12)
+              )
+) %>%
+  layout(
+    title = list(
+      text = "Análisis PCA - 182 Países (PC1 vs PC2)",
+      font = list(size = 16)
+    ),
+    xaxis = list(
+      title = paste0("PC1 (", percent_pc1, "%)"),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    yaxis = list(
+      title = paste0("PC2 (", percent_pc2, "%)"),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "black",
+      zerolinewidth = 1
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    margin = list(l = 50, r = 50, b = 50, t = 50),
+    showlegend = FALSE
+  )
+p3
+```
+
+<p>
+
+La gráfica biplot del PCA resume, en dos ejes principales, cómo se distribuyen y comparan 182 países según sus perfiles de salud y mortalidad. El eje horizontal distingue países con buena calidad sanitaria y baja mortalidad de aquellos con problemas graves de salud pública y altas muertes prevenibles. El eje vertical separa países según si la mortalidad afecta más a jóvenes o a adultos por enfermedades crónicas. Los colores muestran qué tan bien queda representado cada país en esta proyección.
+</p>
+
+```{r grafico-pc1-pc2, fig.width=10, fig.height=8}
+plot_var_12_interactive <- plot_ly() %>%
+  # Círculo de correlación
+  add_trace(
+    type = "scatter",
+    x = cos(seq(0, 2*pi, length.out = 100)),
+    y = sin(seq(0, 2*pi, length.out = 100)),
+    mode = "lines",
+    line = list(color = "#2E7D32", dash = "dash", width = 2),
+    hoverinfo = "none",
+    showlegend = FALSE,
+    name = "Círculo unidad"
+  ) %>%
+  # Flechas de variables
+  add_annotations(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC2,
+    ax = 0,
+    ay = 0,
+    text = "",
+    showarrow = TRUE,
+    arrowhead = 2,
+    arrowsize = 1,
+    arrowwidth = 2.5,
+    arrowcolor = ~ifelse(Contrib_12 > 8, "#FC4E07", 
+                         ifelse(Contrib_12 > 5, "#E7B800", "#00AFBB")),
+    opacity = 0.85
+  ) %>%
+  # Puntos de las variables
+  add_trace(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC2,
+    type = "scatter",
+    mode = "markers+text",
+    marker = list(
+      size = 12,
+      color = ~Contrib_12,
+      colorscale = list(
+        c(0, "#00AFBB"),
+        c(0.5, "#E7B800"),
+        c(1, "#FC4E07")
+      ),
+      showscale = TRUE,
+      colorbar = list(
+        title = "Contribución<br>(%)",
+        thickness = 15,
+        len = 0.6,
+        x = 1.02
+      ),
+      line = list(color = "white", width = 2)
+    ),
+    text = ~Variable_corto,
+    textposition = "top center",
+    textfont = list(size = 10, color = "black", family = "Arial"),
+    hovertext = ~paste(
+      "<b>Variable:</b>", Variable_corto,
+      "<br><b>PC1:</b>", round(PC1, 3),
+      "<br><b>PC2:</b>", round(PC2, 3),
+      "<br><b>Contribución Total:</b>", round(Contrib_12, 2), "%",
+      "<br><b>Calidad (cos²):</b>", round(Cos2_PC1_PC2, 3)
+    ),
+    hoverinfo = "text",
+    showlegend = FALSE
+  ) %>%
+  layout(
+    title = list(
+      text = "<b>Círculo de Correlaciones - Variables PCA</b><br><sup>Dimensión 1 vs Dimensión 2</sup>",
+      x = 0.5,
+      font = list(size = 18, family = "Arial", color = "#2E7D32")
+    ),
+    xaxis = list(
+      title = paste0("<b>Dim 1 (", percent_pc1, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      titlefont = list(size = 14)
+    ),
+    yaxis = list(
+      title = paste0("<b>Dim 2 (", percent_pc2, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      scaleanchor = "x",
+      titlefont = list(size = 14)
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    ),
+    margin = list(l = 80, r = 120, b = 80, t = 100)
+  )
+
+plot_var_12_interactive
+```
+
+<p>
+
+Este gráfico visualiza la correlación de cada variable original con las dos primeras dimensiones principales. Cada punto representa una variable y su posición indica qué tanto contribuye a la separación de países en función de Dim1 (62.3%) y Dim2 (11.6%).
+</p>
+**Cuadrante 1:**<p>Este cuadrante concentra las variables de longevidad. Los países que puntúan alto en Dim1 y Dim2 positivas tienen excelentes indicadores de esperanza de vida y supervivencia hasta edades avanzadas. Estas variables están fuertemente correlacionadas entre sí (vectores muy cercanos).</p>
+
+**Cuadrante 2:**<p>Este cuadrante agrupa factores de mortalidad infantil, neonatal y temprana, junto con riesgos ambientales (polución) y accidentes de tránsito. Representa países con alta carga de mortalidad prevenible, especialmente en etapas tempranas de la vida y por factores externos. La presencia de polución del aire sugiere que los problemas ambientales contribuyen significativamente a estos perfiles de mortalidad.</p>
+
+**Cuadrante 3:**<p>Este cuadrante captura un perfil de mortalidad adulta por enfermedades crónicas no transmisibles, suicidios y envenenamientos. Representa países con alta carga de enfermedades del desarrollo (cardiovasculares, cáncer, diabetes) y problemas de salud mental. Es interesante que los suicidios y las enfermedades crónicas compartan este espacio, sugiriendo una posible relación entre desarrollo económico, transición epidemiológica y salud mental.</p>
+
+**Cuadrante 4:**<p>Este cuadrante permanece prácticamente vacío, lo que indica que no existe un perfil de países con alta longevidad (Dim1+) que simultáneamente presentan valores negativos en Dim2. La proximidad de expectativa de vida mujer al borde sugiere que las mujeres pueden tener ligeras ventajas en longevidad incluso en contextos con ciertas presiones de mortalidad específicas.</p>
+
+<h3>Correlaciones clave:</h3>
+**Relaciones muy positivas:**
+ <p>La expectativa de vida, tanto en hombres como en mujeres, se mueve casi en la misma dirección que la supervivencia a los 65 años; sus vectores quedan prácticamente juntos en el mismo cuadrante. También pasa algo similar con las tasas de suicidio en hombres y mujeres: están muy cerca, aunque no totalmente superpuestas.
+ </p>
+
+**Relaciones muy negativas:**
+ <p>La expectativa de vida va en dirección contraria a las enfermedades crónicas, ubicándose en cuadrantes opuestos (1 y 3). Lo mismo ocurre con la mortalidad infantil y neonatal, que queda del lado contrario a la expectativa de vida (cuadrantes 1 y 2). Y por último, la supervivencia a los 65 años también se opone a la mortalidad adulta y a las enfermedades crónicas.
+</p>
+
+```{r grafico-pc1-pc3, fig.width=10, fig.height=8}
+plot_var_13_interactive <- plot_ly() %>%
+  add_trace(
+    type = "scatter",
+    x = cos(seq(0, 2*pi, length.out = 100)),
+    y = sin(seq(0, 2*pi, length.out = 100)),
+    mode = "lines",
+    line = list(color = "#1565C0", dash = "dash", width = 2),
+    hoverinfo = "none",
+    showlegend = FALSE,
+    name = "Círculo unidad"
+  ) %>%
+  add_annotations(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC3,
+    ax = 0,
+    ay = 0,
+    text = "",
+    showarrow = TRUE,
+    arrowhead = 2,
+    arrowsize = 1,
+    arrowwidth = 2.5,
+    arrowcolor = ~ifelse(Contrib_13 > 8, "#FC4E07", 
+                         ifelse(Contrib_13 > 5, "#E7B800", "#00AFBB")),
+    opacity = 0.85
+  ) %>%
+  add_trace(
+    data = df_var_plot,
+    x = ~PC1,
+    y = ~PC3,
+    type = "scatter",
+    mode = "markers+text",
+    marker = list(
+      size = 12,
+      color = ~Contrib_13,
+      colorscale = list(
+        c(0, "#00AFBB"),
+        c(0.5, "#E7B800"),
+        c(1, "#FC4E07")
+      ),
+      showscale = TRUE,
+      colorbar = list(
+        title = "Contribución<br>(%)",
+        thickness = 15,
+        len = 0.6,
+        x = 1.02
+      ),
+      line = list(color = "white", width = 2)
+    ),
+    text = ~Variable_corto,
+    textposition = "top center",
+    textfont = list(size = 10, color = "black", family = "Arial"),
+    hovertext = ~paste(
+      "<b>Variable:</b>", Variable_corto,
+      "<br><b>PC1:</b>", round(PC1, 3),
+      "<br><b>PC3:</b>", round(PC3, 3),
+      "<br><b>Contribución Total:</b>", round(Contrib_13, 2), "%",
+      "<br><b>Calidad (cos²):</b>", round(Cos2_PC1_PC3, 3)
+    ),
+    hoverinfo = "text",
+    showlegend = FALSE
+  ) %>%
+  layout(
+    title = list(
+      text = "<b>Círculo de Correlaciones - Variables PCA</b><br><sup>Dimensión 1 vs Dimensión 3</sup>",
+      x = 0.5,
+      font = list(size = 18, family = "Arial", color = "#1565C0")
+    ),
+    xaxis = list(
+      title = paste0("<b>Dim 1 (", percent_pc1, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      titlefont = list(size = 14)
+    ),
+    yaxis = list(
+      title = paste0("<b>Dim 3 (", percent_pc3, "%)</b>"),
+      range = c(-1.15, 1.15),
+      gridcolor = "lightgray",
+      zeroline = TRUE,
+      zerolinecolor = "gray50",
+      zerolinewidth = 1.5,
+      scaleanchor = "x",
+      titlefont = list(size = 14)
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    ),
+    margin = list(l = 80, r = 120, b = 80, t = 100)
+  )
+
+plot_var_13_interactive
+```
+
+<p>
+**Cuadrante 1:** Este cuadrante mantiene las variables de longevidad, pero con coordenadas muy bajas en Dim3 (cerca del eje horizontal), lo que indica que Dim3 no diferencia significativamente entre países con alta o baja expectativa de vida. La presencia de suicidios masculinos aquí, también cercana a cero en Dim1, sugiere que esta variable no está fuertemente asociada con la primera dimensión, sino principalmente con Dim1 solo que en esta comparación es positiva.
+
+**Cuadrante 2:** En este cuadrante las variables se separan en dos bloques muy visibles: por un lado, mortalidad infantil y muertes neonatales en números absolutos, que se alinean con Dim1 positivo y dependen del tamaño poblacional; y, por el otro, mortalidad neonatal en tasas, polución en hombres, enfermedades crónicas en hombres y envenenamientos, que caen hacia Dim1 negativo y Dim3 más bajo, mostrando problemas ligados a pobreza y ambiente más que al número de habitantes.
+
+**Cuadrante 3:** Las variables de enfermedades crónicas en mujeres, polución del aire en mujeres, mortalidad adulta y mortalidad temprana aparecen agrupadas porque comparten valores negativos en Dim1 y casi nulos en Dim3, lo que indica que están relacionadas con condiciones sanitarias deficientes, sin depender del tamaño poblacional. La única que se separa un poco es accidentes de tránsito, que cae más hacia Dim3 negativo, pero aun así su contribución es menor frente al grupo principal.
+
+**Cuadrante 4:** La ausencia de variables aquí confirma que no existe un perfil de países con alta longevidad (Dim1+) que simultáneamente presentan valores negativos en Dim3.</p>
+
+<h3>Definición de las Dimensiones del Análisis PCA en Indicadores de Mortalidad</h3>
+
+```{r valores-propios, message=FALSE, warning=FALSE, results='hide',fig.width=9, fig.height=7}
+eig.val <- get_eigenvalue(res.pca)
+eig.val
+```
+
+```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
+res.var <- get_pca_var(res.pca)
+
+head(res.var$coord)
+head(res.var$contrib)
+head(res.var$cos2)
+
+colSums(res.var$contrib[,1:2])
+```
+
+```{r resultados-individuos, message=FALSE, warning=FALSE, results='hide'}
+res.ind <- get_pca_ind(res.pca)
+
+head(res.ind$coord)
+head(res.ind$contrib[,1:3])
+head(res.ind$cos2)
+
+```
+
+<p>Buscamos consolidar las interpretaciones de las tres primeras dimensiones principales del Análisis de Componentes Principales (ACP) realizado sobre los 22  indicadores de salud y mortalidad de países. Cada dimensión captura un aspecto diferente de la estructura de la mortalidad global, revelando los principales gradientes que diferencian a los países según sus perfiles epidemiológicos y demográficos:</p>
+
+**Dimensión 1 (Dim1): Calidad de Salud - 62.3% de Varianza Explicada:**
+
+<p>
+Representa el principal gradiente de desarrollo sanitario e indicadores de esperanza de vida de los países. Esta dimensión opone de manera continua los países con excelentes indicadores de longevidad y baja mortalidad prevenible (valores positivos altos en Dim1) en contraste con países con sistemas de salud frágiles, alta mortalidad infantil y múltiples causas de muerte evitable (valores negativos en Dim1).</p>
+
+```{r top pc1,fig.width=9, fig.height=7}
+top5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(desc(.[,1])) %>%
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+top5_pc1 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países por Contribución al Componente Principal 1 (PC1)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#488B49") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el primer componente principal.",
+           general_title = "Nota:")
+```
+
+<p>Esto se puede confirmar mirando los países con mayor contribución a esta dimensión;  República Centroafricana (11.470%) lidera las contribuciones a PC1, seguida por Lesoto (3.671%), Somalia (3.742%), Chad (2.504%) y Nigeria (2.492%). Este patrón confirma plenamente la interpretación de PC1 como gradiente de desarrollo sanitario.
+
+Estos países representan algunos de los sistemas de salud más frágiles del mundo y enfrentan crisis humanitarias prolongadas, conflictos armados, infraestructura sanitaria precaria y altas tasas de mortalidad evitable. La República Centroafricana, con más del 11% de contribución, ejemplifica el extremo de vulnerabilidad sanitaria: esperanza de vida extremadamente baja, mortalidad infantil y neonatal elevadas, y alta prevalencia de enfermedades infecciosas y parasitarias. La presencia de estos países en el extremo negativo de PC1 contrasta con naciones desarrolladas (valores positivos) que tienen sistemas universales de salud, baja mortalidad prevenible y alta esperanza de vida.</p>
+
+**Dimensión 2 (Dim2): Edad de Mortalidad - 11.6% de Varianza Explicada**
+
+<p>
+En la segunda dimensión se representa el principal gradiente epidemiológico el cual distingue entre diferentes perfiles de mortalidad prematura. Contrasta dos etapas características de la transición epidemiológica: la mortalidad temprana y por factores ambientales (característica de países en desarrollo temprano) versus la mortalidad adulta por enfermedades crónicas no transmisibles y problemas de salud mental (característica de países con mayor desarrollo).</p>
+
+```{r top 5 mas pc2,fig.width=9, fig.height=7}
+top5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(desc(.[,1])) %>%
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+top5_pc2 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países por Contribución al Componente Principal 2 (PC2)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#488B49") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el segundo componente principal.",
+           general_title = "Nota:")
+
+```
+
+<p>
+Lesoto (7.398%) domina la contribución a PC2, seguido por Rusia (5.661%), Nigeria (5.621%), Eswatini (4.978%) e India (4.747%). Esta combinación de países es particularmente reveladora de la dualidad epidemiológica que captura esta dimensión.
+
+Por un lado, Lesotho y Eswatini (países del sur de África) presentan perfiles de mortalidad temprana dominados por VIH/SIDA, tuberculosis y mortalidad materno-infantil elevada, característicos de sistemas sanitarios con recursos limitados y alta carga de enfermedades infecciosas. Por otro lado, Rusia representa un perfil epidemiológico radicalmente diferente: mortalidad adulta prematura por enfermedades cardiovasculares, alcoholismo, suicidios y violencia.
+</p>
+
+**Dimensión 3 (Dim3): Escala Poblacional - Varianza Menor peso Estructural**
+
+<p>La Dim3 captura cómo el hecho de tener una población grande o pequeña afecta la interpretación de ciertos indicadores dando mayor peso a variables absolutas como muertes neonatales y señala la necesidad de considerar el tipo de medida (total versus tasa) al comparar diferentes países. La contribución principal la tienen los números absolutos (especialmente "Muertes Neonatales"), mientras que los valores negativos marcan dinámicas contrarias, como en accidentes de tránsito.</p>
+
+```{r top 5 mas pc3,fig.width=9, fig.height=7}
+top5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
+  as.data.frame() %>%
+  arrange(desc(.[,1])) %>%
+  head(5) %>%
+  rename("Contribución (%)" = 1) %>%
+  mutate(País = rownames(.)) %>%
+  select(País, "Contribución (%)") %>%
+  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
+
+
+top5_pc3 %>%
+  kbl(align = c('l', 'c'),
+      caption = "Top 5 Países por Contribución al Componente Principal 3 (PC3)") %>%
+  kable_classic(full_width = FALSE, 
+                html_font = "Cambria",
+                font_size = 14) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#488B49") %>%
+  row_spec(1:5, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  column_spec(2, width = "3cm") %>%
+  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el tercer componente principal.",
+           general_title = "Nota:")
+```
+
+<p>India (51.160%) domina abrumadoramente PC3, seguida a considerable distancia por Pakistán (10.416%), Nigeria (9.727%), Corea del Sur (1.512%) y República Democrática del Congo (1.143%). Esta distribución confirma de manera contundente la interpretación de PC3 como dimensión de escala poblacional.
+
+India, con más del 51% de contribución y una población superior a 1,400 millones de habitantes, naturalmente registra números absolutos masivos en indicadores como muertes neonatales, muertes por enfermedades respiratorias, cardiovasculares y otras causas, independientemente de sus tasas per cápita. Pakistán y Nigeria, también países de gran población (220+ millones y 220+ millones respectivamente), contribuyen significativamente por la misma razón.
+</p>
+
+```{r tabla resumen nombres dim, echo=FALSE, message=FALSE, warning=FALSE}
+library(kableExtra)
+
+# Crear tabla con mejor espaciado y colores profesionales
+tabla <- data.frame(
+  Dimensión = c("Dim1", "Dim2", "Dim3"),
+  `Nombre Simplificado` = c("Calidad de Salud", "Edad de Mortalidad", "Escala Poblacional"),
+  `Lo que Mide` = c(
+    "Desarrollo sanitario: esperanza de vida y mortalidad prevenible", 
+    "Mortalidad temprana versus adulta", 
+    "Efecto del tamaño poblacional en números absolutos de muertes"
+  ),
+  Varianza = c("62.3%", "11.6%", "Pequeña"),
+  `Variable Más Importante` = c(
+    "Esperanza de vida (+) Mortalidad infantil (-)", 
+    "Mortalidad temprana (+) Enfermedades crónicas (-)", 
+    "Muertes Neonatales (números absolutos)"
+  ),
+  check.names = FALSE
+)
+
+kbl(tabla, caption = "Análisis de Dimensiones en Indicadores de Salud Pública", align = "l") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, font_size = 11) %>%
+  row_spec(0, bold = TRUE, background = "#488B49", color = "white") %>%
+  row_spec(1:3, background = "#F8F9FA") %>%
+  column_spec(1, bold = TRUE) %>%
+  footnote(
+    general = "Análisis de componentes principales aplicado a indicadores de salud global. Los signos (+) y (-) indican la dirección de la correlación.",
+    general_title = "Nota:"
+  )
+```
+
+<h3>5.2 
 
 :::
 
