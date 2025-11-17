@@ -1237,6 +1237,101 @@ if(exists("hclust_result")) {
 }
 ```
 
+
+# ANÁLISIS DE MÉTODO SILUETA PARA CLUSTERING JERÁRQUICO
+
+```{r metodo-silueta, message=FALSE, warning=FALSE, fig.width=10, fig.height=6}
+# Configurar tema profesional
+theme_set(theme_minimal(base_size = 12) +
+            theme(
+              plot.title = element_text(face = "bold", hjust = 0.5, size = 16, 
+                                        color = "#2C3E50", margin = margin(b = 15)),
+              plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#7F8C8D",
+                                          margin = margin(b = 20)),
+              panel.grid.major = element_line(color = "grey92", linewidth = 0.5),
+              panel.grid.minor = element_blank(),
+              panel.background = element_rect(fill = "white", color = NA),
+              plot.background = element_rect(fill = "white", color = NA),
+              axis.title = element_text(face = "bold", size = 12, color = "#2C3E50"),
+              axis.text = element_text(size = 10, color = "#34495E"),
+              axis.line = element_line(color = "#BDC3C7"),
+              legend.position = "none"
+            ))
+
+# Usar las coordenadas del ACP
+coordenadas_acp <- acp_resultado$li[, 1:3]
+
+# Generar gráfico de silueta base
+g_sil <- fviz_nbclust(
+  coordenadas_acp, 
+  FUN = hcut,
+  method = "silhouette",
+  hc_method = "ward.D2",
+  hc_metric = "euclidean",
+  k.max = 10,
+  barfill = "#3498DB",     # Azul profesional
+  barcolor = "#2980B9",    # Azul más oscuro para bordes
+  linecolor = "#E74C3C",   # Rojo para la línea
+  ggtheme = theme_minimal()
+) + 
+  labs(
+    title = "ANÁLISIS DE SILUETA - DETERMINACIÓN DE CLÚSTERES ÓPTIMOS",
+    subtitle = "Clustering Jerárquico (Método Ward) aplicado a Componentes Principales",
+    x = "Número de Clústeres (k)",
+    y = "Anchura Promedio de Silueta"
+  ) +
+  # Mejorar las barras
+  geom_bar(stat = "identity", alpha = 0.85, width = 0.6, 
+           color = "white", linewidth = 0.3) +
+  # Suavizar la línea
+  geom_line(color = "#E74C3C", linewidth = 1.2, alpha = 0.8)
+
+# Obtener valores óptimos
+optimo_clusters <- g_sil$data[which.max(g_sil$data$y), "clusters"]
+max_silueta <- round(max(g_sil$data$y), 3)
+
+# Calcular límites del gráfico para mantener todo dentro del cuadro
+y_max <- max(g_sil$data$y) * 1.15  # 15% más de espacio para la anotación
+x_limits <- c(0.5, 10.5)  # Límites ajustados para eje X
+
+# Construir gráfico final
+g_sil_final <- g_sil +
+  # Resaltar el punto óptimo
+  geom_point(data = g_sil$data[which.max(g_sil$data$y),], 
+             aes(x = clusters, y = y), 
+             color = "#E74C3C", size = 5, shape = 21, 
+             stroke = 2, fill = "white") +
+  # Línea vertical en el óptimo
+  geom_vline(
+    xintercept = optimo_clusters,
+    linetype = "dashed",
+    color = "#E74C3C",
+    linewidth = 1,
+    alpha = 0.7
+  ) +
+  # Anotación del valor óptimo - POSICIÓN AJUSTADA
+  annotate("text",
+           x = optimo_clusters,
+           y = y_max * 0.95,  # Posición dentro de los límites
+           label = paste("CLÚSTERES ÓPTIMOS: k =", optimo_clusters),
+           color = "#2C3E50",
+           fontface = "bold",
+           size = 5,
+           hjust = 0.5) +
+  # Ajustar escalas para mantener todo dentro del cuadro
+  scale_x_continuous(breaks = 1:10, limits = x_limits) +
+  scale_y_continuous(limits = c(0, y_max),
+                     breaks = seq(0, 0.5, by = 0.1)) +
+  # Cuadro alrededor del gráfico
+  theme(
+    panel.border = element_rect(color = "#BDC3C7", fill = NA, linewidth = 0.8),
+    plot.margin = margin(20, 20, 20, 20)
+  )
+
+# Mostrar gráfico
+print(g_sil_final)
+```
+
 ```{r dendo,fig.width=9, fig.height=7}
 library(plotly)
 library(factoextra)
