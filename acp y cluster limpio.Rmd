@@ -9,9 +9,7 @@ output:
     theme: cosmo
     code_folding: hide
 ---
-# Preparación inicial datos y base 
 
-##Librerías
 
 ```{r librerias, message=FALSE, warning=FALSE, results='hide'}
 library(readr)
@@ -30,24 +28,34 @@ library(dplyr)
 library(tidyr)
 library(ggforce)
 library(cluster)
-
-library(ggplot2)
 library(reshape2)
-library(reshape2)
-library(ggplot2)
-library(reactable)
 library(reactablefmtr)
 library(kableExtra)
+library(plotly)
+library(viridis)
+library(ggdendro)
+library(plotly)
+library(factoextra)
+library(viridis)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(leaflet)
+library(sf)
+library(countrycode)
+library(dplyr)
+library(dplyr)
+library(tidyr)
+library(gt)
+library(stringr)
+
 ```
 
-##Cargar y Preparar Datos
 
 ```{r cargar-datos, message=FALSE, warning=FALSE, results='hide'}
-# Leer la base
+# Preparacion de base
 Muertes_ans <- read_csv("Muertes ans.csv", locale = locale(encoding = "UTF-8"))
 Muertes <- data.frame(Muertes_ans)
 
-# Limpieza y selección de variables
 Muertes <- Muertes[-(218:245), ]
 Muertes <- na.omit(Muertes)
 colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", 
@@ -63,11 +71,9 @@ colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida
                        "Tasa_de_suicidios_hombres", "Supervivencia_hasta_los_65_anos_mujeres",
                        "Supervivencia_hasta_los_65_anos_hombres")
 
-# Eliminar filas con valores NA
 Muertes <- Muertes %>%
   filter(complete.cases(.))
 
-# Traducir nombres de países al español
 Muertes <- Muertes %>%
   mutate(Pais = case_when(
     Pais == "Faroe Islands" ~ "Islas Feroe",
@@ -241,13 +247,12 @@ Muertes_df <- Muertes %>%
 rownames(Muertes_df) <- Muertes$Pais
 head(Muertes_df[, 1:6])
 
-# Realizar el ACP con datos ya escalados
 res.pca <- prcomp(Muertes_df, scale = FALSE)
 res.pca
 ```
 
 
-##matriz correlaciones
+## Matriz correlaciones
 
 ```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=9, fig.height=7}
 
@@ -340,7 +345,7 @@ p2 <- fviz_eig(res.pca,
 print(p2)
 ```
 
-## Definición de Nombres Cortos para Variables
+
 
 ```{r nombres-cortos-variables}
 nombres_cortos_var <- c(
@@ -369,7 +374,7 @@ nombres_cortos_var <- c(
 )
 ```
 
-## Preparación de Datos para Círculos de Correlación
+
 
 ```{r preparacion-datos}
 var_coord <- res.pca$rotation
@@ -415,6 +420,7 @@ df_var_plot$Variable_corto[is.na(df_var_plot$Variable_corto)] <-
   df_var_plot$Variable[is.na(df_var_plot$Variable_corto)]
 ```
 
+## Grafico individuos
 
 ```{r grafico individuos,fig.width=9, fig.height=7}
 library(factoextra)
@@ -447,7 +453,6 @@ if(inherits(res.pca, "PCA")) {
   percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
 }
 
-# Gráfico 2D interactivo
 p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
               type = 'scatter',
               mode = 'markers',
@@ -507,7 +512,7 @@ p3
 ```
 
 
-## Gráfico Interactivo 1: PC1 vs PC2 variables
+## Gráfico Interactivo 1: DIM1 vs DIM2 variables
 
 ```{r grafico-pc1-pc2, fig.width=10, fig.height=8}
 plot_var_12_interactive <- plot_ly() %>%
@@ -717,18 +722,16 @@ plot_var_13_interactive <- plot_ly() %>%
 
 plot_var_13_interactive
 ```
+
 # Resultados del ACP
 
-##Valores Propios
 
 ```{r valores-propios, message=FALSE, warning=FALSE, results='hide',fig.width=9, fig.height=7}
+##Valores Propios
 eig.val <- get_eigenvalue(res.pca)
 eig.val
-```
 
-##Resultados para Variables
-
-```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
+#Resultados para Variables
 res.var <- get_pca_var(res.pca)
 
 head(res.var$coord)
@@ -736,11 +739,8 @@ head(res.var$contrib)
 head(res.var$cos2)
 
 colSums(res.var$contrib[,1:2])
-```
 
 ## Resultados para Países
-
-```{r resultados-individuos, message=FALSE, warning=FALSE, results='hide'}
 res.ind <- get_pca_ind(res.pca)
 
 head(res.ind$coord)
@@ -749,7 +749,7 @@ head(res.ind$cos2)
 
 ```
 
-# Tabla Interactiva de Contribuciones
+## Tabla Interactiva de Contribuciones
 
 ```{r tabla-contribuciones}
 
@@ -966,7 +966,6 @@ top5_pc3 %>%
 ```
 
 
-
 ```{r tabla resumen nombres dim, echo=FALSE, message=FALSE, warning=FALSE}
 library(kableExtra)
 
@@ -998,9 +997,10 @@ kbl(tabla, caption = "Análisis de Dimensiones en Indicadores de Salud Pública"
     general_title = "Nota:"
   )
 ```
+
 # CLUSTER
 
-## Análisis de Componentes Principales
+# Análisis Dendrograma
 
 ```{r acp, message=FALSE, warning=FALSE, results='hide'}
 graphics.off()
@@ -1008,15 +1008,12 @@ par(mar = c(4, 4, 3, 2))
 
 # Realizar ACP de forma no interactiva
 acp_resultado <- dudi.pca(df = Muertes_df, 
-                          scannf = FALSE,  # No mostrar gráfico de selección
-                          nf = 3)          # Número de ejes a retener
-
-# Clustering no interactivo usando directamente los resultados del ACP
-dist_matrix <- dist(acp_resultado$li[, 1:3])  # Distancia euclidiana en las 3 primeras componentes
+                          scannf = FALSE,  
+                          nf = 3)          
+dist_matrix <- dist(acp_resultado$li[, 1:3]) 
 hclust_result <- hclust(dist_matrix, method = "ward.D2")
-clusters <- cutree(hclust_result, k = 2)  # Cortar en 2 clusters
+clusters <- cutree(hclust_result, k = 2)  
 
-# Crear objeto similar a FactoClass
 resultado_ACP <- list(
   dudi = acp_resultado,
   cluster = clusters,
@@ -1024,16 +1021,10 @@ resultado_ACP <- list(
 )
 
 NuevaBase <- data.frame(Cluster = resultado_ACP$cluster, Muertes_df)
-```
 
-## Preparación de Datos
-
-```{r preparacion_datos, message=FALSE, warning=FALSE, results='hide'}
-# Extraer información del ACP para ggplot
 acp_ind <- as.data.frame(resultado_ACP$dudi$li)
 acp_var <- as.data.frame(resultado_ACP$dudi$co)
 
-# Asignar nombres consistentes
 colnames(acp_ind) <- paste0("Axis", 1:ncol(acp_ind))
 colnames(acp_var) <- paste0("Axis", 1:ncol(acp_var))
 
@@ -1041,36 +1032,19 @@ acp_ind$Cluster <- as.factor(NuevaBase$Cluster)
 acp_ind$Pais <- rownames(Muertes_df)
 acp_var$Variable <- rownames(acp_var)
 
-# Porcentaje de varianza explicada
 eigenvals <- resultado_ACP$dudi$eig
 var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
 ```
 
-# Análisis Dendrograma
 
-```{r dendrograma interactivo, fig.width=9, fig.height=7}
-# Cargar librerías
-library(plotly)
-library(viridis)
-library(ggdendro)
+```{r dendrograma interactivo, message=FALSE, warning=FALSE, fig.width=7, fig.height=5.5}
 
-# Función corregida con escala correcta del eje Y
 crear_dendrograma_interactivo_mejorado <- function(hc) {
-  
-  # Obtener la altura máxima REAL del objeto hclust
   altura_max <- max(hc$height)
-  
-  # Crear secuencia de alturas para el slider
   alturas <- seq(0, altura_max, length.out = 20)
-  
-  # Extraer datos del dendrograma para visualización
   dend_data <- dendro_data(hc)
   segmentos <- segment(dend_data)
-  
-  # IMPORTANTE: Verificar que los valores Y corresponden a hc$height
-  # Los valores en segmentos$y y segmentos$yend ya deberían estar en la escala correcta
-  
-  # Crear gráfico base con el dendrograma
+ 
   fig <- plot_ly() %>%
     add_segments(
       data = segmentos,
@@ -1089,14 +1063,12 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
       ),
       yaxis = list(
         title = "Distancia",
-        # Usar explícitamente la altura máxima de hc$height
         range = c(0, altura_max * 1.05)
       ),
       showlegend = FALSE,
       hovermode = "closest"
     )
-  
-  # Agregar línea de corte inicial
+
   fig <- fig %>% add_lines(
     x = c(0.5, max(segmentos$xend) + 0.5),
     y = c(alturas[1], alturas[1]),
@@ -1105,20 +1077,17 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
     hovertemplate = "Altura: %{y:.2f}<extra></extra>"
   )
   
-  # Preparar steps para el slider
   steps <- list()
-  
-  # Obtener el número TOTAL de observaciones (países)
-  n_total <- length(hc$order)  # Usar hc$order que es más confiable
+
+  n_total <- length(hc$order)  
   
   cat("Número total de observaciones detectadas:", n_total, "\n")
   
   for (i in 1:length(alturas)) {
     altura_actual <- alturas[i]
-    
-    # Calcular número de clusters a esta altura
-    if (i == 1) {  # Primera posición del slider (altura mínima)
-      n_clusters <- n_total  # Todos son clusters individuales
+   
+    if (i == 1) {  
+      n_clusters <- n_total  
     } else {
       n_clusters <- length(unique(cutree(hc, h = altura_actual)))
     }
@@ -1135,7 +1104,6 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
     steps[[i]] <- step
   }
   
-  # Configurar slider
   fig <- fig %>% layout(
     sliders = list(
       list(
@@ -1153,8 +1121,6 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
   return(fig)
 }
 
-# EJECUTAR el código
-# Verificar si existe hclust_result (el objeto real del análisis)
 if(exists("hclust_result")) {
   cat("=== DIAGNÓSTICO COMPLETO ===\n")
   cat("Usando hclust_result (datos reales)\n")
@@ -1164,7 +1130,6 @@ if(exists("hclust_result")) {
   cat("Altura máxima del dendrograma:", max(hclust_result$height), "\n")
   cat("Rango de alturas:", range(hclust_result$height), "\n")
   
-  # Verificar también Muertes_df si existe
   if(exists("Muertes_df")) {
     cat("Número de filas en Muertes_df:", nrow(Muertes_df), "\n")
   }
@@ -1179,7 +1144,7 @@ if(exists("hclust_result")) {
   dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
   dend_interactivo
 } else {
-  # Si ninguno existe, crear un ejemplo
+
   cat("Creando un ejemplo con datos de iris...\n")
   data <- scale(iris[, 1:4])
   dist_matrix <- dist(data)
@@ -1195,8 +1160,8 @@ if(exists("hclust_result")) {
 
 # ANÁLISIS DE MÉTODO SILUETA PARA CLUSTERING JERÁRQUICO
 
-```{r metodo-silueta, message=FALSE, warning=FALSE, fig.width=10, fig.height=6}
-# Configurar tema profesional CORREGIDO
+```{r metodo-silueta, message=FALSE, warning=FALSE, fig.width=9, fig.height=5.4}
+
 theme_set(theme_minimal(base_size = 12) +
             theme(
               plot.title = element_text(face = "bold", hjust = 0.5, size = 16, 
@@ -1210,13 +1175,11 @@ theme_set(theme_minimal(base_size = 12) +
               axis.text = element_text(size = 10, color = "#34495E"),
               axis.line = element_line(color = "#BDC3C7"),
               legend.position = "none",
-              plot.margin = unit(c(1, 1, 1, 1), "cm")  # CORRECCIÓN: margin correcta
+              plot.margin = unit(c(1, 1, 1, 1), "cm") 
             ))
 
-# Usar las coordenadas del ACP
 coordenadas_acp <- acp_resultado$li[, 1:3]
 
-# Generar gráfico de silueta con colores atractivos
 g_sil <- fviz_nbclust(
   coordenadas_acp, 
   FUN = hcut,
@@ -1239,14 +1202,9 @@ g_sil <- fviz_nbclust(
            fill = "#3498DB", color = "#2980B9") +
   geom_line(color = "#E74C3C", size = 1.5, alpha = 0.9)
 
-# Obtener valores óptimos
 optimo_clusters <- g_sil$data[which.max(g_sil$data$y), "clusters"]
 max_silueta <- round(max(g_sil$data$y), 3)
-
-# Ajustar límites
 y_max <- max(g_sil$data$y) * 1.12
-
-# Construir gráfico final CORREGIDO
 g_sil_final <- g_sil +
   geom_point(data = g_sil$data[which.max(g_sil$data$y),], 
              aes(x = clusters, y = y), 
@@ -1273,23 +1231,19 @@ g_sil_final <- g_sil +
     panel.border = element_rect(color = "#BDC3C7", fill = NA, size = 1)
   )
 
-# Mostrar gráfico
 print(g_sil_final)
 ```
 
 ```{r setup-colores}
-# ============================================================================
+
 # DEFINICIÓN DE COLORES GLOBALES PARA LOS CLUSTERS
-# ============================================================================
+
 verde_cluster1 <- "#488B49"  # Verde para Cluster 1
 azul_cluster2 <- "#4A90E2"   # Azul para Cluster 2
 colores_clusters <- c("1" = verde_cluster1, "2" = azul_cluster2)
 ```
 
-```{r dendo, fig.width=9, fig.height=7}
-library(plotly)
-library(factoextra)
-library(viridis)
+```{r dendo, message=FALSE, warning=FALSE, fig.width=7, fig.height=5.5}
 
 dist_matrix <- dist(resultado_ACP$dudi$li[, 1:3])
 hc <- hclust(dist_matrix, method = "ward.D2")
@@ -1351,7 +1305,9 @@ plotly_dendro <- plotly_dendro %>%
 plotly_dendro
 ```
 
-## mapa por cluster
+## Mapa por clusters
+
+
 ```{r mapa-clusters-final, message=FALSE, warning=FALSE}
 library(rnaturalearth)
 library(rnaturalearthdata)
@@ -1521,26 +1477,22 @@ mapa_clusters <- leaflet(world_clusters) %>%
 
 mapa_clusters
 ```
+## Biplot Interactivo
 
-## Preparación de datos para Biplot
 ```{r preparacion-circle-data}
-# Crear circle_data con las coordenadas de las variables
+
 circle_data <- data.frame(
   Variable = rownames(acp_var),
   Axis1 = acp_var$Axis1,
   Axis2 = acp_var$Axis2,
   Axis3 = acp_var$Axis3
 )
-
-# Aplicar nombres cortos a las variables
 circle_data$Variable_corto <- nombres_cortos_var[circle_data$Variable]
 
-# Si no hay nombre corto disponible, usar el original
 circle_data$Variable_corto[is.na(circle_data$Variable_corto)] <- 
   circle_data$Variable[is.na(circle_data$Variable_corto)]
 ```
 
-## Biplot Interactivo
 ```{r biplot_interactivo, fig.width=9, fig.height=7}
 # Preparar anotaciones de flechas
 anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
@@ -1562,13 +1514,10 @@ anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
   )
 })
 
-# Obtener clusters únicos
 clusters <- unique(acp_ind$Cluster)
 
-# Crear el gráfico base
 plotly_biplot <- plot_ly()
 
-# Agregar puntos por cluster
 for(cluster in clusters) {
   datos_cluster <- acp_ind[acp_ind$Cluster == cluster, ]
   color_cluster <- colores_clusters[as.character(cluster)]
@@ -1591,7 +1540,6 @@ for(cluster in clusters) {
               legendgroup = "paises")
 }
 
-# Agregar las variables (flechas y etiquetas)
 plotly_biplot <- plotly_biplot %>%
   add_trace(data = circle_data,
             x = ~Axis1*3, y = ~Axis2*3,
@@ -1608,13 +1556,11 @@ plotly_biplot <- plotly_biplot %>%
             showlegend = TRUE,
             legendgroup = "variables")
 
-# Preparar vectores de visibilidad para los botones
 n_clusters <- length(clusters)
 visible_solo_paises <- c(rep(TRUE, n_clusters), FALSE)
 visible_solo_variables <- c(rep(FALSE, n_clusters), TRUE)
 visible_ambos <- rep(TRUE, n_clusters + 1)
 
-# Configurar el layout con botones
 plotly_biplot <- plotly_biplot %>%
   layout(
     title = list(
@@ -1692,18 +1638,12 @@ plotly_biplot <- plotly_biplot %>%
     )
   )
 
-# Mostrar el gráfico
 plotly_biplot
 ```
 
 
 ```{r estadisticas-descriptivas-clusters}
-library(dplyr)
-library(tidyr)
-library(gt)
-library(stringr)
 
-# Diccionario de nombres descriptivos para las variables
 nombres_variables <- c(
   "Expectativa_de_vida_mujer" = "Esperanza de vida - Mujeres",
   "Expectativa_de_vida_hombres" = "Esperanza de vida - Hombres",
@@ -1729,7 +1669,6 @@ nombres_variables <- c(
   "Supervivencia_hasta_los_65_anos_hombres" = "Supervivencia a 65 años - Hombres"
 )
 
-# Calcular estadísticas descriptivas por cluster
 estadisticas_clusters <- NuevaBase %>%
   group_by(Cluster) %>%
   summarise(across(
@@ -1759,7 +1698,6 @@ estadisticas_clusters <- NuevaBase %>%
     values_from = Valor
   )
 
-# Crear tabla con formato profesional
 tabla_estadisticas <- estadisticas_clusters %>%
   mutate(
     Variable_Descriptiva = nombres_variables[Variable],
@@ -1849,8 +1787,7 @@ tabla_estadisticas <- estadisticas_clusters %>%
 tabla_estadisticas
 ```
 
-```{r comparacion-medias-clusters}
-# Tabla comparativa de medias entre clusters
+```{r comparacion-medias-clusters, message=FALSE, warning=FALSE}
 tabla_comparativa <- estadisticas_clusters %>%
   filter(!is.na(Media)) %>%
   mutate(
@@ -2188,8 +2125,6 @@ tabla_resumen <- resumen_clusters %>%
 tabla_resumen
 ```
 
-# Mapa Geográfico de Clusters
-
 # Caracterización de Dimensiones Principales
 
 ```{r caracterizacion-dimensiones}
@@ -2247,7 +2182,6 @@ caracterizacion_componentes <- data.frame(
   )
 )
 
-# Crear tabla con formato profesional
 tabla_caracterizacion <- caracterizacion_componentes %>%
   gt() %>%
   tab_header(
