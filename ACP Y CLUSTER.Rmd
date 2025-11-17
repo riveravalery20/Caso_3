@@ -1322,28 +1322,32 @@ g_sil_final <- g_sil +
 print(g_sil_final)
 ```
 
-```{r dendo,fig.width=9, fig.height=7}
+```{r setup-colores}
+# ============================================================================
+# DEFINICIÓN DE COLORES GLOBALES PARA LOS CLUSTERS
+# ============================================================================
+verde_cluster1 <- "#488B49"  # Verde para Cluster 1
+azul_cluster2 <- "#4A90E2"   # Azul para Cluster 2
+colores_clusters <- c("1" = verde_cluster1, "2" = azul_cluster2)
+```
+
+```{r dendo, fig.width=9, fig.height=7}
 library(plotly)
 library(factoextra)
 library(viridis)
 
-# Crear matriz de distancia y dendrograma
 dist_matrix <- dist(resultado_ACP$dudi$li[, 1:3])
 hc <- hclust(dist_matrix, method = "ward.D2")
-
-# Obtener los nombres de los países
 paises <- rownames(resultado_ACP$dudi$li)
 
-# Primero crear el dendrograma con factoextra para obtener la estructura
 dendro_plot <- fviz_dend(hc, k = 2, 
                          cex = 0.6,
-                         k_colors = viridis(2),
+                         k_colors = c(verde_cluster1, azul_cluster2),
                          color_labels_by_k = TRUE,
                          ggtheme = theme_minimal(),
                          main = "Dendrograma - Clasificación Jerárquica",
                          xlab = "Países", ylab = "Distancia")
 
-# Convertir el ggplot a plotly manteniendo los colores y estructura
 plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
   layout(
     title = list(
@@ -1355,7 +1359,7 @@ plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
       title = "<b>Países</b>",
       tickfont = list(size = 10),
       titlefont = list(size = 14),
-      showticklabels = FALSE  # Ocultar etiquetas del eje X para evitar desorden
+      showticklabels = FALSE
     ),
     yaxis = list(
       title = "<b>Distancia</b>",
@@ -1371,7 +1375,6 @@ plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
     )
   )
 
-# Función para obtener el nombre del país basado en la posición
 get_country_name <- function(position) {
   if (position >= 1 && position <= length(paises)) {
     return(paises[position])
@@ -1379,7 +1382,6 @@ get_country_name <- function(position) {
   return("N/A")
 }
 
-# Mejorar los tooltips para mostrar nombres de países
 plotly_dendro <- plotly_dendro %>%
   style(
     hoverinfo = "text",
@@ -1388,10 +1390,9 @@ plotly_dendro <- plotly_dendro %>%
       "<b>Distancia:</b> ", round(y, 4), "<br>",
       "<b>Posición:</b> ", x
     ),
-    traces = c(1, 2)  # Aplicar a los traces de segmentos y puntos
+    traces = c(1, 2)
   )
 
-# Mostrar el gráfico interactivo
 plotly_dendro
 ```
 
