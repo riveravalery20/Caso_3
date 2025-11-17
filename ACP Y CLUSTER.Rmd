@@ -30,6 +30,14 @@ library(dplyr)
 library(tidyr)
 library(ggforce)
 library(cluster)
+
+library(ggplot2)
+library(reshape2)
+library(reshape2)
+library(ggplot2)
+library(reactable)
+library(reactablefmtr)
+library(kableExtra)
 ```
 
 ##Cargar y Preparar Datos
@@ -42,8 +50,6 @@ Muertes <- data.frame(Muertes_ans)
 # Limpieza y selección de variables
 Muertes <- Muertes[-(218:245), ]
 Muertes <- na.omit(Muertes)
-
-# Renombrar columnas
 colnames(Muertes) <- c("Pais", "Expectativa_de_vida_mujer", "Expectativa_de_vida_hombres", 
                        "Accidentes_de_transito", "Enfermedades_cardiacas_cancer_diabetes_mujeres", 
                        "Enfermedades_cardiacas_cancer_diabetes_hombres", "Polucion_del_aire_mujeres", 
@@ -233,8 +239,6 @@ Muertes_df <- Muertes %>%
   mutate(across(everything(), as.numeric)) %>%
   scale()
 rownames(Muertes_df) <- Muertes$Pais
-
-# Ver las primeras filas y columnas
 head(Muertes_df[, 1:6])
 
 # Realizar el ACP con datos ya escalados
@@ -246,10 +250,7 @@ res.pca
 ##matriz correlaciones
 
 ```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=9, fig.height=7}
-library(ggplot2)
-library(reshape2)
 
-# Vector de nombres cortos con los nombres correctos del dataframe:
 nombres_cortos <- c(
   "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
   "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
@@ -275,27 +276,20 @@ nombres_cortos <- c(
   "Supervivencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
 )
 
-# 1. Selecciona las 22 variables (excluye País)
 variables_requeridas <- names(nombres_cortos)
 Muertes_filtradas <- Muertes[, variables_requeridas]
 Muertes_filtradas[] <- lapply(Muertes_filtradas, as.numeric)
 
-# 2. Renombra columnas a los cortos
 colnames(Muertes_filtradas) <- nombres_cortos
 
-# 3. Elimina filas con NA
 Muertes_filtradas <- na.omit(Muertes_filtradas)
 
-# 4. Calcula la matriz de correlación
 cor_matrix <- cor(Muertes_filtradas, use = "pairwise.complete.obs")
 
-# 5. Prepara datos para graficar sin NA
-library(reshape2)
+
 cor_melted <- melt(cor_matrix)
 names(cor_melted) <- c("Var1", "Var2", "value")
 
-# 6. Gráfica
-library(ggplot2)
 p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
   geom_tile(color = "grey90") +
   scale_fill_gradient2(
@@ -330,8 +324,8 @@ p2 <- fviz_eig(res.pca,
          barfill = "#2E8B57",
          barcolor = "#2E8B57",
          linecolor = "#FF6B35",
-         choice = "variance",  # Mostrar varianza en lugar de eigenvalues
-         geom = "bar",         # Usar barras en lugar de líneas
+         choice = "variance",  
+         geom = "bar",         
          main = "ANÁLISIS DE COMPONENTES PRINCIPALES - SCREE PLOT",
          xlab = "Número de Componente Principal",
          ylab = "Porcentaje de Varianza Explicada",
@@ -349,7 +343,6 @@ print(p2)
 ## Definición de Nombres Cortos para Variables
 
 ```{r nombres-cortos-variables}
-# Definir nombres cortos para usar en los círculos de correlación
 nombres_cortos_var <- c(
   "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
   "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
@@ -379,21 +372,13 @@ nombres_cortos_var <- c(
 ## Preparación de Datos para Círculos de Correlación
 
 ```{r preparacion-datos}
-# Extraer datos DIRECTAMENTE del objeto res.pca (prcomp)
-# Las coordenadas están en res.pca$rotation (loadings)
 var_coord <- res.pca$rotation
-
 # Calcular eigenvalues y porcentajes de varianza
 eigenvalues <- res.pca$sdev^2
 total_variance <- sum(eigenvalues)
 percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
 percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
 percent_pc3 <- round((eigenvalues[3] / total_variance) * 100, 1)
-
-# Calcular contribuciones CORRECTAMENTE como lo hace factoextra
-# La contribución es relativa al total de inercia en las dimensiones mostradas
-# Para PC1 y PC2: contrib = (coord^2 * eigenvalue / suma_eigenvalues_PC1_PC2) * 100
-# Para PC1 y PC3: contrib = (coord^2 * eigenvalue / suma_eigenvalues_PC1_PC3) * 100
 
 # Contribución para el gráfico PC1 vs PC2
 contrib_12_PC1 <- (var_coord[,1]^2 * eigenvalues[1]) / (eigenvalues[1] + eigenvalues[2]) * 100
@@ -433,42 +418,36 @@ df_var_plot$Variable_corto[is.na(df_var_plot$Variable_corto)] <-
 
 ```{r grafico individuos,fig.width=9, fig.height=7}
 library(factoextra)
-library(plotly)
 
-# Extraer datos del PCA - asumiendo que res.pca es un objeto de FactoMineR
 pca_data <- get_pca_ind(res.pca)
 
-# Crear dataframe con las 2 primeras dimensiones
 df <- data.frame(
   País = rownames(pca_data$coord),
   PC1 = pca_data$coord[,1],
   PC2 = pca_data$coord[,2]
 )
 
-# Calcular calidad de representación (cos2) en las 2 dimensiones
 if(!is.null(pca_data$cos2)) {
   df$Cos2 <- rowSums(pca_data$cos2[,1:2])
 } else {
-  # Si no hay cos2, calculamos manualmente como la suma de los cuadrados de las coordenadas en las dos primeras dimensiones dividido por la suma de los cuadrados de todas las coordenadas
+
   df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
 }
 
-# Obtener los porcentajes de varianza explicada
-# Para un objeto de FactoMineR, los autovalores y porcentajes están en res.pca$eig
+
 if(inherits(res.pca, "PCA")) {
-  # Si es un objeto PCA de FactoMineR
+ 
   percent_pc1 <- round(res.pca$eig[1,2], 1)
   percent_pc2 <- round(res.pca$eig[2,2], 1)
 } else {
-  # Si es un objeto de prcomp (o otro)
-  # Calculamos la varianza explicada
+ 
   eigenvalues <- res.pca$sdev^2
   total_variance <- sum(eigenvalues)
   percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
   percent_pc2 <- round((eigenvalues[2] / total_variance) * 100, 1)
 }
 
-# Crear gráfico 2D interactivo
+# Gráfico 2D interactivo
 p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
               type = 'scatter',
               mode = 'markers',
@@ -524,7 +503,6 @@ p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
     showlegend = FALSE
   )
 
-# Mostrar el gráfico
 p3
 ```
 
@@ -753,15 +731,10 @@ eig.val
 ```{r resultados-variables, message=FALSE, warning=FALSE, results='hide'}
 res.var <- get_pca_var(res.pca)
 
-# Coordenadas
 head(res.var$coord)
-
-# Contribuciones a los CPs
 head(res.var$contrib)
-
-# Calidad de representación
 head(res.var$cos2)
-# Visualizar contribuciones de variables a los primeros componentes
+
 colSums(res.var$contrib[,1:2])
 ```
 
@@ -770,40 +743,31 @@ colSums(res.var$contrib[,1:2])
 ```{r resultados-individuos, message=FALSE, warning=FALSE, results='hide'}
 res.ind <- get_pca_ind(res.pca)
 
-# Coordenadas
 head(res.ind$coord)
-
-# Contribuciones a los CPs
 head(res.ind$contrib[,1:3])
-
-# Calidad de representación
 head(res.ind$cos2)
+
 ```
 
 # Tabla Interactiva de Contribuciones
 
 ```{r tabla-contribuciones}
-library(reactable)
-library(reactablefmtr)
 
-# 1. Paleta de color
+
 verde_principal <- "#488B49"
 
-# 2. Función para crear escala de colores: de blanco a verde
 color_scale <- function(values, color_low = "#FFFFFF", color_high = verde_principal) {
   normalized <- (values - min(values)) / (max(values) - min(values))
   colors <- colorRamp(c(color_low, color_high))(normalized)
   rgb(colors[,1], colors[,2], colors[,3], maxColorValue = 255)
 }
 
-# 3. Función auxiliar para determinar color de texto adecuado
 suitable_text_color <- function(hex_color) {
   rgb <- col2rgb(hex_color)/255
   luminance <- 0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]
   if (luminance < 0.5) 'white' else '#2E7D32'
 }
 
-# 4. Crea tu dataframe (ajusta res.ind$contrib según tu análisis)
 contribuciones_df <- data.frame(
   País = rownames(res.ind$contrib),
   PC1 = res.ind$contrib[,1],
@@ -813,12 +777,10 @@ contribuciones_df <- data.frame(
 )
 contribuciones_df <- contribuciones_df[order(contribuciones_df$PC1, decreasing = TRUE), ]
 
-# 5. Genera los colores
 pc1_colors <- color_scale(contribuciones_df$PC1)
 pc2_colors <- color_scale(contribuciones_df$PC2)
 pc3_colors <- color_scale(contribuciones_df$PC3)
 
-# 6. Tabla reactable con estilos correctos y contraste de texto automático
 tabla_contribuciones <- reactable(
   contribuciones_df,
   defaultPageSize = 15,
@@ -927,7 +889,7 @@ tabla_contribuciones
 ```
 
 ```{r top pc1,fig.width=9, fig.height=7}
-# Crear tabla del top 5 de contribución a PC1 por países
+
 top5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
   as.data.frame() %>%
   arrange(desc(.[,1])) %>%
@@ -936,9 +898,6 @@ top5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
   mutate(País = rownames(.)) %>%
   select(País, "Contribución (%)") %>%
   mutate("Contribución (%)" = round(`Contribución (%)`, 3))
-
-# Mostrar tabla formateada
-library(kableExtra)
 
 top5_pc1 %>%
   kbl(align = c('l', 'c'),
@@ -954,34 +913,8 @@ top5_pc1 %>%
            general_title = "Nota:")
 ```
 
-```{r top 5 menos pc1,fig.width=9, fig.height=7}
-# Crear tabla del top 5 de menor contribución a PC1 por países
-bottom5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
-  as.data.frame() %>%
-  arrange(.[,1]) %>%  # Orden ascendente esta vez
-  head(5) %>%
-  rename("Contribución (%)" = 1) %>%
-  mutate(País = rownames(.)) %>%
-  select(País, "Contribución (%)") %>%
-  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
-
-# Mostrar tabla formateada
-bottom5_pc1 %>%
-  kbl(align = c('l', 'c'),
-      caption = "Top 5 Países con Menor Contribución al Componente Principal 1 (PC1)") %>%
-  kable_classic(full_width = FALSE, 
-                html_font = "Cambria",
-                font_size = 14) %>%
-  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
-  row_spec(1:5, background = "#F8F9FA") %>%
-  column_spec(1, bold = TRUE) %>%
-  column_spec(2, width = "3cm") %>%
-  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el primer componente principal. Valores bajos indican menor influencia en la dirección del componente.",
-           general_title = "Nota:")
-```
 
 ```{r top 5 mas pc2,fig.width=9, fig.height=7}
-# Crear tabla del top 5 de contribución a PC2 por países
 top5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
   as.data.frame() %>%
   arrange(desc(.[,1])) %>%
@@ -991,7 +924,6 @@ top5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
   select(País, "Contribución (%)") %>%
   mutate("Contribución (%)" = round(`Contribución (%)`, 3))
 
-# Mostrar tabla formateada
 top5_pc2 %>%
   kbl(align = c('l', 'c'),
       caption = "Top 5 Países por Contribución al Componente Principal 2 (PC2)") %>%
@@ -1007,35 +939,8 @@ top5_pc2 %>%
 
 ```
 
-```{r top 5 menos pc2,fig.width=9, fig.height=7}
-
-# Crear tabla del top 5 de menor contribución a PC2 por países
-bottom5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
-  as.data.frame() %>%
-  arrange(.[,1]) %>%  # Orden ascendente para los menores valores
-  head(5) %>%
-  rename("Contribución (%)" = 1) %>%
-  mutate(País = rownames(.)) %>%
-  select(País, "Contribución (%)") %>%
-  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
-
-# Mostrar tabla formateada
-bottom5_pc2 %>%
-  kbl(align = c('l', 'c'),
-      caption = "Top 5 Países con Menor Contribución al Componente Principal 2 (PC2)") %>%
-  kable_classic(full_width = FALSE, 
-                html_font = "Cambria",
-                font_size = 14) %>%
-  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
-  row_spec(1:5, background = "#F8F9FA") %>%
-  column_spec(1, bold = TRUE) %>%
-  column_spec(2, width = "3cm") %>%
-  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el segundo componente principal. Valores bajos indican menor influencia en esta dimensión ortogonal al PC1.",
-           general_title = "Nota:")
-```
 
 ```{r top 5 mas pc3,fig.width=9, fig.height=7}
-# Crear tabla del top 5 de contribución a PC3 por países
 top5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
   as.data.frame() %>%
   arrange(desc(.[,1])) %>%
@@ -1045,7 +950,7 @@ top5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
   select(País, "Contribución (%)") %>%
   mutate("Contribución (%)" = round(`Contribución (%)`, 3))
 
-# Mostrar tabla formateada
+
 top5_pc3 %>%
   kbl(align = c('l', 'c'),
       caption = "Top 5 Países por Contribución al Componente Principal 3 (PC3)") %>%
@@ -1060,32 +965,38 @@ top5_pc3 %>%
            general_title = "Nota:")
 ```
 
-```{r top 5 menos pc3,fig.width=9, fig.height=7}
 
-# Crear tabla del top 5 de menor contribución a PC3 por países
-bottom5_pc3 <- res.ind$contrib[,3, drop = FALSE] %>%
-  as.data.frame() %>%
-  arrange(.[,1]) %>%  # Orden ascendente para los menores valores
-  head(5) %>%
-  rename("Contribución (%)" = 1) %>%
-  mutate(País = rownames(.)) %>%
-  select(País, "Contribución (%)") %>%
-  mutate("Contribución (%)" = round(`Contribución (%)`, 3))
 
-# Mostrar tabla formateada
-bottom5_pc3 %>%
-  kbl(align = c('l', 'c'),
-      caption = "Top 5 Países con Menor Contribución al Componente Principal 3 (PC3)") %>%
-  kable_classic(full_width = FALSE, 
-                html_font = "Cambria",
-                font_size = 14) %>%
-  row_spec(0, bold = TRUE, color = "white", background = "#2C3E50") %>%
-  row_spec(1:5, background = "#F8F9FA") %>%
+```{r tabla resumen nombres dim, echo=FALSE, message=FALSE, warning=FALSE}
+library(kableExtra)
+
+# Crear tabla con mejor espaciado y colores profesionales
+tabla <- data.frame(
+  Dimensión = c("Dim1", "Dim2", "Dim3"),
+  `Nombre Simplificado` = c("Calidad de Salud", "Edad de Mortalidad", "Escala Poblacional"),
+  `Lo que Mide` = c(
+    "Desarrollo sanitario: esperanza de vida y mortalidad prevenible", 
+    "Mortalidad temprana versus adulta", 
+    "Efecto del tamaño poblacional en números absolutos de muertes"
+  ),
+  Varianza = c("62.3%", "11.6%", "Pequeña"),
+  `Variable Más Importante` = c(
+    "Esperanza de vida (+) Mortalidad infantil (-)", 
+    "Mortalidad temprana (+) Enfermedades crónicas (-)", 
+    "Muertes Neonatales (números absolutos)"
+  ),
+  check.names = FALSE
+)
+
+kbl(tabla, caption = "Análisis de Dimensiones en Indicadores de Salud Pública", align = "l") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, font_size = 11) %>%
+  row_spec(0, bold = TRUE, background = "#3D5A80", color = "white") %>%
+  row_spec(1:3, background = "#F8F9FA") %>%
   column_spec(1, bold = TRUE) %>%
-  column_spec(2, width = "3cm") %>%
-  footnote(general = "La contribución representa el porcentaje de varianza explicado por cada país en el tercer componente principal. Valores bajos indican menor influencia en esta tercera dimensión de variabilidad.",
-           general_title = "Nota:")
-
+  footnote(
+    general = "Análisis de componentes principales aplicado a indicadores de salud global. Los signos (+) y (-) indican la dirección de la correlación.",
+    general_title = "Nota:"
+  )
 ```
 
 # CLUSTER
@@ -1138,17 +1049,16 @@ var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
 
 # Análisis Dendrograma
 
-```{r dendrograma interactivo, fig.width=9, fig.height=7, message=FALSE, warning=FALSE, results='hide'}
-
+```{r dendrograma interactivo, fig.width=9, fig.height=7}
 # Cargar librerías
 library(plotly)
 library(viridis)
-library(ggdendro)  # Para extraer datos del dendrograma
+library(ggdendro)
 
-# Función mejorada que incluye el dendrograma visualizado
+# Función corregida con escala correcta del eje Y
 crear_dendrograma_interactivo_mejorado <- function(hc) {
   
-  # Obtener la altura máxima del dendrograma
+  # Obtener la altura máxima REAL del objeto hclust
   altura_max <- max(hc$height)
   
   # Crear secuencia de alturas para el slider
@@ -1157,6 +1067,9 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
   # Extraer datos del dendrograma para visualización
   dend_data <- dendro_data(hc)
   segmentos <- segment(dend_data)
+  
+  # IMPORTANTE: Verificar que los valores Y corresponden a hc$height
+  # Los valores en segmentos$y y segmentos$yend ya deberían estar en la escala correcta
   
   # Crear gráfico base con el dendrograma
   fig <- plot_ly() %>%
@@ -1172,38 +1085,53 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
       title = "Dendrograma Interactivo con Línea de Corte",
       xaxis = list(
         title = "Países", 
-        showticklabels = FALSE,
-        range = c(0, max(segmentos$xend) + 1)
+        showticklabels = TRUE,
+        range = c(0.5, max(segmentos$xend) + 0.5)
       ),
       yaxis = list(
-        title = "Distancia", 
-        range = c(0, altura_max * 1.1)
+        title = "Distancia",
+        # Usar explícitamente la altura máxima de hc$height
+        range = c(0, altura_max * 1.05)
       ),
-      showlegend = FALSE
+      showlegend = FALSE,
+      hovermode = "closest"
     )
   
   # Agregar línea de corte inicial
   fig <- fig %>% add_lines(
-    x = c(0, max(segmentos$xend) + 1),
+    x = c(0.5, max(segmentos$xend) + 0.5),
     y = c(alturas[1], alturas[1]),
     line = list(color = "red", width = 3, dash = "dash"),
-    name = "Línea de corte"
+    name = "Línea de corte",
+    hovertemplate = "Altura: %{y:.2f}<extra></extra>"
   )
   
   # Preparar steps para el slider
   steps <- list()
   
+  # Obtener el número TOTAL de observaciones (países)
+  n_total <- length(hc$order)  # Usar hc$order que es más confiable
+  
+  cat("Número total de observaciones detectadas:", n_total, "\n")
+  
   for (i in 1:length(alturas)) {
     altura_actual <- alturas[i]
+    
+    # Calcular número de clusters a esta altura
+    if (i == 1) {  # Primera posición del slider (altura mínima)
+      n_clusters <- n_total  # Todos son clusters individuales
+    } else {
+      n_clusters <- length(unique(cutree(hc, h = altura_actual)))
+    }
     
     step <- list(
       method = "restyle",
       args = list(
-        "y",  # Propiedad a modificar
-        list(c(altura_actual, altura_actual)),  # Nuevo valor
-        list(1)  # Índice de la traza (la línea de corte)
+        "y",
+        list(c(altura_actual, altura_actual)),
+        list(1)  # Índice de la línea de corte
       ),
-      label = sprintf("%.1f", altura_actual)
+      label = sprintf("%.2f (%d clusters)", altura_actual, n_clusters)
     )
     steps[[i]] <- step
   }
@@ -1213,8 +1141,11 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
     sliders = list(
       list(
         active = 0,
-        currentvalue = list(prefix = "Altura de corte: "),
-        pad = list(t = 50),
+        currentvalue = list(
+          prefix = "Altura de corte: ",
+          font = list(size = 14)
+        ),
+        pad = list(t = 50, b = 10),
         steps = steps
       )
     )
@@ -1224,44 +1155,155 @@ crear_dendrograma_interactivo_mejorado <- function(hc) {
 }
 
 # EJECUTAR el código
-if(exists("hc")) {
+# Verificar si existe hclust_result (el objeto real del análisis)
+if(exists("hclust_result")) {
+  cat("=== DIAGNÓSTICO COMPLETO ===\n")
+  cat("Usando hclust_result (datos reales)\n")
+  cat("Número de observaciones (merge + 1):", nrow(as.matrix(hclust_result$merge)) + 1, "\n")
+  cat("Longitud de hclust_result$order:", length(hclust_result$order), "\n")
+  cat("Longitud de hclust_result$labels:", length(hclust_result$labels), "\n")
+  cat("Altura máxima del dendrograma:", max(hclust_result$height), "\n")
+  cat("Rango de alturas:", range(hclust_result$height), "\n")
+  
+  # Verificar también Muertes_df si existe
+  if(exists("Muertes_df")) {
+    cat("Número de filas en Muertes_df:", nrow(Muertes_df), "\n")
+  }
+  
+  dend_interactivo <- crear_dendrograma_interactivo_mejorado(hclust_result)
+  dend_interactivo
+} else if(exists("hc")) {
+  cat("Usando hc\n")
+  cat("Altura máxima del dendrograma:", max(hc$height), "\n")
+  cat("Rango de alturas:", range(hc$height), "\n")
+  
   dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
   dend_interactivo
 } else {
-  # Si hc no existe, crear un ejemplo
+  # Si ninguno existe, crear un ejemplo
   cat("Creando un ejemplo con datos de iris...\n")
   data <- scale(iris[, 1:4])
   dist_matrix <- dist(data)
   hc <- hclust(dist_matrix, method = "ward.D2")
   
+  cat("Altura máxima del dendrograma:", max(hc$height), "\n")
+  
   dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
   dend_interactivo
 }
-
 ```
 
-```{r dendo,fig.width=9, fig.height=7, message=FALSE, warning=FALSE, results='hide'}
+
+# ANÁLISIS DE MÉTODO SILUETA PARA CLUSTERING JERÁRQUICO
+
+```{r metodo-silueta, message=FALSE, warning=FALSE, fig.width=10, fig.height=6}
+# Configurar tema profesional CORREGIDO
+theme_set(theme_minimal(base_size = 12) +
+            theme(
+              plot.title = element_text(face = "bold", hjust = 0.5, size = 16, 
+                                        color = "#2C3E50"),
+              plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#7F8C8D"),
+              panel.grid.major = element_line(color = "grey95"),
+              panel.grid.minor = element_blank(),
+              panel.background = element_rect(fill = "white", color = NA),
+              plot.background = element_rect(fill = "white", color = NA),
+              axis.title = element_text(face = "bold", size = 12, color = "#2C3E50"),
+              axis.text = element_text(size = 10, color = "#34495E"),
+              axis.line = element_line(color = "#BDC3C7"),
+              legend.position = "none",
+              plot.margin = unit(c(1, 1, 1, 1), "cm")  # CORRECCIÓN: margin correcta
+            ))
+
+# Usar las coordenadas del ACP
+coordenadas_acp <- acp_resultado$li[, 1:3]
+
+# Generar gráfico de silueta con colores atractivos
+g_sil <- fviz_nbclust(
+  coordenadas_acp, 
+  FUN = hcut,
+  method = "silhouette",
+  hc_method = "ward.D2",
+  hc_metric = "euclidean",
+  k.max = 10,
+  barfill = "#3498DB",
+  barcolor = "#2980B9", 
+  linecolor = "#E74C3C",
+  ggtheme = theme_minimal()
+) + 
+  labs(
+    title = "ANÁLISIS DE SILUETA - DETERMINACIÓN DE CLÚSTERES ÓPTIMOS",
+    subtitle = "Clustering Jerárquico (Método Ward) aplicado a Componentes Principales",
+    x = "Número de Clústeres (k)",
+    y = "Anchura Promedio de Silueta"
+  ) +
+  geom_bar(stat = "identity", alpha = 0.9, width = 0.7, 
+           fill = "#3498DB", color = "#2980B9") +
+  geom_line(color = "#E74C3C", size = 1.5, alpha = 0.9)
+
+# Obtener valores óptimos
+optimo_clusters <- g_sil$data[which.max(g_sil$data$y), "clusters"]
+max_silueta <- round(max(g_sil$data$y), 3)
+
+# Ajustar límites
+y_max <- max(g_sil$data$y) * 1.12
+
+# Construir gráfico final CORREGIDO
+g_sil_final <- g_sil +
+  geom_point(data = g_sil$data[which.max(g_sil$data$y),], 
+             aes(x = clusters, y = y), 
+             color = "#E74C3C", size = 6, shape = 21, 
+             stroke = 2.5, fill = "white") +
+  geom_vline(
+    xintercept = optimo_clusters,
+    linetype = "dashed",
+    color = "#E74C3C",
+    size = 1.2,
+    alpha = 0.8
+  ) +
+  annotate("text",
+           x = optimo_clusters,
+           y = y_max * 0.98,
+           label = paste("ÓPTIMO: k =", optimo_clusters),
+           color = "#2C3E50",
+           fontface = "bold",
+           size = 5.5,
+           hjust = 0.5) +
+  scale_y_continuous(limits = c(0, y_max),
+                     breaks = seq(0, 0.5, by = 0.1)) +
+  theme(
+    panel.border = element_rect(color = "#BDC3C7", fill = NA, size = 1)
+  )
+
+# Mostrar gráfico
+print(g_sil_final)
+```
+
+```{r setup-colores}
+# ============================================================================
+# DEFINICIÓN DE COLORES GLOBALES PARA LOS CLUSTERS
+# ============================================================================
+verde_cluster1 <- "#488B49"  # Verde para Cluster 1
+azul_cluster2 <- "#4A90E2"   # Azul para Cluster 2
+colores_clusters <- c("1" = verde_cluster1, "2" = azul_cluster2)
+```
+
+```{r dendo, fig.width=9, fig.height=7}
 library(plotly)
 library(factoextra)
 library(viridis)
 
-# Crear matriz de distancia y dendrograma
 dist_matrix <- dist(resultado_ACP$dudi$li[, 1:3])
 hc <- hclust(dist_matrix, method = "ward.D2")
-
-# Obtener los nombres de los países
 paises <- rownames(resultado_ACP$dudi$li)
 
-# Primero crear el dendrograma con factoextra para obtener la estructura
 dendro_plot <- fviz_dend(hc, k = 2, 
                          cex = 0.6,
-                         k_colors = viridis(2),
+                         k_colors = c(verde_cluster1, azul_cluster2),
                          color_labels_by_k = TRUE,
                          ggtheme = theme_minimal(),
                          main = "Dendrograma - Clasificación Jerárquica",
                          xlab = "Países", ylab = "Distancia")
 
-# Convertir el ggplot a plotly manteniendo los colores y estructura
 plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
   layout(
     title = list(
@@ -1273,7 +1315,7 @@ plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
       title = "<b>Países</b>",
       tickfont = list(size = 10),
       titlefont = list(size = 14),
-      showticklabels = FALSE  # Ocultar etiquetas del eje X para evitar desorden
+      showticklabels = FALSE
     ),
     yaxis = list(
       title = "<b>Distancia</b>",
@@ -1289,7 +1331,6 @@ plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
     )
   )
 
-# Función para obtener el nombre del país basado en la posición
 get_country_name <- function(position) {
   if (position >= 1 && position <= length(paises)) {
     return(paises[position])
@@ -1297,7 +1338,6 @@ get_country_name <- function(position) {
   return("N/A")
 }
 
-# Mejorar los tooltips para mostrar nombres de países
 plotly_dendro <- plotly_dendro %>%
   style(
     hoverinfo = "text",
@@ -1306,233 +1346,176 @@ plotly_dendro <- plotly_dendro %>%
       "<b>Distancia:</b> ", round(y, 4), "<br>",
       "<b>Posición:</b> ", x
     ),
-    traces = c(1, 2)  # Aplicar a los traces de segmentos y puntos
+    traces = c(1, 2)
   )
 
-# Mostrar el gráfico interactivo
 plotly_dendro
 ```
 
+# Tabla Interactiva de Clusters por País
+```{r tabla-clusters}
+library(reactable)
+library(reactablefmtr)
 
-## Gráfico de Individuos (Países) - Componentes 1 y 2
+# 1. Paleta de colores para clusters
+verde_cluster1 <- "#488B49"  # Verde para Cluster 1
+azul_cluster2 <- "#4A90E2"   # Azul para Cluster 2
 
-```{r grafico_paises_interactivo,fig.width=9, fig.height=7}
-plotly_p1 <- plot_ly(acp_ind, 
-                     x = ~Axis1, y = ~Axis2, 
-                     color = ~Cluster,
-                     colors = viridis_pal()(2),
-                     text = ~paste("País:", Pais, 
-                                   "Cluster:", Cluster,
-                                   "Comp1:", round(Axis1, 2),
-                                   "Comp2:", round(Axis2, 2)),
-                     hoverinfo = "text",
-                     type = "scatter",
-                     mode = "markers",
-                     marker = list(size = 10, opacity = 0.7, line = list(width = 1))) %>%
-  layout(title = "ACP Interactivo - Países por Cluster",
-         xaxis = list(title = paste0("Dimensión 1 (", var_exp[1], "%)")),
-         yaxis = list(title = paste0("Dimensión 2 (", var_exp[2], "%)")),
-         hoverlabel = list(bgcolor = "white"))
+# 2. Crear dataframe con países y clusters
+clusters_df <- data.frame(
+  País = rownames(Muertes_df),
+  Cluster = NuevaBase$Cluster,
+  row.names = NULL
+)
 
-plotly_p1
+# Ordenar por cluster y luego por país alfabéticamente
+clusters_df <- clusters_df[order(clusters_df$Cluster, clusters_df$País), ]
+
+# 3. Contar países por cluster
+conteo_clusters <- table(clusters_df$Cluster)
+clusters_df$Total_Cluster <- conteo_clusters[as.character(clusters_df$Cluster)]
+
+# 4. Función para asignar color según cluster
+get_cluster_color <- function(cluster) {
+  if (cluster == 1) return(verde_cluster1)
+  if (cluster == 2) return(azul_cluster2)
+  return("#808080")  # Gris por defecto
+}
+
+# 5. Función para determinar color de texto adecuado
+suitable_text_color <- function(hex_color) {
+  rgb <- col2rgb(hex_color)/255
+  luminance <- 0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]
+  if (luminance < 0.5) 'white' else '#2E3A3B'
+}
+
+# 6. Tabla reactable con diseño profesional
+tabla_clusters <- reactable(
+  clusters_df,
+  defaultPageSize = 20,
+  showPageSizeOptions = TRUE,
+  pageSizeOptions = c(10, 20, 30, 50, nrow(clusters_df)),
+  filterable = TRUE,
+  searchable = TRUE,
+  sortable = TRUE,
+  resizable = FALSE,
+  striped = FALSE,
+  highlight = TRUE,
+  bordered = FALSE,
+  wrap = FALSE,
+  showSortIcon = TRUE,
+  defaultSorted = list(Cluster = "asc", País = "asc"),
+  theme = reactableTheme(
+    backgroundColor = "#ffffff",
+    borderColor = "#E8F5E8",
+    cellPadding = "8px 12px",
+    style = list(
+      fontFamily = "Segoe UI, Arial, sans-serif",
+      fontSize = "14px"
+    ),
+    searchInputStyle = list(
+      width = "100%",
+      padding = "8px 12px",
+      border = "1px solid #81C784",
+      borderRadius = "4px",
+      fontSize = "14px"
+    ),
+    headerStyle = list(
+      borderBottom = "2px solid #2E7D32",
+      fontSize = "14px",
+      backgroundColor = verde_cluster1,
+      color = "white",
+      fontWeight = "bold",
+      textTransform = "uppercase",
+      letterSpacing = "0.5px"
+    )
+  ),
+  columns = list(
+    País = colDef(
+      name = "PAÍS",
+      minWidth = 200,
+      filterable = TRUE,
+      align = "left",
+      style = list(
+        fontWeight = "600",
+        color = "#2E3A3B",
+        borderRight = "1px solid #E8F5E8"
+      )
+    ),
+    Cluster = colDef(
+      name = "CLUSTER",
+      minWidth = 120,
+      align = "center",
+      filterable = TRUE,
+      style = function(value) {
+        bg_color <- get_cluster_color(value)
+        txt_color <- suitable_text_color(bg_color)
+        list(
+          background = bg_color,
+          color = txt_color,
+          fontWeight = "bold",
+          fontSize = "15px",
+          borderRadius = "4px",
+          padding = "6px 12px",
+          borderLeft = "1px solid #E8F5E8"
+        )
+      },
+      cell = function(value) {
+        paste("Cluster", value)
+      }
+    ),
+    Total_Cluster = colDef(
+      name = "TOTAL EN CLUSTER",
+      minWidth = 140,
+      align = "center",
+      filterable = FALSE,
+      style = function(value, index) {
+        cluster_actual <- clusters_df$Cluster[index]
+        bg_color <- get_cluster_color(cluster_actual)
+        # Crear un color más claro para el background
+        rgb_vals <- col2rgb(bg_color)
+        light_bg <- rgb(rgb_vals[1], rgb_vals[2], rgb_vals[3], 
+                        alpha = 50, maxColorValue = 255)
+        list(
+          background = light_bg,
+          color = bg_color,
+          fontWeight = "600",
+          fontSize = "14px",
+          borderLeft = "1px solid #E8F5E8"
+        )
+      },
+      cell = function(value) {
+        paste(value, "países")
+      }
+    )
+  )
+)
+
+# Mostrar la tabla
+tabla_clusters
 ```
 
-## Círculo de Correlaciones
-
-```{r circulo_correlaciones,fig.width=9, fig.height=7}
-library(plotly)
-
-# Crear nombres cortos para las variables
-nombres_cortos <- c(
-  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
-  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
-  "Accidentes_de_transito" = "Accidentes Tránsito",
-  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
-  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
-  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
-  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
-  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
-  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
-  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
-  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
-  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
-  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
-  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
-  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
-  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
-  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
-  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
-  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
-  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
-  "Supervivenencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
-  "Supervivenencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
-)
-
-# Preparar datos
+## Preparación de datos para Biplot
+```{r preparacion-circle-data}
+# Crear circle_data con las coordenadas de las variables
 circle_data <- data.frame(
-  Axis1 = acp_var[,1],
-  Axis2 = acp_var[,2],
-  Variable = rownames(acp_var)
+  Variable = rownames(acp_var),
+  Axis1 = acp_var$Axis1,
+  Axis2 = acp_var$Axis2,
+  Axis3 = acp_var$Axis3
 )
 
-# Aplicar nombres cortos
-circle_data$NombreCorto <- nombres_cortos[circle_data$Variable]
+# Aplicar nombres cortos a las variables
+circle_data$Variable_corto <- nombres_cortos_var[circle_data$Variable]
 
-# Calcular métricas para tooltips
-circle_data$Longitud <- sqrt(circle_data$Axis1^2 + circle_data$Axis2^2)
-circle_data$Angulo <- round(atan2(circle_data$Axis2, circle_data$Axis1) * 180/pi, 1)
-circle_data$Correlacion <- round(circle_data$Longitud, 3)
-
-# Crear gráfico interactivo profesional
-plot_interactivo <- plot_ly() %>%
-  
-  # Añadir círculo de referencia
-  add_trace(
-    type = "scatter",
-    x = cos(seq(0, 2*pi, length.out = 100)),
-    y = sin(seq(0, 2*pi, length.out = 100)),
-    mode = "lines",
-    line = list(color = "blue", dash = "dash", width = 1),
-    hoverinfo = "none",
-    showlegend = FALSE,
-    name = "Círculo unidad"
-  ) %>%
-  
-  # Añadir flechas
-  add_annotations(
-    x = circle_data$Axis1,
-    y = circle_data$Axis2,
-    ax = 0,
-    ay = 0,
-    text = "",
-    showarrow = TRUE,
-    arrowhead = 2,
-    arrowsize = 1.2,
-    arrowwidth = 2,
-    arrowcolor = "#E41A1C",
-    opacity = 0.8
-  ) %>%
-  
-  # Añadir puntos interactivos
-  add_trace(
-    data = circle_data,
-    x = ~Axis1,
-    y = ~Axis2,
-    type = "scatter",
-    mode = "markers",
-    marker = list(
-      size = 10,
-      color = "#E41A1C",
-      line = list(color = "white", width = 2)
-    ),
-    text = ~paste(
-      "<b>Variable:</b> ", NombreCorto,
-      "<br><b>Correlación Comp. 1:</b> ", round(Axis1, 3),
-      "<br><b>Correlación Comp. 2:</b> ", round(Axis2, 3),
-      "<br><b>Longitud vector:</b> ", round(Longitud, 3),
-      "<br><b>Ángulo:</b> ", Angulo, "°",
-      "<br><b>Variable original:</b><br>", Variable
-    ),
-    hoverinfo = "text",
-    hoverlabel = list(bgcolor = "white", bordercolor = "black"),
-    showlegend = FALSE
-  ) %>%
-  
-  # Añadir etiquetas con nombres cortos
-  add_annotations(
-    x = circle_data$Axis1 * 1.15,
-    y = circle_data$Axis2 * 1.15,
-    text = circle_data$NombreCorto,
-    showarrow = FALSE,
-    font = list(
-      family = "Arial",
-      size = 11,
-      color = "darkred",
-      weight = "bold"
-    ),
-    bgcolor = "rgba(255,255,255,0.85)",
-    bordercolor = "rgba(200,0,0,0.3)",
-    borderwidth = 1,
-    borderpad = 4,
-    opacity = 0.9
-  ) %>%
-  
-  layout(
-    title = list(
-      text = paste0(
-        "<b> CÍRCULO DE CORRELACIONES - </b><br>",
-        "<sup>Dimensión 1 (", var_exp[1], "%) vs Dimensión 2 (", var_exp[2], "%)</sup>"
-      ),
-      x = 0.5,
-      font = list(size = 20, family = "Arial")
-    ),
-    xaxis = list(
-      title = paste0("<b>Dimensión 1 (", var_exp[1], "%)</b>"),
-      range = c(-1.3, 1.3),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1.5,
-      titlefont = list(size = 14)
-    ),
-    yaxis = list(
-      title = paste0("<b>Dimensión 2 (", var_exp[2], "%)</b>"),
-      range = c(-1.3, 1.3),
-      gridcolor = "lightgray",
-      zeroline = TRUE,
-      zerolinecolor = "black",
-      zerolinewidth = 1.5,
-      scaleanchor = "x",
-      titlefont = list(size = 14)
-    ),
-    plot_bgcolor = "white",
-    paper_bgcolor = "white",
-    font = list(family = "Arial"),
-    hoverlabel = list(
-      bgcolor = "white",
-      bordercolor = "black",
-      font = list(family = "Arial", size = 12)
-    ),
-    showlegend = FALSE,
-    margin = list(t = 100, b = 80, l = 80, r = 80)
-  )
-
-plot_interactivo
+# Si no hay nombre corto disponible, usar el original
+circle_data$Variable_corto[is.na(circle_data$Variable_corto)] <- 
+  circle_data$Variable[is.na(circle_data$Variable_corto)]
 ```
 
 ## Biplot Interactivo
-
-```{r biplot_interactivo,fig.width=9, fig.height=7}
-# Crear nombres cortos para las variables
-nombres_cortos <- c(
-  "Expectativa_de_vida_mujer" = "Exp Vida Mujer",
-  "Expectativa_de_vida_hombres" = "Exp Vida Hombre",
-  "Accidentes_de_transito" = "Accidentes Tránsito",
-  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf Crónicas Mujer",
-  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf Crónicas Hombre",
-  "Polucion_del_aire_mujeres" = "Polución Aire Mujer", 
-  "Polucion_del_aire_hombres" = "Polución Aire Hombre",
-  "Envenenamiento_accidental_mujeres" = "Envenenamiento Mujer",
-  "Envenenamiento_accidental_hombres" = "Envenenamiento Hombre",
-  "Tasa_de_mortalidad_mujeres_adultas" = "Mort Adulta Mujer",
-  "Tasa_de_mortalidad_hombres_adultos" = "Mort Adulta Hombre",
-  "Tasa_de_mortalidad_infantil_mujeres" = "Mort Infantil Mujer",
-  "Tasa_de_mortalidad_infantil_varones" = "Mort Infantil Hombre",
-  "Tasa_de_mortalidad_neonatal" = "Mort Neonatal",
-  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mort Temprana Mujer",
-  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mort Temprana Hombre",
-  "Numero_de_muertes_infantiles" = "Muertes Infantiles",
-  "Numero_de_muertes_neonatales" = "Muertes Neonatales",
-  "Tasa_de_suicidios_mujeres" = "Suicidios Mujer",
-  "Tasa_de_suicidios_hombres" = "Suicidios Hombre",
-  "Supervivenencia_hasta_los_65_anos_mujeres" = "Superv 65 Mujer",
-  "Supervivenencia_hasta_los_65_anos_hombres" = "Superv 65 Hombre"
-)
-
-# Aplicar nombres cortos a circle_data
-circle_data$Variable_corto <- nombres_cortos[circle_data$Variable]
-
-# Crear lista de anotaciones para las flechas
+```{r biplot_interactivo, fig.width=9, fig.height=7}
+# Preparar anotaciones de flechas
 anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
   list(
     x = circle_data$Axis1[i] * 3,
@@ -1555,19 +1538,22 @@ anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
 # Obtener clusters únicos
 clusters <- unique(acp_ind$Cluster)
 
-# Biplot interactivo profesional CORREGIDO
+# Crear el gráfico base
 plotly_biplot <- plot_ly()
 
-# Agregar un trace por cada cluster
+# Agregar puntos por cluster
 for(cluster in clusters) {
   datos_cluster <- acp_ind[acp_ind$Cluster == cluster, ]
+  color_cluster <- colores_clusters[as.character(cluster)]
   
   plotly_biplot <- plotly_biplot %>%
     add_trace(data = datos_cluster,
               x = ~Axis1, y = ~Axis2,
               type = "scatter",
               mode = "markers",
-              marker = list(size = 9, opacity = 0.7, line = list(width = 1, color = 'darkgray')),
+              marker = list(size = 9, opacity = 0.7, 
+                          line = list(width = 1, color = 'darkgray'),
+                          color = color_cluster),
               name = paste("Cluster", cluster),
               text = ~paste("<b>País:</b>", Pais, 
                             "<br><b>Cluster:</b>", Cluster,
@@ -1578,14 +1564,15 @@ for(cluster in clusters) {
               legendgroup = "paises")
 }
 
-# Agregar variables - TEXTO
+# Agregar las variables (flechas y etiquetas)
 plotly_biplot <- plotly_biplot %>%
   add_trace(data = circle_data,
             x = ~Axis1*3, y = ~Axis2*3,
             text = ~Variable_corto,
             type = "scatter",
             mode = "text",
-            textfont = list(color = "#E41A1C", size = 11, family = "Arial", weight = "bold"),
+            textfont = list(color = "#E41A1C", size = 11, 
+                           family = "Arial", weight = "bold"),
             name = "Variables",
             hoverinfo = "text",
             hovertext = ~paste("<b>Variable:</b>", Variable_corto,
@@ -1594,16 +1581,13 @@ plotly_biplot <- plotly_biplot %>%
             showlegend = TRUE,
             legendgroup = "variables")
 
-# Crear la configuración de visibilidad según número de clusters
+# Preparar vectores de visibilidad para los botones
 n_clusters <- length(clusters)
-# Para "Solo Países": primeros n_clusters traces visibles, último oculto
 visible_solo_paises <- c(rep(TRUE, n_clusters), FALSE)
-# Para "Solo Variables": primeros n_clusters traces ocultos, último visible
 visible_solo_variables <- c(rep(FALSE, n_clusters), TRUE)
-# Para "Ambos": todos visibles
 visible_ambos <- rep(TRUE, n_clusters + 1)
 
-# Layout con botones corregidos
+# Configurar el layout con botones
 plotly_biplot <- plotly_biplot %>%
   layout(
     title = list(
@@ -1639,9 +1623,7 @@ plotly_biplot <- plotly_biplot %>%
       bordercolor = 'gray',
       borderwidth = 1
     ),
-    # Agregar las flechas como anotaciones fijas
     annotations = anotaciones_flechas,
-    # Botones de control CORREGIDOS
     updatemenus = list(
       list(
         type = "buttons",
@@ -1654,7 +1636,6 @@ plotly_biplot <- plotly_biplot %>%
         bordercolor = "#CCCCCC",
         borderwidth = 1,
         buttons = list(
-          # Botón 1: Solo Países
           list(
             method = "update",
             args = list(
@@ -1663,7 +1644,6 @@ plotly_biplot <- plotly_biplot %>%
             ),
             label = "Solo Países"
           ),
-          # Botón 2: Solo Variables
           list(
             method = "update",
             args = list(
@@ -1672,7 +1652,6 @@ plotly_biplot <- plotly_biplot %>%
             ),
             label = "Solo Variables"
           ),
-          # Botón 3: Ambos
           list(
             method = "update",
             args = list(
@@ -1686,9 +1665,9 @@ plotly_biplot <- plotly_biplot %>%
     )
   )
 
+# Mostrar el gráfico
 plotly_biplot
 ```
-
 
 ## Gráfico PC1 vs PC2 - Clusters
 
@@ -1740,10 +1719,10 @@ plot_clusters_12 <- ggplot(df_clusters, aes(x = PC1, y = PC2, color = Cluster, f
   scale_fill_manual(values = colores_clusters, name = "Cluster") +
   # Etiquetas y título
   labs(
-    title = "Análisis de Clusters - Componentes Principales 1 y 2",
+    title = "Análisis de Clusters - Dimensiones Principales 1 y 2",
     subtitle = "Elipses de confianza al 95% con centroides",
-    x = paste0("Componente Principal 1 (", var_exp[1], "%)"),
-    y = paste0("Componente Principal 2 (", var_exp[2], "%)")
+    x = paste0("Dimensión Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Dimensión Principal 2 (", var_exp[2], "%)")
   ) +
   # Tema
   theme_minimal(base_size = 14) +
@@ -1800,10 +1779,10 @@ plot_clusters_13 <- ggplot(df_clusters, aes(x = PC1, y = PC3, color = Cluster, f
   scale_fill_manual(values = colores_clusters, name = "Cluster") +
   # Etiquetas y título
   labs(
-    title = "Análisis de Clusters - Componentes Principales 1 y 3",
+    title = "Análisis de Clusters - Dimensión Principales 1 y 3",
     subtitle = "Elipses de confianza al 95% con centroides",
-    x = paste0("Componente Principal 1 (", var_exp[1], "%)"),
-    y = paste0("Componente Principal 3 (", var_exp[3], "%)")
+    x = paste0("Dimensión Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Dimensión Principal 3 (", var_exp[3], "%)")
   ) +
   # Tema
   theme_minimal(base_size = 14) +
@@ -1827,62 +1806,3 @@ print(plot_clusters_13)
 ```
 
 
-# Análisis de Contribución
-
-
-```{r contribucion_variables, fig.width=9, fig.height=7}
-contrib_data <- acp_var %>%
-  mutate(Contrib1 = abs(Axis1) / sum(abs(Axis1)) * 100,
-         Contrib2 = abs(Axis2) / sum(abs(Axis2)) * 100) %>%
-  pivot_longer(cols = c(Contrib1, Contrib2), 
-               names_to = "Componente", 
-               values_to = "Contribucion")
-
-p6 <- ggplot(contrib_data, aes(x = reorder(Variable, Contribucion), 
-                               y = Contribucion, fill = Componente)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_viridis(discrete = TRUE, begin = 0.3, end = 0.8) +
-  labs(
-    title = "Contribución de Variables a los Componentes Principales",
-    x = "Variables",
-    y = "Contribución Absoluta (%)",
-    fill = "Componente"
-  ) +
-  coord_flip() +
-  theme_minimal()
-
-print(p6)
-```
-
-## Información General del Análisis
-
-# Resumen Estadístico del Análisis
-
-## 1. Información General
-
-```{r resumen_general, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-cat("### RESUMEN DEL ANÁLISIS ACP Y CLUSTERING\n\n")
-cat("📊 **Países analizados:**", nrow(NuevaBase), "\n")
-cat("🔢 **Número de clusters identificados:**", length(unique(NuevaBase$Cluster)), "\n")
-cat("📈 **Variables incluidas:**", ncol(NuevaBase) - 2, "\n")
-cat("🎯 **Varianza explicada (PC1+PC2):**", round(sum(var_exp[1:2]), 2), "%\n")
-
-library(knitr)
-library(kableExtra)
-
-# Tabla de distribución
-dist_tabla <- as.data.frame(table(NuevaBase$Cluster))
-colnames(dist_tabla) <- c("Cluster", "N° Países")
-dist_tabla$Porcentaje <- round(dist_tabla$`N° Países` / sum(dist_tabla$`N° Países`) * 100, 1)
-dist_tabla$Porcentaje <- paste0(dist_tabla$Porcentaje, "%")
-
-kable(dist_tabla, 
-      align = c("c", "c", "c"),
-      caption = "Distribución de países por cluster") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE,
-                position = "center") %>%
-  row_spec(0, bold = TRUE, background = "#4CAF50", color = "white")
-```
-
----
