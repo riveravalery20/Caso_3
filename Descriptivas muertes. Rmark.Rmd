@@ -8,19 +8,23 @@ output: html_document
 Este mapa se ve representado con frecuencias en donde los tonos más oscuros equivalen a más frecuencia y los más claros a frecuencias más debiles, las variables que se encuentran representadas en el mapa  están diferenciadas por sexo, cuya tematica se encuentra en causas de muerte, tasas en diferentes edades e indicadores de expectativa de vida. Del mismo modo tambien se encuentran las frecuencias, en las variables que no tienen esa caracterización 
 ```{r setup, include=FALSE}
 
+
 library(leaflet)
 library(dplyr)
 library(sf)
 library(rworldmap)
 library(readr)
 library(countrycode)
+library(shiny)
 
-# Leer la base de datos
-datos <-Muertes
+# Leer la base de datos (asumiendo que 'Muertes' es un dataframe disponible en el entorno)
+datos <- Muertes
+
+# Convertir columnas numéricas (excepto 'País') a numérico
 datos <- datos %>%
   mutate(across(.cols = -País, .fns = ~as.numeric(.)))
 
-# Preparar datos
+# Preparar y renombrar columnas
 datos <- datos %>%
   select(
     País = País,
@@ -107,7 +111,7 @@ datos <- datos %>%
   ) %>%
   filter(!is.na(iso3))
 
-# Lista de variables
+# Lista de variables para el selector
 variables <- c(
   "Expectativa de Vida" = "frecuencia_expectativa_vida",
   "Accidentes de Tránsito" = "frecuencia_accidentes",
@@ -124,11 +128,11 @@ variables <- c(
   "Supervivencia hasta los 65 Años" = "frecuencia_supervivencia_65"
 )
 
-# Obtener datos geoespaciales
+# Obtener datos geoespaciales del mundo
 world <- getMap(resolution = "low")
 world_sf <- st_as_sf(world)
 
-# Función para crear el mapa
+# Función para crear el mapa interactivo
 crear_mapa <- function(variable_seleccionada) {
   # Definir variable_seleccionada en el entorno de la función
   assign("variable_seleccionada", variable_seleccionada, envir = environment())
@@ -186,8 +190,8 @@ crear_mapa <- function(variable_seleccionada) {
   # Preparar valores seguros para tooltip (aplicado a todo world_sf)
   world_sf <- world_sf %>%
     mutate(
-      hombres_val = if (!is.na(hombres_col)) !!hombres_col else NA_real_,
-      mujeres_val = if (!is.na(mujeres_col)) !!mujeres_col else NA_real_,
+      hombres_val = if (!is.na(hombres_col)) !!hombres_col else NA_real_,  # Agregado: verificación para evitar !!NA
+      mujeres_val = if (!is.na(mujeres_col)) !!mujeres_col else NA_real_,  # Agregado: verificación para evitar !!NA
       frecuencia_val = !!frecuencia_col
     )
   
@@ -226,78 +230,26 @@ crear_mapa <- function(variable_seleccionada) {
   
   return(mapa)
 }
-  
-  # Definir col_hombres y col_mujeres al inicio
-  col_hombres <- NA
-  col_mujeres <- NA
-  if (variable_seleccionada == "Expectativa de Vida") {
-    col_hombres <- "expectativa_vida_hombres"
-    col_mujeres <- "expectativa_vida_mujer"
-  } else if (variable_seleccionada == "Enfermedades Cardíacas, Cáncer, Diabetes") {
-    col_hombres <- "enfermedades_cvd_hombres"
-    col_mujeres <- "enfermedades_cvd_mujeres"
-  } else if (variable_seleccionada == "Polución del Aire") {
-    col_hombres <- "polucion_aire_hombres"
-    col_mujeres <- "polucion_aire_mujeres"
-  } else if (variable_seleccionada == "Envenenamiento Accidental") {
-    col_hombres <- "envenenamiento_hombres"
-    col_mujeres <- "envenenamiento_mujeres"
-  } else if (variable_seleccionada == "Tasa de Mortalidad Adultos") {
-    col_hombres <- "mortalidad_adultos_hombres"
-    col_mujeres <- "mortalidad_adultos_mujeres"
-  } else if (variable_seleccionada == "Tasa de Mortalidad Infantil") {
-    col_hombres <- "mortalidad_infantil_varones"
-    col_mujeres <- "mortalidad_infantil_mujeres"
-  } else if (variable_seleccionada == "Tasa de Mortalidad Infantil Temprana") {
-    col_hombres <- "mortalidad_infantil_temprana_hombres"
-    col_mujeres <- "mortalidad_infantil_temprana_mujeres"
-  } else if (variable_seleccionada == "Tasa de Suicidios") {
-    col_hombres <- "suicidios_hombres"
-    col_mujeres <- "suicidios_mujeres"
-  } else if (variable_seleccionada == "Supervivencia hasta los 65 Años") {
-    col_hombres <- "supervivencia_65_hombres"
-    col_mujeres <- "supervivencia_65_mujeres"
-  }
-  
-  world_sf <- world_sf %>%
-    left_join(datos, by = c("ISO3" = "iso3"))
-  
-  # Preparar expresiones en el entorno de la función
-  if (!is.na(col_hombres)) {
-    assign("hombres_col", sym(col_hombres), envir = environment())
-  } else {
-    assign("hombres_col", NA, envir = environment())
-  }
-  if (!is.na(col_mujeres)) {
-    assign("mujeres_col", sym(col_mujeres), envir = environment())
-  } else {
-    assign("mujeres_col", NA, envir = environment())
-  }
-  assign("frecuencia_col", sym(col_frecuencia), envir = environment())
-  
-  # Preparar valores seguros para tooltip (aplicado a todo world_sf)
-  world_sf <- world_sf %>%
-    mutate(
-      hombres_val = if (!is.na(hombres_col)) !!hombres_col else NA_real_,
-      mujeres_val = if (!is.na(mujeres_col)) !!mujeres_col else NA_real_,
-      frecuencia_val = !!frecuencia_col
-    )
-# Mapa inicial
+# Crear mapa inicial con la primera variable
 mapa_inicial <- crear_mapa("Expectativa de Vida")
-mapa_inicial
+print(mapa_inicial)  # Mostrar el mapa inicial (opcional, para verificar)
 
-# Shiny para selector
-library(shiny)
+# Definir la interfaz de usuario (UI) para Shiny
 ui <- fluidPage(
+  titlePanel("Mapa Interactivo de Datos de Mortalidad por País"),
   selectInput("variable", "Selecciona Variable:", choices = names(variables)),
   leafletOutput("mapa")
 )
+
+# Definir el servidor para Shiny
 server <- function(input, output) {
   output$mapa <- renderLeaflet({
     crear_mapa(input$variable)
   })
 }
-shinyApp(ui, server)
+
+# Ejecutar la aplicación Shiny
+shinyApp(ui = ui, server = server)
 
 ```
 Los paises mas resaltables dentro de todas las variables son: Rusia, Japon, Republica centro africana (Central African Republic) Mongolia y Uruguay.
