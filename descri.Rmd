@@ -238,7 +238,7 @@ str(Muertes)
 ```
 
 ## MAPA INTERACTIVO POR FRECUENCIAS
-```{r}
+```{r MAPA}
 
 col_pais <- names(Muertes)[grepl("pa[ií]s|country|name", names(Muertes), ignore.case = TRUE)][1]
 if (is.na(col_pais)) stop("No se encontró una columna de países en Muertes. Verifica los nombres.")
