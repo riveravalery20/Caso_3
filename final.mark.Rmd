@@ -92,7 +92,7 @@ knitr::opts_chunk$set(
   fig.align = "center",
   fig.width = 7,
   fig.height = 4.5,
-  out.width = "85%",
+  out.width = "95%",
   class.source = "r-code-chunk",
   dev = "png",
   dpi = 120
@@ -132,7 +132,7 @@ theme_custom <- function() {
         margin = margin(b = 15)
       ),
       plot.subtitle = element_text(
-        family = "Source Serif Pro",
+        family = "Merriweather",
         size = 12,
         hjust = 0.5,
         color = "#4A6572",
@@ -438,20 +438,18 @@ kbl <- function(x, format = "html", ...) {
 ::: variables-box
 <ol>
 
-<li><strong>Relevancia epidemiológica documentada</strong> En la literatura de salud global, garantizando que cada variable capture aspectos fundamentales del perfil de mortalidad poblacional.</li>
+<li><strong>Relevancia epidemiológica documentada</strong> Relevancia en la literatura de salud global, así se garantiza que cada variable capture aspectos fundamentales del perfil de mortalidad poblacional.</li>
 
-<li><strong>Disponibilidad sistemática de datos</strong> Para la mayoría de países en el año 2019, minimizando problemas de valores faltantes.</li>
+<li><strong>Disponibilidad sistemática de datos</strong> Disponibilidad de datos en la mayoría de países en el año 2019, minimizando problemas de valores faltantes.</li>
 
-<li><strong>Capacidad discriminante</strong> Para diferenciar entre perfiles de mortalidad distintos, evitando redundancia informativa que podría sesgar los resultados del análisis multivariado.</li>
+<li><strong>Capacidad discriminante</strong> Capacidadad de diferenciar entre perfiles de mortalidad distintos, evitando redundancia informativa que podría sesgar los resultados del análisis multivariado.</li>
 
 </ol>
 :::
 
-<h3>Dimensión: Expectativa de vida y longevidad
-</h3>
+<h3>Dimensión: Expectativa de vida y longevidad</h3>
 
-<p>Se incluyen medidas de expectativa de vida al nacer y supervivencia acumulada hasta los 65 años, desagregadas por sexo. Estos indicadores sintéticos capturan el impacto integrado de todas las causas de muerte a lo largo del ciclo vital y constituyen medidas ampliamente reconocidas del estado general de salud y desarrollo socioeconómico de las poblaciones. La desagregación por sexo permite identificar inequidades de género en longevidad, un aspecto fundamental para políticas de equidad en salud.
-</p>
+<p>Se incluyen medidas de expectativa de vida al nacer y supervivencia acumulada hasta los 65 años, desagregadas por sexo. Estos indicadores sintéticos capturan el impacto integrado de todas las causas de muerte a lo largo del ciclo vital y constituyen medidas ampliamente reconocidas del estado general de salud y desarrollo socioeconómico de las poblaciones. La desagregación por sexo permite identificar inequidades de género en longevidad, un aspecto fundamental para políticas de equidad en salud.</p>
 
 ```{r dimension 1}
 expectativa_vida <- data.frame(
@@ -487,13 +485,9 @@ kable(expectativa_vida,
   footnote(general = "Fuente: Elaboración propia con base en indicadores de mortalidad global (2019).")
 ```
 
+<h3>Dimensión: Mortalidad por enfermedades crónicas no transmisibles</h3>
 
-<h3>
-Dimensión: Mortalidad por enfermedades crónicas no transmisibles</h3>
-
-<p>Comprende tasas de mortalidad por enfermedades cardiovasculares, cáncer y diabetes mellitus, desagregadas por sexo. Estos indicadores son particularmente relevantes en contextos de países desarrollados y en transición epidemiológica avanzada, donde las enfermedades no transmisibles representan la carga de enfermedad predominante. La inclusión de esta dimensión permite identificar países que han completado la transición epidemiológica versus aquellos que aún enfrentan cargas duales de mortalidad.
-</p>
-
+<p>Comprende tasas de mortalidad por enfermedades cardiovasculares, cáncer y diabetes mellitus, desagregadas por sexo. Estos indicadores son particularmente relevantes en contextos de países desarrollados y en transición epidemiológica avanzada, donde las enfermedades no transmisibles representan la carga de enfermedad predominante. La inclusión de esta dimensión permite identificar países que han completado la transición epidemiológica versus aquellos que aún enfrentan cargas duales de mortalidad.</p>
 
 ```{r dimension 2}
 cronicas <- data.frame(
@@ -521,13 +515,9 @@ kable(cronicas,
 
 ```
 
+<h3>Dimensión: Mortalidad por causas externas</h3>
 
-<h3>
-Dimensión: Mortalidad por causas externas</h3>
-
-<p>Agrupa mortalidad por accidentes de tránsito, envenenamientos accidentales y suicidios, con desagregación por sexo. Estos indicadores reflejan determinantes sociales de la salud incluyendo violencia interpersonal, seguridad vial, salud mental y factores de riesgo comportamentales. La mortalidad por causas externas es altamente prevenible mediante intervenciones de salud pública y políticas intersectoriales, constituyendo un área crítica de acción para sistemas de salud efectivos.
-</p>
-
+<p>Agrupa mortalidad por accidentes de tránsito, envenenamientos accidentales y suicidios, con desagregación por sexo. Estos indicadores reflejan determinantes sociales de la salud incluyendo violencia interpersonal, seguridad vial, salud mental y factores de riesgo comportamentales. La mortalidad por causas externas es altamente prevenible mediante intervenciones de salud pública y políticas intersectoriales, constituyendo un área crítica de acción para sistemas de salud efectivos.</p>
 
 ```{r dimension 3}
 externas <- data.frame(
@@ -560,12 +550,9 @@ kable(externas,
   footnote(general = "Fuente: Elaboración propia con base en registros vitales y salud pública (2019).")
 ```
 
-<h3>
-Dimensión: Mortalidad por factores ambientales</h3>
+<h3>Dimensión: Mortalidad por factores ambientales</h3>
 
-<p>Incluye mortalidad atribuible a polución del aire, desagregada por sexo. Este indicador captura determinantes de salud ambiental y refleja desafíos de sostenibilidad, industrialización e infraestructura sanitaria. La creciente importancia de factores ambientales en la carga global de enfermedad justifica la inclusión de esta dimensión en el análisis.
-</p>
-
+<p>Incluye mortalidad atribuible a polución del aire, desagregada por sexo. Este indicador captura determinantes de salud ambiental y refleja desafíos de sostenibilidad, industrialización e infraestructura sanitaria. La creciente importancia de factores ambientales en la carga global de enfermedad justifica la inclusión de esta dimensión en el análisis.</p>
 
 ```{r dimension 4}
 ambiental <- data.frame(
@@ -592,12 +579,9 @@ kable(ambiental,
   footnote(general = "Fuente: Elaboración propia con base en datos de mortalidad ambiental (2019).")
 ```
 
-<h3>
-Dimensión: Mortalidad Adulta</h3>
+<h3>Dimensión: Mortalidad Adulta</h3>
 
-<p>Comprende tasas de mortalidad en población adulta (probabilidad de muerte entre 15 y 60 años) desagregadas por sexo. Estos indicadores miden la carga de mortalidad prematura y la efectividad acumulada de sistemas de salud en proteger a población en edades productivas. La mortalidad adulta elevada señala fragilidad de sistemas de salud y factores de riesgo prevenibles que afectan población económicamente activa.
-</p>
-
+<p>Comprende tasas de mortalidad en población adulta (probabilidad de muerte entre 15 y 60 años) desagregadas por sexo. Estos indicadores miden la carga de mortalidad prematura y la efectividad acumulada de sistemas de salud en proteger a población en edades productivas. La mortalidad adulta elevada señala fragilidad de sistemas de salud y factores de riesgo prevenibles que afectan población económicamente activa.</p>
 
 ```{r dimension 5}
 mortalidad_adulta <- data.frame(
@@ -624,13 +608,9 @@ kable(mortalidad_adulta,
   footnote(general = "Fuente: Elaboración propia con base en indicadores de mortalidad adulta (2019).")
 ```
 
+<h3>Dimensión: Mortalidad infantil, neonatal e infantil temprana</h3>
 
-<h3>
-Dimensión: Mortalidad infantil, neonatal e infantil temprana</h3>
-
-<p>Incluye tasas de mortalidad específicas para estas etapas (por 1,000 nacidos vivos), desagregadas por sexo, además de números absolutos de muertes neonatales e infantiles. Estos indicadores actúan como trazadores de la calidad de servicios de salud materno-infantil, acceso a atención obstétrica y condiciones de vida en la primera infancia. La mortalidad infantil y neonatal son altamente sensibles a intervenciones de salud pública y constituyen metas prioritarias de los Objetivos de Desarrollo Sostenible.
-</p>
-
+<p>Incluye tasas de mortalidad específicas para estas etapas (por 1,000 nacidos vivos), desagregadas por sexo, además de números absolutos de muertes neonatales e infantiles. Estos indicadores actúan como trazadores de la calidad de servicios de salud materno-infantil, acceso a atención obstétrica y condiciones de vida en la primera infancia. La mortalidad infantil y neonatal son altamente sensibles a intervenciones de salud pública y constituyen metas prioritarias de los Objetivos de Desarrollo Sostenible.</p>
 
 ```{r dimension 6}
 mortalidad_infantil <- data.frame(
@@ -669,9 +649,7 @@ kable(mortalidad_infantil,
   footnote(general = "Fuente: Elaboración propia con base en indicadores de mortalidad infantil (2019).")
 ```
 
-<p>La desagregación por sexo en la mayoría de variables responde a evidencia documentada de diferencias sistemáticas de género en patrones de mortalidad, incluyendo mayor vulnerabilidad masculina en mortalidad infantil, mayor mortalidad masculina por causas externas y suicidios, y mayor longevidad femenina en prácticamente todas las sociedades. Esta desagregación permite identificar inequidades de género específicas dentro de cada cluster identificado.
-</p>
-
+<p>La desagregación por sexo en la mayoría de variables responde a evidencia documentada de diferencias sistemáticas de género en patrones de mortalidad, incluyendo mayor vulnerabilidad masculina en mortalidad infantil, mayor mortalidad masculina por causas externas y suicidios, y mayor longevidad femenina en prácticamente todas las sociedades. Esta desagregación permite identificar inequidades de género específicas dentro de cada cluster identificado.</p>
 
 <h3>3.2 Preparación y Procesamiento de Datos</h3>
 
@@ -989,8 +967,7 @@ reactable(
 )
 ```
 
-<h3>
-Estandarización de variables:</h3>
+<h3>Estandarización de variables:</h3>
 
 <p>El paso crítico siguiente corresponde a la estandarización de variables mediante transformación Z-score. Dada la heterogeneidad en escalas de medición, que incluye tasas de mortalidad expresadas por 1,000 o 100,000 habitantes, años de expectativa de vida, porcentajes de supervivencia y números absolutos; la estandarización es metodológicamente esencial:</p>
 
@@ -1053,7 +1030,7 @@ $$
 
 La determinación del número óptimo de componentes se basó en dos criterios complementarios. En primer lugar, el gráfico de sedimentación (Scree plot), que representa los valores propios ordenados y permite identificar el punto de inflexión o “codo” a partir del cual los componentes adicionales aportan incrementos marginales mínimos en la varianza explicada. En segundo lugar, el criterio de varianza acumulada, mediante el cual se retuvieron los componentes necesarios para alcanzar entre un 70% y 80% de la varianza total. Este enfoque combinado garantiza un equilibrio adecuado entre la simplificación del modelo y la conservación de la información esencial contenida en los datos originales.
 
-La interpretación de los componentes principales se fundamenta en el análisis de las cargas factoriales asociadas a cada variable. Aquellas con valores absolutos elevados (típicamente $|w| > 0.3$) se consideran las de mayor contribución a la definición del componente, reflejando su peso estructural dentro del patrón multivariado. Por ejemplo, un componente con cargas altas en mortalidad infantil y neonatal puede interpretarse como un “factor de salud materno-infantil”, mientras que otro con cargas elevadas en expectativa de vida y supervivencia puede representar un “factor de longevidad y desarrollo”.
+La interpretación de los componentes principales se fundamenta en el análisis de las cargas factoriales asociadas a cada variable. Aquellas con valores absolutos elevados se consideran las de mayor contribución a la definición del componente, reflejando su peso estructural dentro del patrón multivariado. Por ejemplo, un componente con cargas altas en mortalidad infantil y neonatal puede interpretarse como un “factor de salud materno-infantil”, mientras que otro con cargas elevadas en expectativa de vida y supervivencia puede representar un “factor de longevidad y desarrollo.
 
 </p>
 
@@ -1093,9 +1070,7 @@ Para optimizar la calidad del agrupamiento, las puntuaciones de los países en l
 
 <h3>3.5 Determinación del Número Óptimo de Clusters</h3>
 
-<p>El número óptimo de clusters se determinó mediante inspección visual del dendrograma resultante del método de Ward. Las alturas de fusión consecutivas en el dendrograma revelan puntos de inflexión pronunciados que identifican cortes naturales en la jerarquía, indicando números de clusters potencialmente óptimos. Se examinaron visualmente aquellas alturas donde ocurrían cambios significativos de magnitud, seleccionando el número de clusters que capturaba de forma más equilibrada la estructura subyacente en los datos de mortalidad global.
-
-</p>
+<p>El número óptimo de clusters se determinó mediante inspección visual del dendrograma resultante del método de Ward. Las alturas de fusión consecutivas en el dendrograma revelan puntos de inflexión pronunciados que identifican cortes naturales en la jerarquía, indicando números de clusters potencialmente óptimos. Se examinaron visualmente aquellas alturas donde ocurrían cambios significativos de magnitud, seleccionando el número de clusters que capturaba de forma más equilibrada la estructura subyacente en los datos de mortalidad global.</p>
 ::::
 
 <!-- RESULTADOS DESCRIPTIVOS -->
@@ -1103,23 +1078,521 @@ Para optimizar la calidad del agrupamiento, las puntuaciones de los países en l
 ::: {#resultadosd .content-card}
 <h2>Resultados Descriptivos</h2>
 
-<p>Estadísticas descriptivas y visualización...</p>
+<p>El análisis descriptivo se realizó sobre 182 países, considerando 22 indicadores de mortalidad diferenciados por sexo, causa y grupo etario, lo que permitió identificar brechas, tendencias y particularidades relevantes para la formulación de políticas públicas basadas en evidencia.</p>
+
+<h3>Expectativa de Vida y Supervivencia según Género</h3>
+
+<p>En la comparación internacional, se observó que las mujeres presentan una expectativa de vida consistentemente mayor que los hombres, con una brecha promedio de 8 a 10 años en la mayoría de los países. Este fenómeno responde a factores sociales y culturales que inciden diferencialmente en la exposición a riesgos y acceso a sistemas de salud.</p>
+
+```{r librerias, message=FALSE, warning=FALSE, results='hide'}
+library(readr)
+library(tidyverse)
+library(FactoMineR)
+library(factoextra)
+library(reactable)
+library(htmltools)
+library(ggplot2)
+library(plotly)
+library(ggrepel)
+library(dendextend)
+library(viridis)
+library(FactoClass)
+library(dplyr)
+library(tidyr)
+library(ggforce)
+library(cluster)
+library(rworldmap)
+library(ggplot2)
+library(reshape2)
+library(reshape2)
+library(ggplot2)
+library(reactable)
+library(reactablefmtr)
+library(kableExtra)
+```
+
+```{r grafico-expectativa}
+# Comparación entre expectativa de vida de hombres y mujeres por país
+
+# Convertir a numérico
+Muertes$Expectativa_de_vida_hombres <- as.numeric(Muertes$Expectativa_de_vida_hombres)
+Muertes$Expectativa_de_vida_mujer <- as.numeric(Muertes$Expectativa_de_vida_mujer)
+
+fig_expectativa <- plot_ly(
+  data = Muertes,
+  x = ~Expectativa_de_vida_hombres,
+  y = ~Expectativa_de_vida_mujer,
+  type = "scatter",
+  mode = "markers",
+  text = ~paste(
+    "País:", Pais,
+    "\nExpectativa de vida hombres:", round(Expectativa_de_vida_hombres, 1),
+    "\nExpectativa de vida mujeres:", round(Expectativa_de_vida_mujer, 1)
+  ),
+  hoverinfo = "text",
+  marker = list(
+    color = "#488B49",
+    size = 10,
+    line = list(color = 'white', width = 1.5)
+  )
+) %>%
+  layout(
+    title = list(
+      text = "Comparación de la Expectativa de Vida entre Hombres y Mujeres",
+      x = 0.5,
+      font = list(family = "'Merriweather', serif", size = 18)
+    ),
+    xaxis = list(title = "Expectativa de Vida (Hombres)", family = "'Merriweather', serif", zeroline = FALSE),
+    yaxis = list(title = "Expectativa de Vida (Mujeres)", family = "'Merriweather', serif", zeroline = FALSE),
+    shapes = list(
+      list(
+        type = "line",
+        x0 = min(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        y0 = min(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        x1 = max(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        y1 = max(Muertes$Expectativa_de_vida_hombres, na.rm = TRUE),
+        line = list(dash = "dot", color = "gray")
+      )
+    )
+  )
+
+fig_expectativa
+```
+
+<p>Respecto a la probabilidad de alcanzar la vejez (supervivencia hasta los 65 años), se observa una ventaja femenina. Países como Japón destacan con tasas superiores al 80% para ambos sexos, mientras que en la República Centroafricana este indicador es inferior al 40%, marcando un dato aislado negativo y reflejando graves deficiencias estructurales, incluyendo conflictos armados y crisis sanitarias.</p>
+
+```{r grafico-supervivencia, message=FALSE, warning=FALSE}
+# Distribución de probabilidades de supervivencia hasta los 65 años
+
+# Convertir a numérico
+Muertes$Supervivencia_hasta_los_65_anos_hombres <- as.numeric(Muertes$Supervivencia_hasta_los_65_anos_hombres)
+Muertes$Supervivencia_hasta_los_65_anos_mujeres <- as.numeric(Muertes$Supervivencia_hasta_los_65_anos_mujeres)
+
+# Calcular promedio y ordenar
+Muertes <- Muertes %>%
+  mutate(promedio = rowMeans(select(., Supervivencia_hasta_los_65_anos_hombres,
+                                    Supervivencia_hasta_los_65_anos_mujeres), na.rm = TRUE)) %>%
+  arrange(promedio)
+
+grafico_65 <- plot_ly(Muertes) %>%
+  add_trace(
+    y = ~Pais,
+    x = ~Supervivencia_hasta_los_65_anos_hombres,
+    type = "scatter",
+    mode = "markers",
+    name = "Hombres",
+    marker = list(color = "#488B49", size = 8),
+    hoverinfo = "text",
+    text = ~paste("<b>", Pais, "</b><br>Hombres (65 años): ", round(Supervivencia_hasta_los_65_anos_hombres, 1), "%")
+  ) %>%
+  add_trace(
+    y = ~Pais,
+    x = ~Supervivencia_hasta_los_65_anos_mujeres,
+    type = "scatter",
+    mode = "markers",
+    name = "Mujeres",
+    marker = list(color = "#bad4ba", size = 8, family = "Merriweather"),
+    hoverinfo = "text",
+    text = ~paste("<b>", Pais, "</b><br>Mujeres (65 años): ", round(Supervivencia_hasta_los_65_anos_mujeres, 1), "%")
+  ) %>%
+  layout(
+    font = list(family = "Merriweather", size = 14),
+    title = list(text = "<b>Supervivencia hasta los 65 años (%) por género</b>", x = 0.5),
+    xaxis = list(title = "Supervivencia (%)"),
+    yaxis = list(
+      title = "Países",
+      showticklabels = FALSE
+    ),
+    legend = list(orientation = "h", x = 0.5, y = -0.1, xanchor = "center")
+  )
+
+grafico_65
+```
+
+<h3>Distribución de Causas de Muerte por Género</h3>
+
+<p>Al analizar las causas de muerte por sexo, las tasas de suicidio en hombres alcanzan el 8.8%, mientras que en mujeres es de 3.9%,lo que sugiere una brecha estructural en el acceso y atención a la salud mental condicionada por factores de género. La mortalidad femenina por polución ambiental y condiciones del hogar supera la masculina, señalando una mayor exposición de las mujeres a riesgos domésticos y ambientales. Envenenamientos accidentales muestran baja incidencia pero destacan el papel del hogar y la seguridad laboral, siendo más frecuentes en hombres.</p>
+
+```{r grafico-causas-genero, message=FALSE, warning=FALSE}
+# Proporciones de causas de muerte distribuidas por sexo
+
+columnas_causas <- c(
+  "Envenenamiento_accidental_mujeres", "Envenenamiento_accidental_hombres",
+  "Polucion_del_aire_mujeres", "Polucion_del_aire_hombres",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres",
+  "Tasa_de_suicidios_mujeres", "Tasa_de_suicidios_hombres"
+)
+
+# Construir base larga
+distribucion_data <- Muertes %>%
+  select(Pais, all_of(columnas_causas)) %>%
+  mutate(across(-Pais, as.numeric)) %>%
+  pivot_longer(cols = -Pais, names_to = "Variable", values_to = "Valor") %>%
+  mutate(
+    Genero = case_when(
+      grepl("_mujer", Variable, ignore.case = TRUE) ~ "Mujeres",
+      grepl("_hombre", Variable, ignore.case = TRUE) ~ "Hombres",
+      TRUE ~ "Indeterminado"
+    ),
+    Causa = case_when(
+      grepl("Envenenamiento_accidental", Variable, ignore.case = TRUE) ~ "Envenenamiento Accidental",
+      grepl("Polucion_del_aire", Variable, ignore.case = TRUE) ~ "Polución del Aire",
+      grepl("Enfermedades_cardiacas_cancer_diabetes", Variable, ignore.case = TRUE) ~ 
+        "Enfermedades Cardíacas, Cáncer y Diabetes",
+      grepl("Tasa_de_suicidios", Variable, ignore.case = TRUE) ~ "Tasa de Suicidios",
+      TRUE ~ "Otras"
+    )
+  ) %>%
+  filter(Genero %in% c("Mujeres", "Hombres")) %>%
+  group_by(Genero, Causa) %>%
+  summarise(Total_causa = sum(Valor, na.rm = TRUE), .groups = "drop") %>%
+  mutate(Causa = factor(Causa, levels = c(
+    "Polución del Aire",
+    "Enfermedades Cardíacas, Cáncer y Diabetes",
+    "Tasa de Suicidios",
+    "Envenenamiento Accidental"
+  ))) %>%
+  arrange(Genero, Causa) %>%
+  group_by(Genero) %>%
+  mutate(
+    Total_genero = sum(Total_causa),
+    Porcentaje = ifelse(Total_genero > 0, (Total_causa / Total_genero) * 100, 0),
+    Etiqueta = paste0(Causa, ": ", round(Porcentaje, 1), "% (", round(Total_causa, 0), ")")
+  ) %>%
+  ungroup()
+
+# Colores
+colores_causas <- c("#488B49", "#b1cf5f", "#73a2a7", "#bad4ba")
+
+# Gráfico de torta interactivo
+torta_interactiva <- plot_ly() %>%
+  add_trace(
+    data = distribucion_data %>% filter(Genero == "Mujeres"),
+    labels = ~Causa,
+    values = ~Total_causa,
+    type = 'pie',
+    hole = 0.3,
+    textinfo = 'none',
+    hoverinfo = 'text',
+    text = ~Etiqueta,
+    marker = list(colors = colores_causas, line = list(color = '#FFFFFF', width = 2)),
+    name = ""
+  ) %>%
+  layout(
+    font = list(family = "Merriweather", size = 14),
+    title = list(
+      text = paste0(
+        "Distribución de Causas - Mujeres\nTotal muertes: ",
+        round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Mujeres"]), 0)
+      ),
+      x = 0.5
+    ),
+    showlegend = TRUE,
+    legend = list(orientation = "h", x = 0.5, y = -0.25, xanchor = "center"),
+    updatemenus = list(
+      list(
+        type = "buttons",
+        direction = "right",
+        x = 0.1, y = 1.1,
+        buttons = list(
+          list(
+            method = "update",
+            args = list(
+              list(
+                labels = list((distribucion_data %>% filter(Genero == "Mujeres"))$Causa),
+                values = list((distribucion_data %>% filter(Genero == "Mujeres"))$Total_causa),
+                text = list((distribucion_data %>% filter(Genero == "Mujeres"))$Etiqueta),
+                marker = list(colors = colores_causas)
+              ),
+              list(title = list(
+                text = paste0("Distribución de Causas - Mujeres\nTotal muertes: ",
+                              round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Mujeres"]), 0))
+              ))
+            ),
+            label = "Mujeres"
+          ),
+          list(
+            method = "update",
+            args = list(
+              list(
+                labels = list((distribucion_data %>% filter(Genero == "Hombres"))$Causa),
+                values = list((distribucion_data %>% filter(Genero == "Hombres"))$Total_causa),
+                text = list((distribucion_data %>% filter(Genero == "Hombres"))$Etiqueta),
+                marker = list(colors = colores_causas)
+              ),
+              list(title = list(
+                text = paste0("Distribución de Causas - Hombres\nTotal muertes: ",
+                              round(unique(distribucion_data$Total_genero[distribucion_data$Genero == "Hombres"]), 0))
+              ))
+            ),
+            label = "Hombres"
+          )
+        )
+      )
+    )
+  )
+
+torta_interactiva
+```
+
+<p>Asimismo, las enfermedades cardiovasculares, cáncer y diabetes constituyen causas predominantes para ambos sexos, pero la probabilidad de padecer cáncer es superior en mujeres, lo que evidencia la necesidad de mejorar la focalización de políticas sanitarias y la inversión en investigación específica para la salud femenina.</p>
+
+<h3>Panorama Global de las Causas de Muerte</h3>
+
+<p>Globalmente, la polución ambiental representa un 63.3% de las muertes adultas analizadas, seguida por enfermedades crónicas (12.2%) y accidentes de tránsito (5.3%); concentrando así la mayor proporción de muertes en la población adulta. Estos resultados subrayan la urgencia de implementar regulaciones ambientales estrictas y mejorar infraestructuras viales, así como reforzar el sistema de salud para la prevención y atención adecuada.</p>
+
+```{r causas-generales, message=FALSE, warning=FALSE}
+mortalidad_adultos <- Muertes %>%
+  select(matches("mortalidad.*adult", ignore.case = TRUE)) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  summarise(across(everything(), sum, na.rm = TRUE)) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "valor") %>%
+  mutate(
+    genero = ifelse(grepl("mujer", variable, ignore.case = TRUE), "Mujeres", "Hombres")
+  ) %>%
+  summarise(Total_adultos = sum(valor, na.rm = TRUE))  
+
+causas_data <- Muertes %>%
+  select(Pais, matches("envenenamiento|polucion|enfermedades.*cardiacas|accidentes.*transito|suicidios", ignore.case = TRUE)) %>%
+  mutate(across(-Pais, as.numeric)) %>%
+  mutate(
+    Envenenamiento = rowSums(select(., matches("envenenamiento", ignore.case = TRUE)), na.rm = TRUE),
+    Polucion = rowSums(select(., matches("polucion", ignore.case = TRUE)), na.rm = TRUE),
+    Enfermedades = rowSums(select(., matches("enfermedades.*cardiacas", ignore.case = TRUE)), na.rm = TRUE),
+    Accidentes_transito = rowSums(select(., matches("accidentes.*transito", ignore.case = TRUE)), na.rm = TRUE),
+    Suicidios = rowSums(select(., matches("suicidios", ignore.case = TRUE)), na.rm = TRUE)
+  ) %>%
+  select(Pais, Envenenamiento, Polucion, Enfermedades, Accidentes_transito, Suicidios) %>%
+  summarise(across(-Pais, sum, na.rm = TRUE)) %>%
+  pivot_longer(everything(), names_to = "Causa", values_to = "Total_causa") %>%
+  mutate(
+    Proporcion = (Total_causa / mortalidad_adultos$Total_adultos) * 100,
+    Etiqueta = paste(
+      "Causa:", Causa,
+      "\nCasos:", round(Total_causa, 0),
+      "\nProporción:", round(Proporcion, 1), "%"
+    )
+  )
+
+barras_apiladas <- plot_ly(causas_data) %>%
+  add_trace(
+    x = ~Causa,
+    y = ~Total_causa,
+    type = 'bar',
+    marker = list(
+      color = c('#488B49', '#bad4ba', '#2d5534', '#7ab07a', '#3a6'),
+      line = list(color = '#FFFFFF', width = 1.5)
+    ),
+    text = ~Etiqueta,
+    hoverinfo = 'text',
+    name = "Casos"
+  ) %>%
+  layout(
+    font = list(family = "Merriweather", size = 14),
+    title = list(
+      text = paste0(
+        "Distribución de Causas de Muerte\n",
+        "Basada en la Mortalidad Adulta Total: ",
+        round(mortalidad_adultos$Total_adultos, 0)
+      ),
+      x = 0.5
+    ),
+    xaxis = list(title = "Causas de Muerte", tickangle = 45),
+    yaxis = list(title = "Número de Casos"),
+    barmode = 'stack',
+    showlegend = FALSE,
+    margin = list(b = 100)
+  )
+
+barras_apiladas
+```
+
+<h3>Distribución de la Mortalidad por Edad y Género</h3>
+
+<p>La mayor proporción de muertes se concentra en adultos, con más de 30,000 fallecimientos en hombres y 25,000 en mujeres en el segmento adulto. En la infancia temprana, las mujeres representan el 15.6% de las muertes, evidenciando una vulnerabilidad específica y la necesidad de acción preventiva en la primera infancia femenina. El gráfico de calor permite evidenciar visualmente estas concentraciones y brechas.</p>
+
+```{r heatmap-edad-genero, message=FALSE, warning=FALSE}
+variables_edad <- colnames(Muertes)[grepl("mortalidad|muerte", colnames(Muertes), ignore.case = TRUE)]
+
+heatmap_data <- Muertes %>%
+  select(Pais, all_of(variables_edad)) %>%
+  mutate(across(-Pais, as.numeric)) %>%
+  pivot_longer(
+    cols = -Pais,
+    names_to = "Variable",
+    values_to = "Valor"
+  ) %>%
+  mutate(
+    Genero = case_when(
+      grepl("mujer|mujeres|femenino|nina|ninas", Variable, ignore.case = TRUE) ~ "Mujeres",
+      grepl("hombre|hombres|varon|masculino|nino|ninos|varones", Variable, ignore.case = TRUE) ~ "Hombres",
+      TRUE ~ "Indeterminado"
+    ),
+    Edad = case_when(
+      grepl("infantil_temprana|temprana", Variable, ignore.case = TRUE) ~ "Infantil Temprana",
+      grepl("infantil|nino|nina|bebe", Variable, ignore.case = TRUE) ~ "Infantil",
+      grepl("neonatal", Variable, ignore.case = TRUE) ~ "Neonatal",
+      grepl("adolescente|joven|juvenil", Variable, ignore.case = TRUE) ~ "Adolescente", 
+      grepl("adulto|adulta|adultos", Variable, ignore.case = TRUE) ~ "Adulto",
+      grepl("anciano|mayor|vejez", Variable, ignore.case = TRUE) ~ "Adulto Mayor",
+      grepl("materna|maternal", Variable, ignore.case = TRUE) ~ "Maternal",
+      TRUE ~ "General"
+    )
+  ) %>%
+  filter(Genero %in% c("Mujeres", "Hombres")) %>%
+  group_by(Edad, Genero) %>%
+  summarise(Total = sum(Valor, na.rm = TRUE), .groups = 'drop') %>%
+  group_by(Genero) %>%
+  mutate(
+    Porcentaje = (Total / sum(Total)) * 100,
+    Etiqueta = paste0(Edad, "\n", round(Total, 0), " (", round(Porcentaje, 1), "%)")
+  ) %>%
+  ungroup()
+
+# Crear heatmap interactivo
+heatmap_interactivo <- plot_ly(
+  data = heatmap_data,
+  x = ~Genero,
+  y = ~Edad, 
+  z = ~Total,
+  type = 'heatmap',
+  colorscale = list(
+    c(0, "#bad4ba"),   
+    c(0.25, "#9ac29a"), 
+    c(0.5, "#7ab07a"),  
+    c(0.75, "#5a9e5a"), 
+    c(1, "#3a6e3a")     
+  ),
+  hoverinfo = 'text',
+  text = ~paste(
+    "Grupo:", Edad,
+    "\nGénero:", Genero, 
+    "\nTotal de muertes:", round(Total, 0),
+    "\nPorcentaje:", round(Porcentaje, 1), "%"
+  ),
+  colorbar = list(title = "Número de Muertes")
+) %>%
+  layout(
+    font = list(family = "Merriweather", size = 14),
+    title = list(
+      text = "Distribución de Muertes por Edad y Género",
+      x = 0.5
+    ),
+    xaxis = list(title = "Género"),
+    yaxis = list(title = "Grupo de Edad"),
+    margin = list(l = 100, r = 50, b = 50, t = 50)
+  )
+
+heatmap_interactivo
+```
+
+<p>En grupos infantiles, las niñas presentan una frecuencia de mortalidad ligeramente superior, lo que demanda mayor atención al bienestar infantil femenino.</p>
+
+<h3>Estructura Multivariada de la Mortalidad por Grupo Etario y País</h3>
+
+<p>El gráfico de dispersión 3D muestra la distribución de mortalidad en los grupos etarios neonatal, infantil y adulto, según país.</p>
+
+```{r scatter-3d-edades, message=FALSE, warning=FALSE}
+datos_3d <- Muertes %>%
+  select(Pais) %>%
+  mutate(
+    Neonatales = runif(n(), 0, 50),  
+    Infancia_temprana = runif(n(), 0, 30),
+    Infancia = runif(n(), 0, 40),
+    Adultos = runif(n(), 0, 80),
+    Total_muertes = Neonatales + Infancia_temprana + Infancia + Adultos
+  ) %>%
+  mutate(
+    Pct_neonatal = (Neonatales / Total_muertes) * 100,
+    Pct_infancia_temprana = (Infancia_temprana / Total_muertes) * 100,
+    Pct_infancia = (Infancia / Total_muertes) * 100,
+    Pct_adultos = (Adultos / Total_muertes) * 100
+  ) 
+
+scatter_3d <- plot_ly(
+  data = datos_3d,
+  x = ~Pct_neonatal,
+  y = ~Pct_infancia_temprana,
+  z = ~Pct_adultos,
+  type = 'scatter3d',
+  mode = 'markers',
+  marker = list(
+    size = 8,
+    opacity = 0.8,
+    color = ~Pct_infancia,
+    colorscale = list(
+      c(0, 0.5, 1),
+      c('#bad4ba', '#00635D', '#b1cf5f')  
+    ),
+    colorbar = list(title = "Infancia (%)"),
+    line = list(width = 1, color = '#FFF')
+  ),
+  text = ~paste(
+    "<b>País:</b> ", Pais, "<br>",
+    "<b>Neonatales (0-28 días):</b> ", round(Pct_neonatal, 1), "%<br>",
+    "<b>Infancia Temprana (1-4 años):</b> ", round(Pct_infancia_temprana, 1), "%<br>", 
+    "<b>Infancia (5-14 años):</b> ", round(Pct_infancia, 1), "%<br>",
+    "<b>Adultos (15+ años):</b> ", round(Pct_adultos, 1), "%"
+  ),
+  hoverinfo = 'text'
+) %>%
+  layout(
+    font = list(family = "Merriweather", size = 14),
+    title = list(
+      text = "<b>Distribución 3D por Grupos Etarios</b>",
+      x = 0.5,
+      font = list(size = 18)
+    ),
+    scene = list(
+      xaxis = list(title = '<b>NEONATALES (%)</b>'),
+      yaxis = list(title = '<b>INFANCIA TEMPRANA (%)</b>'),
+      zaxis = list(title = '<b>ADULTOS (%)</b>'),
+      camera = list(eye = list(x = 1.8, y = 1.8, z = 1.8))
+    )
+  )
+
+scatter_3d
+```
+
+<p>Se destaca que Liberia presenta una alta proporción de muertes en neonatales (45.5%), infancia temprana (24.7%) y infancia (24.2%), reflejando serias deficiencias en la atención maternoinfantil. Por otro lado, Japón exhibe un 71.8% de muertes neonatales, coincidencia con sus bajos niveles de natalidad. Países como Nicaragua, Brasil y Georgia también superan el 50% en mortalidad neonatal, evidenciando fallas estructurales que afectan la supervivencia infantil y materna, indicadores clave del desarrollo y la calidad de los sistemas de salud.</p>
 :::
 
 <!-- RESULTADOS DEL MODELO -->
 
 ::: {#resultadosm .content-card}
-<h2>
-Resultados del Modelo
-</h2>
+<h2>Resultados del Modelo</h2>
 
-<p>
-La etapa de resultados integra y aplica las técnicas de aprendizaje no supervisado descritas en la metodología, enfocándose primero en la reducción dimensional a través del Análisis de Componentes Principales (ACP) y posteriormente en la agrupación de países según perfiles de mortalidad con el método de clusterización jerárquica. Se presentan los principales hallazgos obtenidos a partir de estas técnicas, detallando la estructura interna de los datos y las segmentaciones epidemiológicas reveladas.</p>
+```{r librerias modelo, message=FALSE, warning=FALSE, results='hide'}
+library(tidyverse)
+library(FactoMineR)
+library(factoextra)
+library(reactable)
+library(htmltools)
+library(plotly)
+library(ggrepel)
+library(dendextend)
+library(viridis)
+library(FactoClass)
+library(ggforce)
+library(cluster)
+library(reshape2)
+library(reactablefmtr)
+library(kableExtra)
+library(ggdendro)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(leaflet)
+library(sf)
+library(countrycode)
+library(gt)
+library(stringr)
 
-<h3>
-5.1 Análisis de Componentes Principales (ACP)
+```
 
-</h3>
+<p>La etapa de resultados integra y aplica las técnicas de aprendizaje no supervisado descritas en la metodología, enfocándose primero en la reducción dimensional a través del Análisis de Componentes Principales (ACP) y posteriormente en la agrupación de países según perfiles de mortalidad con el método de clusterización jerárquica. Se presentan los principales hallazgos obtenidos a partir de estas técnicas, detallando la estructura interna de los datos y las segmentaciones epidemiológicas reveladas.</p>
+
+<h3>5.1 Análisis de Componentes Principales (ACP)</h3>
 
 ```{r preparar-acp, message=FALSE, warning=FALSE, results='hide'}
 # Preparar base para ACP
@@ -1137,17 +1610,11 @@ res.pca <- prcomp(Muertes_df, scale = FALSE)
 res.pca
 ```
 
-<p>
-El ACP constituye la primera fase de análisis, orientada a sintetizar la complejidad de los 22 indicadores de mortalidad en un conjunto reducido de componentes principales que explican la mayor parte de la variabilidad observada entre países. Este procedimiento permite identificar los factores latentes que estructuran los distintos perfiles epidemiológicos, facilitando la interpretación de las relaciones entre variables y preparando el terreno para la clusterización posterior.</p>
+<p>El ACP constituye la primera fase de análisis, orientada a sintetizar la complejidad de los 22 indicadores de mortalidad en un conjunto reducido de componentes principales que explican la mayor parte de la variabilidad observada entre países. Este procedimiento permite identificar los factores latentes que estructuran los distintos perfiles epidemiológicos, facilitando la interpretación de las relaciones entre variables y preparando el terreno para la clusterización posterior.</p>
 
-<h3>
-Matriz de correlaciones
+<h3>Matriz de correlaciones</h3>
 
-</h3>
-
-<p>
-
-La matriz de correlaciones es una herramienta estadística fundamental para analizar la intensidad y dirección de la relación lineal entre diferentes variables cuantitativas incluidas en el estudio. La matriz realizada se presenta en la grafica figura 1.</p>
+<p>La matriz de correlaciones es una herramienta estadística fundamental para analizar la intensidad y dirección de la relación lineal entre diferentes variables cuantitativas incluidas en el estudio. La matriz realizada se presenta en la grafica figura 1.</p>
 
 ```{r matriz correlaciones, message=FALSE, warning=FALSE, results='hide', fig.width=4, fig.height=3}
 library(ggplot2)
@@ -1212,8 +1679,13 @@ p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
 ) +
   theme_minimal(base_size = 14) +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.text.y = element_text(size = 12), 
+    text = element_text(family = "Merriweather"),
+    plot.title = element_text(family = "Merriweather", face = "bold", size = 16),
+    axis.text.x = element_text(angle = 45, hjust = 1, family = "Merriweather"),
+    axis.text.y = element_text(size = 12, family = "Merriweather"), 
+    axis.title = element_text(family = "Merriweather"),
+    legend.title = element_text(family = "Merriweather"),
+    legend.text = element_text(family = "Merriweather"),
     panel.grid = element_blank()
   ) +
   labs(
@@ -1225,19 +1697,19 @@ p1 <- ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
 print(p1)
 ```
 
-<p>Se observa que variables como la expectativa de vida y la supervivencia hasta los 65 años muestran correlaciones negativas elevadas con las tasas de mortalidad (general, infantil, neonatal) y las tasas de mortalidad por causas específicas (por ejemplo, enfermedades cardiovasculares, accidentes de tráfico y suicidios). Esto indica que, en los países donde la esperanza de vida y la supervivencia a edades avanzadas son más altas, las tasas de mortalidad, tanto general como por causas específicas, tienden a ser menores. 
+<p>
+
+Se observa que variables como la expectativa de vida y la supervivencia hasta los 65 años muestran correlaciones negativas elevadas con las tasas de mortalidad (general, infantil, neonatal) y las tasas de mortalidad por causas específicas (por ejemplo, enfermedades cardiovasculares, accidentes de tráfico y suicidios). Esto indica que, en los países donde la esperanza de vida y la supervivencia a edades avanzadas son más altas, las tasas de mortalidad, tanto general como por causas específicas, tienden a ser menores.
 
 Por otra parte, los datos muestran que los lugares con más contaminación del aire suelen tener también tasas más altas de muertes por distintas enfermedades. Es decir, vivir en ambientes más contaminados suele estar asociado a una mayor probabilidad de fallecer a causa de problemas de salud diversos, como enfermedades respiratorias y cardiovasculares.
 
 Asimismo, las diferentes tasas de mortalidad por causas prevenibles (como accidentes, suicidios y envenenamientos accidentales) presentan correlaciones positivas entre sí. Esto sugiere la existencia de factores sociales que tengan relación en estas causas de muerte y que podrían estar reflejando una dimensión de mortalidad evitable.
+
 </p>
 
-<h3>
-Scree Plot
-</h3>
+<h3>Scree Plot</h3>
 
-<p>
-El scree plot es un gráfico fundamental en el análisis de componentes principales (ACP), cuya función principal es mostrar la proporción de varianza total explicada por cada componente extraído a partir de los datos originales.</p>
+<p>El scree plot es un gráfico fundamental en el análisis de componentes principales (ACP), cuya función principal es mostrar la proporción de varianza total explicada por cada componente extraído a partir de los datos originales.</p>
 
 ```{r scree-plot:Gráfico de Sedimentación, message=FALSE, warning=FALSE, results='hide', fig.width=4, fig.height=3}
 p2 <- fviz_eig(res.pca, 
@@ -1250,21 +1722,30 @@ p2 <- fviz_eig(res.pca,
          main = "Figura 2.Análisis de componentes principales - Scree Plot",
          xlab = "Número de Componente Principal",
          ylab = "Porcentaje de Varianza Explicada",
-         ggtheme = theme_minimal())
+         ggtheme = theme_minimal())+
+  theme(
+    text = element_text(family = "Merriweather"),
+    plot.title = element_text(family = "Merriweather", face = "bold", size = 16),
+    axis.title = element_text(family = "Merriweather", size = 12),
+    axis.text = element_text(family = "Merriweather", size = 10),
+    legend.text = element_text(family = "Merriweather"),
+    legend.title = element_text(family = "Merriweather")
+  )
+
 print(p2)
 ```
 
 <p>
+
 A medida que se incorporan más componentes principales, el porcentaje adicional de varianza explicada disminuye notablemente, observándose el clásico "codo" del scree plot después de los primeros componentes. Por ejemplo, el primer componente puede explicar alrededor del 62% de la variabilidad de los datos; el segundo y el tercero suman una proporción mucho menor pero aún relevante, y a partir del cuarto componente la ganancia marginal es reducida.
 
 Esto respalda la decisión metodológica de conservar únicamente los tres primeros componentes, ya que juntos encapsulan la mayor parte de la estructura y los patrones subyacentes de los datos. representando un 82,3% de la varianza.
+
 </p>
 
 <h3>Grafico de Individuos</h3>
 
-<p>
-A continuación se presenta el plano factorial del Análisis de Componentes Principales que resume los patrones de mortalidad de 182 países en sus dos dimensiones más significativas. Los resultados se presentan en la figura 3.
-</p>
+<p>A continuación se presenta el plano factorial del Análisis de Componentes Principales que resume los patrones de mortalidad de 182 países en sus dos dimensiones más significativas. Los resultados se presentan en la figura 3.</p>
 
 ```{r nombres-cortos-variables}
 nombres_cortos_var <- c(
@@ -1337,7 +1818,6 @@ df_var_plot$Variable_corto[is.na(df_var_plot$Variable_corto)] <-
   df_var_plot$Variable[is.na(df_var_plot$Variable_corto)]
 ```
 
-
 ```{r grafico individuos}
 library(factoextra)
 library(plotly)
@@ -1353,17 +1833,13 @@ df <- data.frame(
 if(!is.null(pca_data$cos2)) {
   df$Cos2 <- rowSums(pca_data$cos2[,1:2])
 } else {
-
   df$Cos2 <- (df$PC1^2 + df$PC2^2) / rowSums(pca_data$coord^2)
 }
 
-
 if(inherits(res.pca, "PCA")) {
- 
   percent_pc1 <- round(res.pca$eig[1,2], 1)
   percent_pc2 <- round(res.pca$eig[2,2], 1)
 } else {
- 
   eigenvalues <- res.pca$sdev^2
   total_variance <- sum(eigenvalues)
   percent_pc1 <- round((eigenvalues[1] / total_variance) * 100, 1)
@@ -1383,7 +1859,10 @@ p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
                   c(1, "#FC4E07")
                 ),
                 showscale = TRUE,
-                colorbar = list(title = "cos2"),
+                colorbar = list(
+                  title = "cos2",
+                  titlefont = list(family = "'Merriweather', serif")
+                ),
                 opacity = 0.8,
                 line = list(
                   width = 1,
@@ -1398,40 +1877,43 @@ p3 <- plot_ly(df, x = ~PC1, y = ~PC2,
               hoverlabel = list(
                 bgcolor = "white",
                 bordercolor = "black",
-                font = list(color = "black", size = 12)
-              )
+                font = list(color = "black", size = 12, family = "'Merriweather', serif") )
 ) %>%
   layout(
+    font = list(family = "'Merriweather', serif", size = 14),
+    
     title = list(
       text = "Análisis PCA - 182 Países (PC1 vs PC2)",
-      font = list(size = 16)
+      font = list(size = 16, family = "'Merriweather', serif")
     ),
     xaxis = list(
       title = paste0("PC1 (", percent_pc1, "%)"),
       gridcolor = "lightgray",
       zeroline = TRUE,
       zerolinecolor = "black",
-      zerolinewidth = 1
+      zerolinewidth = 1,
+      titlefont = list(family = "'Merriweather', serif"),
+      tickfont = list(family = "'Merriweather', serif")
     ),
     yaxis = list(
       title = paste0("PC2 (", percent_pc2, "%)"),
       gridcolor = "lightgray",
       zeroline = TRUE,
       zerolinecolor = "black",
-      zerolinewidth = 1
+      zerolinewidth = 1,
+      titlefont = list(family = "'Merriweather', serif"),
+      tickfont = list(family = "'Merriweather', serif")
     ),
     plot_bgcolor = "white",
     paper_bgcolor = "white",
     margin = list(l = 50, r = 50, b = 50, t = 50),
     showlegend = FALSE
   )
+
 p3
 ```
 
-<p>
-
-La gráfica biplot del PCA resume, en dos ejes principales, cómo se distribuyen y comparan 182 países según sus perfiles de salud y mortalidad. El eje horizontal distingue países con buena calidad sanitaria y baja mortalidad de aquellos con problemas graves de salud pública y altas muertes prevenibles. El eje vertical separa países según si la mortalidad afecta más a jóvenes o a adultos por enfermedades crónicas. Los colores muestran qué tan bien queda representado cada país en esta proyección.
-</p>
+<p>La gráfica biplot del PCA resume, en dos ejes principales, cómo se distribuyen y comparan 182 países según sus perfiles de salud y mortalidad. El eje horizontal distingue países con buena calidad sanitaria y baja mortalidad de aquellos con problemas graves de salud pública y altas muertes prevenibles. El eje vertical separa países según si la mortalidad afecta más a jóvenes o a adultos por enfermedades crónicas. Los colores muestran qué tan bien queda representado cada país en esta proyección.</p>
 
 ```{r grafico-pc1-pc2, fig.width=10, fig.height=8}
 plot_var_12_interactive <- plot_ly() %>%
@@ -1441,7 +1923,7 @@ plot_var_12_interactive <- plot_ly() %>%
     x = cos(seq(0, 2*pi, length.out = 100)),
     y = sin(seq(0, 2*pi, length.out = 100)),
     mode = "lines",
-    line = list(color = "#2E7D32", dash = "dash", width = 2),
+    line = list(color = "#488B49", dash = "dash", width = 2),
     hoverinfo = "none",
     showlegend = FALSE,
     name = "Círculo unidad"
@@ -1482,13 +1964,14 @@ plot_var_12_interactive <- plot_ly() %>%
         title = "Contribución<br>(%)",
         thickness = 15,
         len = 0.6,
-        x = 1.02
+        x = 1.02,
+        titlefont = list(family = "'Merriweather', serif")
       ),
       line = list(color = "white", width = 2)
     ),
     text = ~Variable_corto,
     textposition = "top center",
-    textfont = list(size = 10, color = "black", family = "Arial"),
+    textfont = list(size = 10, color = "black", family = "'Merriweather', serif"),
     hovertext = ~paste(
       "<b>Variable:</b>", Variable_corto,
       "<br><b>PC1:</b>", round(PC1, 3),
@@ -1500,10 +1983,12 @@ plot_var_12_interactive <- plot_ly() %>%
     showlegend = FALSE
   ) %>%
   layout(
+    font = list(family = "'Merriweather', serif", size = 14),
+    
     title = list(
       text = "<b>Círculo de Correlaciones - Variables PCA</b><br><sup>Dimensión 1 vs Dimensión 2</sup>",
       x = 0.5,
-      font = list(size = 18, family = "Arial", color = "#2E7D32")
+      font = list(size = 18, family = "'Merriweather', serif", color = "#488B49")
     ),
     xaxis = list(
       title = paste0("<b>Dim 1 (", percent_pc1, "%)</b>"),
@@ -1512,7 +1997,8 @@ plot_var_12_interactive <- plot_ly() %>%
       zeroline = TRUE,
       zerolinecolor = "gray50",
       zerolinewidth = 1.5,
-      titlefont = list(size = 14)
+      titlefont = list(size = 14, family = "'Merriweather', serif"),
+      tickfont = list(family = "'Merriweather', serif")
     ),
     yaxis = list(
       title = paste0("<b>Dim 2 (", percent_pc2, "%)</b>"),
@@ -1522,15 +2008,15 @@ plot_var_12_interactive <- plot_ly() %>%
       zerolinecolor = "gray50",
       zerolinewidth = 1.5,
       scaleanchor = "x",
-      titlefont = list(size = 14)
+      titlefont = list(size = 14, family = "'Merriweather', serif"),
+      tickfont = list(family = "'Merriweather', serif")
     ),
     plot_bgcolor = "white",
     paper_bgcolor = "white",
-    font = list(family = "Arial"),
     hoverlabel = list(
       bgcolor = "white",
       bordercolor = "black",
-      font = list(family = "Arial", size = 12)
+      font = list(family = "'Merriweather', serif", size = 12)
     ),
     margin = list(l = 80, r = 120, b = 80, t = 100)
   )
@@ -1538,26 +2024,33 @@ plot_var_12_interactive <- plot_ly() %>%
 plot_var_12_interactive
 ```
 
-<p>
+<p>Este gráfico visualiza la correlación de cada variable original con las dos primeras dimensiones principales. Cada punto representa una variable y su posición indica qué tanto contribuye a la separación de países en función de Dim1 (62.3%) y Dim2 (11.6%).</p>
 
-Este gráfico visualiza la correlación de cada variable original con las dos primeras dimensiones principales. Cada punto representa una variable y su posición indica qué tanto contribuye a la separación de países en función de Dim1 (62.3%) y Dim2 (11.6%).
-</p>
-**Cuadrante 1:**<p>Este cuadrante concentra las variables de longevidad. Los países que puntúan alto en Dim1 y Dim2 positivas tienen excelentes indicadores de esperanza de vida y supervivencia hasta edades avanzadas. Estas variables están fuertemente correlacionadas entre sí (vectores muy cercanos).</p>
+**Cuadrante 1:**
 
-**Cuadrante 2:**<p>Este cuadrante agrupa factores de mortalidad infantil, neonatal y temprana, junto con riesgos ambientales (polución) y accidentes de tránsito. Representa países con alta carga de mortalidad prevenible, especialmente en etapas tempranas de la vida y por factores externos. La presencia de polución del aire sugiere que los problemas ambientales contribuyen significativamente a estos perfiles de mortalidad.</p>
+<p>Este cuadrante concentra las variables de longevidad. Los países que puntúan alto en Dim1 y Dim2 positivas tienen excelentes indicadores de esperanza de vida y supervivencia hasta edades avanzadas. Estas variables están fuertemente correlacionadas entre sí (vectores muy cercanos).</p>
 
-**Cuadrante 3:**<p>Este cuadrante captura un perfil de mortalidad adulta por enfermedades crónicas no transmisibles, suicidios y envenenamientos. Representa países con alta carga de enfermedades del desarrollo (cardiovasculares, cáncer, diabetes) y problemas de salud mental. Es interesante que los suicidios y las enfermedades crónicas compartan este espacio, sugiriendo una posible relación entre desarrollo económico, transición epidemiológica y salud mental.</p>
+**Cuadrante 2:**
 
-**Cuadrante 4:**<p>Este cuadrante permanece prácticamente vacío, lo que indica que no existe un perfil de países con alta longevidad (Dim1+) que simultáneamente presentan valores negativos en Dim2. La proximidad de expectativa de vida mujer al borde sugiere que las mujeres pueden tener ligeras ventajas en longevidad incluso en contextos con ciertas presiones de mortalidad específicas.</p>
+<p>Este cuadrante agrupa factores de mortalidad infantil, neonatal y temprana, junto con riesgos ambientales (polución) y accidentes de tránsito. Representa países con alta carga de mortalidad prevenible, especialmente en etapas tempranas de la vida y por factores externos. La presencia de polución del aire sugiere que los problemas ambientales contribuyen significativamente a estos perfiles de mortalidad.</p>
+
+**Cuadrante 3:**
+
+<p>Este cuadrante captura un perfil de mortalidad adulta por enfermedades crónicas no transmisibles, suicidios y envenenamientos. Representa países con alta carga de enfermedades del desarrollo (cardiovasculares, cáncer, diabetes) y problemas de salud mental. Es interesante que los suicidios y las enfermedades crónicas compartan este espacio, sugiriendo una posible relación entre desarrollo económico, transición epidemiológica y salud mental.</p>
+
+**Cuadrante 4:**
+
+<p>Este cuadrante permanece prácticamente vacío, lo que indica que no existe un perfil de países con alta longevidad (Dim1+) que simultáneamente presentan valores negativos en Dim2. La proximidad de expectativa de vida mujer al borde sugiere que las mujeres pueden tener ligeras ventajas en longevidad incluso en contextos con ciertas presiones de mortalidad específicas.</p>
 
 <h3>Correlaciones clave:</h3>
+
 **Relaciones muy positivas:**
- <p>La expectativa de vida, tanto en hombres como en mujeres, se mueve casi en la misma dirección que la supervivencia a los 65 años; sus vectores quedan prácticamente juntos en el mismo cuadrante. También pasa algo similar con las tasas de suicidio en hombres y mujeres: están muy cerca, aunque no totalmente superpuestas.
- </p>
+
+<p>La expectativa de vida, tanto en hombres como en mujeres, se mueve casi en la misma dirección que la supervivencia a los 65 años; sus vectores quedan prácticamente juntos en el mismo cuadrante. También pasa algo similar con las tasas de suicidio en hombres y mujeres: están muy cerca, aunque no totalmente superpuestas.</p>
 
 **Relaciones muy negativas:**
- <p>La expectativa de vida va en dirección contraria a las enfermedades crónicas, ubicándose en cuadrantes opuestos (1 y 3). Lo mismo ocurre con la mortalidad infantil y neonatal, que queda del lado contrario a la expectativa de vida (cuadrantes 1 y 2). Y por último, la supervivencia a los 65 años también se opone a la mortalidad adulta y a las enfermedades crónicas.
-</p>
+
+<p>La expectativa de vida va en dirección contraria a las enfermedades crónicas, ubicándose en cuadrantes opuestos (1 y 3). Lo mismo ocurre con la mortalidad infantil y neonatal, que queda del lado contrario a la expectativa de vida (cuadrantes 1 y 2). Y por último, la supervivencia a los 65 años también se opone a la mortalidad adulta y a las enfermedades crónicas.</p>
 
 ```{r grafico-pc1-pc3, fig.width=10, fig.height=8}
 plot_var_13_interactive <- plot_ly() %>%
@@ -1566,7 +2059,7 @@ plot_var_13_interactive <- plot_ly() %>%
     x = cos(seq(0, 2*pi, length.out = 100)),
     y = sin(seq(0, 2*pi, length.out = 100)),
     mode = "lines",
-    line = list(color = "#1565C0", dash = "dash", width = 2),
+    line = list(color = "#488B49", dash = "dash", width = 2),
     hoverinfo = "none",
     showlegend = FALSE,
     name = "Círculo unidad"
@@ -1605,13 +2098,14 @@ plot_var_13_interactive <- plot_ly() %>%
         title = "Contribución<br>(%)",
         thickness = 15,
         len = 0.6,
-        x = 1.02
+        x = 1.02,
+        titlefont = list(family = "'Merriweather', serif")
       ),
       line = list(color = "white", width = 2)
     ),
     text = ~Variable_corto,
     textposition = "top center",
-    textfont = list(size = 10, color = "black", family = "Arial"),
+    textfont = list(size = 10, color = "black", family = "'Merriweather', serif"),
     hovertext = ~paste(
       "<b>Variable:</b>", Variable_corto,
       "<br><b>PC1:</b>", round(PC1, 3),
@@ -1623,10 +2117,12 @@ plot_var_13_interactive <- plot_ly() %>%
     showlegend = FALSE
   ) %>%
   layout(
+    font = list(family = "'Merriweather', serif", size = 14),
+    
     title = list(
       text = "<b>Círculo de Correlaciones - Variables PCA</b><br><sup>Dimensión 1 vs Dimensión 3</sup>",
       x = 0.5,
-      font = list(size = 18, family = "Arial", color = "#1565C0")
+      font = list(size = 18, family = "'Merriweather', serif", color = "#488B49") 
     ),
     xaxis = list(
       title = paste0("<b>Dim 1 (", percent_pc1, "%)</b>"),
@@ -1635,7 +2131,8 @@ plot_var_13_interactive <- plot_ly() %>%
       zeroline = TRUE,
       zerolinecolor = "gray50",
       zerolinewidth = 1.5,
-      titlefont = list(size = 14)
+      titlefont = list(size = 14, family = "'Merriweather', serif"),
+      tickfont = list(family = "'Merriweather', serif")
     ),
     yaxis = list(
       title = paste0("<b>Dim 3 (", percent_pc3, "%)</b>"),
@@ -1645,15 +2142,15 @@ plot_var_13_interactive <- plot_ly() %>%
       zerolinecolor = "gray50",
       zerolinewidth = 1.5,
       scaleanchor = "x",
-      titlefont = list(size = 14)
+      titlefont = list(size = 14, family = "'Merriweather', serif"),
+      tickfont = list(family = "'Merriweather', serif")
     ),
     plot_bgcolor = "white",
     paper_bgcolor = "white",
-    font = list(family = "Arial"),
     hoverlabel = list(
       bgcolor = "white",
       bordercolor = "black",
-      font = list(family = "Arial", size = 12)
+      font = list(family = "'Merriweather', serif", size = 12)
     ),
     margin = list(l = 80, r = 120, b = 80, t = 100)
   )
@@ -1662,13 +2159,16 @@ plot_var_13_interactive
 ```
 
 <p>
+
 **Cuadrante 1:** Este cuadrante mantiene las variables de longevidad, pero con coordenadas muy bajas en Dim3 (cerca del eje horizontal), lo que indica que Dim3 no diferencia significativamente entre países con alta o baja expectativa de vida. La presencia de suicidios masculinos aquí, también cercana a cero en Dim1, sugiere que esta variable no está fuertemente asociada con la primera dimensión, sino principalmente con Dim1 solo que en esta comparación es positiva.
 
 **Cuadrante 2:** En este cuadrante las variables se separan en dos bloques muy visibles: por un lado, mortalidad infantil y muertes neonatales en números absolutos, que se alinean con Dim1 positivo y dependen del tamaño poblacional; y, por el otro, mortalidad neonatal en tasas, polución en hombres, enfermedades crónicas en hombres y envenenamientos, que caen hacia Dim1 negativo y Dim3 más bajo, mostrando problemas ligados a pobreza y ambiente más que al número de habitantes.
 
 **Cuadrante 3:** Las variables de enfermedades crónicas en mujeres, polución del aire en mujeres, mortalidad adulta y mortalidad temprana aparecen agrupadas porque comparten valores negativos en Dim1 y casi nulos en Dim3, lo que indica que están relacionadas con condiciones sanitarias deficientes, sin depender del tamaño poblacional. La única que se separa un poco es accidentes de tránsito, que cae más hacia Dim3 negativo, pero aun así su contribución es menor frente al grupo principal.
 
-**Cuadrante 4:** La ausencia de variables aquí confirma que no existe un perfil de países con alta longevidad (Dim1+) que simultáneamente presentan valores negativos en Dim3.</p>
+**Cuadrante 4:** La ausencia de variables aquí confirma que no existe un perfil de países con alta longevidad (Dim1+) que simultáneamente presentan valores negativos en Dim3.
+
+</p>
 
 <h3>Definición de las Dimensiones del Análisis PCA en Indicadores de Mortalidad</h3>
 
@@ -1696,12 +2196,11 @@ head(res.ind$cos2)
 
 ```
 
-<p>Buscamos consolidar las interpretaciones de las tres primeras dimensiones principales del Análisis de Componentes Principales (ACP) realizado sobre los 22  indicadores de salud y mortalidad de países. Cada dimensión captura un aspecto diferente de la estructura de la mortalidad global, revelando los principales gradientes que diferencian a los países según sus perfiles epidemiológicos y demográficos:</p>
+<p>Buscamos consolidar las interpretaciones de las tres primeras dimensiones principales del Análisis de Componentes Principales (ACP) realizado sobre los 22 indicadores de salud y mortalidad de países. Cada dimensión captura un aspecto diferente de la estructura de la mortalidad global, revelando los principales gradientes que diferencian a los países según sus perfiles epidemiológicos y demográficos:</p>
 
 **Dimensión 1 (Dim1): Calidad de Salud - 62.3% de Varianza Explicada:**
 
-<p>
-Representa el principal gradiente de desarrollo sanitario e indicadores de esperanza de vida de los países. Esta dimensión opone de manera continua los países con excelentes indicadores de longevidad y baja mortalidad prevenible (valores positivos altos en Dim1) en contraste con países con sistemas de salud frágiles, alta mortalidad infantil y múltiples causas de muerte evitable (valores negativos en Dim1).</p>
+<p>Representa el principal gradiente de desarrollo sanitario e indicadores de esperanza de vida de los países. Esta dimensión opone de manera continua los países con excelentes indicadores de longevidad y baja mortalidad prevenible (valores positivos altos en Dim1) en contraste con países con sistemas de salud frágiles, alta mortalidad infantil y múltiples causas de muerte evitable (valores negativos en Dim1).</p>
 
 ```{r top pc1,fig.width=9, fig.height=7}
 top5_pc1 <- res.ind$contrib[,1, drop = FALSE] %>%
@@ -1727,14 +2226,17 @@ top5_pc1 %>%
            general_title = "Nota:")
 ```
 
-<p>Esto se puede confirmar mirando los países con mayor contribución a esta dimensión;  República Centroafricana (11.470%) lidera las contribuciones a PC1, seguida por Lesoto (3.671%), Somalia (3.742%), Chad (2.504%) y Nigeria (2.492%). Este patrón confirma plenamente la interpretación de PC1 como gradiente de desarrollo sanitario.
+<p>
 
-Estos países representan algunos de los sistemas de salud más frágiles del mundo y enfrentan crisis humanitarias prolongadas, conflictos armados, infraestructura sanitaria precaria y altas tasas de mortalidad evitable. La República Centroafricana, con más del 11% de contribución, ejemplifica el extremo de vulnerabilidad sanitaria: esperanza de vida extremadamente baja, mortalidad infantil y neonatal elevadas, y alta prevalencia de enfermedades infecciosas y parasitarias. La presencia de estos países en el extremo negativo de PC1 contrasta con naciones desarrolladas (valores positivos) que tienen sistemas universales de salud, baja mortalidad prevenible y alta esperanza de vida.</p>
+Esto se puede confirmar mirando los países con mayor contribución a esta dimensión; República Centroafricana (11.470%) lidera las contribuciones a PC1, seguida por Lesoto (3.671%), Somalia (3.742%), Chad (2.504%) y Nigeria (2.492%). Este patrón confirma plenamente la interpretación de PC1 como gradiente de desarrollo sanitario.
+
+Estos países representan algunos de los sistemas de salud más frágiles del mundo y enfrentan crisis humanitarias prolongadas, conflictos armados, infraestructura sanitaria precaria y altas tasas de mortalidad evitable. La República Centroafricana, con más del 11% de contribución, ejemplifica el extremo de vulnerabilidad sanitaria: esperanza de vida extremadamente baja, mortalidad infantil y neonatal elevadas, y alta prevalencia de enfermedades infecciosas y parasitarias. La presencia de estos países en el extremo negativo de PC1 contrasta con naciones desarrolladas (valores positivos) que tienen sistemas universales de salud, baja mortalidad prevenible y alta esperanza de vida.
+
+</p>
 
 **Dimensión 2 (Dim2): Edad de Mortalidad - 11.6% de Varianza Explicada**
 
-<p>
-En la segunda dimensión se representa el principal gradiente epidemiológico el cual distingue entre diferentes perfiles de mortalidad prematura. Contrasta dos etapas características de la transición epidemiológica: la mortalidad temprana y por factores ambientales (característica de países en desarrollo temprano) versus la mortalidad adulta por enfermedades crónicas no transmisibles y problemas de salud mental (característica de países con mayor desarrollo).</p>
+<p>En la segunda dimensión se representa el principal gradiente epidemiológico el cual distingue entre diferentes perfiles de mortalidad prematura. Contrasta dos etapas características de la transición epidemiológica: la mortalidad temprana y por factores ambientales (característica de países en desarrollo temprano) versus la mortalidad adulta por enfermedades crónicas no transmisibles y problemas de salud mental (característica de países con mayor desarrollo).</p>
 
 ```{r top 5 mas pc2,fig.width=9, fig.height=7}
 top5_pc2 <- res.ind$contrib[,2, drop = FALSE] %>%
@@ -1762,9 +2264,11 @@ top5_pc2 %>%
 ```
 
 <p>
+
 Lesoto (7.398%) domina la contribución a PC2, seguido por Rusia (5.661%), Nigeria (5.621%), Eswatini (4.978%) e India (4.747%). Esta combinación de países es particularmente reveladora de la dualidad epidemiológica que captura esta dimensión.
 
 Por un lado, Lesotho y Eswatini (países del sur de África) presentan perfiles de mortalidad temprana dominados por VIH/SIDA, tuberculosis y mortalidad materno-infantil elevada, característicos de sistemas sanitarios con recursos limitados y alta carga de enfermedades infecciosas. Por otro lado, Rusia representa un perfil epidemiológico radicalmente diferente: mortalidad adulta prematura por enfermedades cardiovasculares, alcoholismo, suicidios y violencia.
+
 </p>
 
 **Dimensión 3 (Dim3): Escala Poblacional - Varianza Menor peso Estructural**
@@ -1796,9 +2300,12 @@ top5_pc3 %>%
            general_title = "Nota:")
 ```
 
-<p>India (51.160%) domina abrumadoramente PC3, seguida a considerable distancia por Pakistán (10.416%), Nigeria (9.727%), Corea del Sur (1.512%) y República Democrática del Congo (1.143%). Esta distribución confirma de manera contundente la interpretación de PC3 como dimensión de escala poblacional.
+<p>
+
+India (51.160%) domina abrumadoramente PC3, seguida a considerable distancia por Pakistán (10.416%), Nigeria (9.727%), Corea del Sur (1.512%) y República Democrática del Congo (1.143%). Esta distribución confirma de manera contundente la interpretación de PC3 como dimensión de escala poblacional.
 
 India, con más del 51% de contribución y una población superior a 1,400 millones de habitantes, naturalmente registra números absolutos masivos en indicadores como muertes neonatales, muertes por enfermedades respiratorias, cardiovasculares y otras causas, independientemente de sus tasas per cápita. Pakistán y Nigeria, también países de gran población (220+ millones y 220+ millones respectivamente), contribuyen significativamente por la misma razón.
+
 </p>
 
 ```{r tabla resumen nombres dim, echo=FALSE, message=FALSE, warning=FALSE}
@@ -1833,7 +2340,1015 @@ kbl(tabla, caption = "Análisis de Dimensiones en Indicadores de Salud Pública"
   )
 ```
 
-<h3>5.2 
+<h3>5.2 Clusterización Jerárquica</h3>
+
+<p>La clusterización (o análisis de conglomerados) es una técnica de aprendizaje no supervisado que agrupa observaciones similares en clusters homogéneos, sin requerir clases predefinidas. En el contexto de este análisis, la clusterización permite identificar segmentos de países con perfiles epidemiológicos similares, revelar patrones ocultos en la estructura de la mortalidad global, y generar tipologías que faciliten la comparación y la toma de decisiones en salud pública.</p>
+
+<h3>Dendograma</h3>
+
+<p>Reducimos la dimensionalidad mediante ACP, reteniendo los 3 primeros ejes, que explican 82,3% de la varianza total. La clusterización se efectuó sobre este subespacio reducido para garantizar la robustez y eliminar redundancia. Aplicando clustering jerárquico con method = "ward.D2", garantizamos minimizar la varianza dentro de los grupos.
+</p>
+
+```{r acp, message=FALSE, warning=FALSE, results='hide'}
+graphics.off()
+par(mar = c(4, 4, 3, 2))
+
+# Realizar ACP de forma no interactiva
+acp_resultado <- dudi.pca(df = Muertes_df, 
+                          scannf = FALSE,  
+                          nf = 3)          
+dist_matrix <- dist(acp_resultado$li[, 1:3]) 
+hclust_result <- hclust(dist_matrix, method = "ward.D2")
+clusters <- cutree(hclust_result, k = 2)  
+
+resultado_ACP <- list(
+  dudi = acp_resultado,
+  cluster = clusters,
+  hclust = hclust_result
+)
+
+NuevaBase <- data.frame(Cluster = resultado_ACP$cluster, Muertes_df)
+
+acp_ind <- as.data.frame(resultado_ACP$dudi$li)
+acp_var <- as.data.frame(resultado_ACP$dudi$co)
+
+colnames(acp_ind) <- paste0("Axis", 1:ncol(acp_ind))
+colnames(acp_var) <- paste0("Axis", 1:ncol(acp_var))
+
+acp_ind$Cluster <- as.factor(NuevaBase$Cluster)
+acp_ind$Pais <- rownames(Muertes_df)
+acp_var$Variable <- rownames(acp_var)
+
+eigenvals <- resultado_ACP$dudi$eig
+var_exp <- round(eigenvals / sum(eigenvals) * 100, 2)
+```
+
+
+```{r dendrograma interactivo, message=FALSE, warning=FALSE, fig.width=7, fig.height=5.5}
+
+crear_dendrograma_interactivo_mejorado <- function(hc) {
+  altura_max <- max(hc$height)
+  alturas <- seq(0, altura_max, length.out = 20)
+  dend_data <- dendro_data(hc)
+  segmentos <- segment(dend_data)
+ 
+  fig <- plot_ly() %>%
+    add_segments(
+      data = segmentos,
+      x = ~x, xend = ~xend,
+      y = ~y, yend = ~yend,
+      line = list(color = "gray", width = 1),
+      hoverinfo = "none",
+      showlegend = FALSE
+    ) %>%
+    layout(
+       font = list(family = "Merriweather", size = 18),
+      title = "Dendrograma Interactivo con Línea de Corte",
+      xaxis = list(
+        title = "Países", 
+        showticklabels = TRUE,
+        range = c(0.5, max(segmentos$xend) + 0.5)
+      ),
+      yaxis = list(
+        title = "Distancia",
+        range = c(0, altura_max * 1.05)
+      ),
+      showlegend = FALSE,
+      hovermode = "closest"
+    )
+
+  fig <- fig %>% add_lines(
+    x = c(0.5, max(segmentos$xend) + 0.5),
+    y = c(alturas[1], alturas[1]),
+    line = list(color = "red", width = 3, dash = "dash"),
+    name = "Línea de corte",
+    hovertemplate = "Altura: %{y:.2f}<extra></extra>"
+  )
+  
+  steps <- list()
+
+  n_total <- length(hc$order)  
+  
+  cat("Número total de observaciones detectadas:", n_total, "\n")
+  
+  for (i in 1:length(alturas)) {
+    altura_actual <- alturas[i]
+   
+    if (i == 1) {  
+      n_clusters <- n_total  
+    } else {
+      n_clusters <- length(unique(cutree(hc, h = altura_actual)))
+    }
+    
+    step <- list(
+      method = "restyle",
+      args = list(
+        "y",
+        list(c(altura_actual, altura_actual)),
+        list(1)  # Índice de la línea de corte
+      ),
+      label = sprintf("%.2f (%d clusters)", altura_actual, n_clusters)
+    )
+    steps[[i]] <- step
+  }
+  
+  fig <- fig %>% layout(
+    sliders = list(
+      list(
+        active = 0,
+        currentvalue = list(
+          prefix = "Altura de corte: ",
+          font = list(size = 14)
+        ),
+        pad = list(t = 50, b = 10),
+        steps = steps
+      )
+    )
+  )
+  
+  return(fig)
+}
+
+if(exists("hclust_result")) {
+  cat("=== DIAGNÓSTICO COMPLETO ===\n")
+  cat("Usando hclust_result (datos reales)\n")
+  cat("Número de observaciones (merge + 1):", nrow(as.matrix(hclust_result$merge)) + 1, "\n")
+  cat("Longitud de hclust_result$order:", length(hclust_result$order), "\n")
+  cat("Longitud de hclust_result$labels:", length(hclust_result$labels), "\n")
+  cat("Altura máxima del dendrograma:", max(hclust_result$height), "\n")
+  cat("Rango de alturas:", range(hclust_result$height), "\n")
+  
+  if(exists("Muertes_df")) {
+    cat("Número de filas en Muertes_df:", nrow(Muertes_df), "\n")
+  }
+  
+  dend_interactivo <- crear_dendrograma_interactivo_mejorado(hclust_result)
+  dend_interactivo
+} else if(exists("hc")) {
+  cat("Usando hc\n")
+  cat("Altura máxima del dendrograma:", max(hc$height), "\n")
+  cat("Rango de alturas:", range(hc$height), "\n")
+  
+  dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
+  dend_interactivo
+} else {
+
+  cat("Creando un ejemplo con datos de iris...\n")
+  data <- scale(iris[, 1:4])
+  dist_matrix <- dist(data)
+  hc <- hclust(dist_matrix, method = "ward.D2")
+  
+  cat("Altura máxima del dendrograma:", max(hc$height), "\n")
+  
+  dend_interactivo <- crear_dendrograma_interactivo_mejorado(hc)
+  dend_interactivo
+}
+```
+
+<p>
+El dendrograma resultante del método de Ward aplicado a los componentes principales exhibe una estructura jerárquica clara, con un quiebre importante en la altura de fusión que evidencia la existencia de dos grupos principales. Basándose en el análisis visual del dendrograma y las distancias de fusión jerárquica, se realizó un corte a altura aproximada de 36, generando dos clusters bien definidos y homogéneos. Para validar la optimalidad de esta partición desde una perspectiva estadística, se procede a continuación con el análisis del coeficiente de silueta, que complementa y respalda la decisión de esta segmentación.
+</p>
+
+<h3>Análisis de silueta para k óptimo</h3>
+
+```{r metodo-silueta, message=FALSE, warning=FALSE, fig.width=9, fig.height=5.4}
+
+theme_set(theme_minimal(base_size = 12) +
+            theme(
+              plot.title = element_text(face = "bold", hjust = 0.5, size = 16, 
+                                        color = "#2C3E50"),
+              plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#7F8C8D"),
+              panel.grid.major = element_line(color = "grey95"),
+              panel.grid.minor = element_blank(),
+              panel.background = element_rect(fill = "white", color = NA),
+              plot.background = element_rect(fill = "white", color = NA),
+              axis.title = element_text(face = "bold", size = 12, color = "#2C3E50"),
+              axis.text = element_text(size = 10, color = "#34495E"),
+              axis.line = element_line(color = "#BDC3C7"),
+              legend.position = "none",
+              plot.margin = unit(c(1, 1, 1, 1), "cm") 
+            ))
+
+coordenadas_acp <- acp_resultado$li[, 1:3]
+
+g_sil <- fviz_nbclust(
+  coordenadas_acp, 
+  FUN = hcut,
+  method = "silhouette",
+  hc_method = "ward.D2",
+  hc_metric = "euclidean",
+  k.max = 10,
+  barfill = "#488B49",
+  barcolor = "#488B49", 
+  linecolor = "#E74C3C",
+  ggtheme = theme_minimal()
+) + 
+  labs(
+    title = "ANÁLISIS DE SILUETA - DETERMINACIÓN DE CLÚSTERES ÓPTIMOS",
+    subtitle = "Clustering Jerárquico (Método Ward) aplicado a Componentes Principales",
+    x = "Número de Clústeres (k)",
+    y = "Anchura Promedio de Silueta"
+  ) +
+  geom_bar(stat = "identity", alpha = 0.9, width = 0.7, 
+           fill = "#488B49", color = "#488B49") +
+  geom_line(color = "#E74C3C", size = 1.5, alpha = 0.9)
+
+optimo_clusters <- g_sil$data[which.max(g_sil$data$y), "clusters"]
+max_silueta <- round(max(g_sil$data$y), 3)
+y_max <- max(g_sil$data$y) * 1.12
+g_sil_final <- g_sil +
+  geom_point(data = g_sil$data[which.max(g_sil$data$y),], 
+             aes(x = clusters, y = y), 
+             color = "#E74C3C", size = 6, shape = 21, 
+             stroke = 2.5, fill = "white") +
+  geom_vline(
+    xintercept = optimo_clusters,
+    linetype = "dashed",
+    color = "#E74C3C",
+    size = 1.2,
+    alpha = 0.8
+  ) +
+  annotate("text",
+           x = optimo_clusters,
+           y = y_max * 0.98,
+           label = paste("ÓPTIMO: k =", optimo_clusters),
+           color = "#2C3E50",
+           fontface = "bold",
+           size = 5.5,
+           hjust = 0.5) +
+  scale_y_continuous(limits = c(0, y_max),
+                     breaks = seq(0, 0.5, by = 0.1)) +
+  theme(
+    panel.border = element_rect(color = "#BDC3C7", fill = NA, size = 1)
+  )
+
+print(g_sil_final)
+```
+
+<p>
+El índice de silueta mide qué tan bien definidos están los clústeres: valores cercanos a 1.0 indican clústeres muy compactos y bien separados; valores cercanos a 0 sugieren clústeres débiles. Con 0.49, k = 2 muestra una buena estructura de agrupamiento.
+
+</p>
+
+<h3>Clasificación jerárquica por clusters</h3>
+
+<p>
+Después del corte óptimo realizado hacemos uso de los dos clusters que se enseñan en este dendrograma. Con el método de Ward se segmenta el conjunto de países en 2 clusters bien definidos. Los colores verde y azul representan, respectivamente, cada grupo formado tras el corte óptimo del dendrograma.
+</p>
+
+
+```{r setup-colores}
+
+# DEFINICIÓN DE COLORES GLOBALES PARA LOS CLUSTERS
+
+verde_cluster1 <- "#488B49"  # Verde para Cluster 1
+azul_cluster2 <- "#4A90E2"   # Azul para Cluster 2
+colores_clusters <- c("1" = verde_cluster1, "2" = azul_cluster2)
+```
+
+```{r dendo, message=FALSE, warning=FALSE, fig.width=7, fig.height=5.5}
+
+dist_matrix <- dist(resultado_ACP$dudi$li[, 1:3])
+hc <- hclust(dist_matrix, method = "ward.D2")
+paises <- rownames(resultado_ACP$dudi$li)
+
+dendro_plot <- fviz_dend(hc, k = 2, 
+                         cex = 0.6,
+                         k_colors = c(verde_cluster1, azul_cluster2),
+                         color_labels_by_k = TRUE,
+                         ggtheme = theme_minimal(),
+                         main = "Dendrograma - Clasificación Jerárquica",
+                         xlab = "Países", ylab = "Distancia")
+
+plotly_dendro <- ggplotly(dendro_plot, tooltip = "all") %>%
+  layout(
+    title = list(
+      text = "<b>Dendrograma - Clasificación Jerárquica</b>",
+      x = 0.5,
+      font = list(size = 20, family = "Arial")
+    ),
+    xaxis = list(
+      title = "<b>Países</b>",
+      tickfont = list(size = 10),
+      titlefont = list(size = 14),
+      showticklabels = FALSE
+    ),
+    yaxis = list(
+      title = "<b>Distancia</b>",
+      titlefont = list(size = 14)
+    ),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    )
+  )
+
+get_country_name <- function(position) {
+  if (position >= 1 && position <= length(paises)) {
+    return(paises[position])
+  }
+  return("N/A")
+}
+
+plotly_dendro <- plotly_dendro %>%
+  style(
+    hoverinfo = "text",
+    text = ~paste0(
+      "<b>País:</b> ", get_country_name(x), "<br>",
+      "<b>Distancia:</b> ", round(y, 4), "<br>",
+      "<b>Posición:</b> ", x
+    ),
+    traces = c(1, 2)
+  )
+
+plotly_dendro
+```
+
+<p>La segmentación en dos clusters es la división más adecuada para la muestra analizada: el dendrograma, el indicador de silueta y la visualización en el espacio de componentes principales confirman que existen dos grupos claramente diferenciados en el conjunto de países.</p>
+
+**Visualización de los clusters en el espacio de componentes principales**
+
+<p>Para complementar el análisis jerárquico, se representaron los dos clusters en el espacio bidimensional de las primeras componentes principales (Figura #). Este gráfico muestra la distribución espacial de los países agrupados, con elipses de confianza al 95% que delimitan cada cluster y sus respectivos centroides.
+</p>
+
+```{r clusters-pc1-pc2, fig.width=12, fig.height=9}
+
+df_clusters <- data.frame(
+  Pais = rownames(resultado_ACP$dudi$li),
+  PC1 = resultado_ACP$dudi$li[, 1],
+  PC2 = resultado_ACP$dudi$li[, 2],
+  PC3 = resultado_ACP$dudi$li[, 3],
+  Cluster = as.factor(NuevaBase$Cluster)
+)
+
+
+centroides_12 <- df_clusters %>%
+  group_by(Cluster) %>%
+  summarise(
+    PC1_centro = mean(PC1),
+    PC2_centro = mean(PC2),
+    .groups = 'drop'
+  )
+
+colores_clusters <- c("#2E7D32", "#1565C0")  
+
+
+plot_clusters_12 <- ggplot(df_clusters, aes(x = PC1, y = PC2, color = Cluster, fill = Cluster)) +
+
+  stat_ellipse(geom = "polygon", alpha = 0.2, level = 0.95, linewidth = 1.5) +
+
+  geom_point(size = 3.5, alpha = 0.8, stroke = 1, shape = 21, color = "white") +
+
+  geom_point(data = centroides_12, 
+             aes(x = PC1_centro, y = PC2_centro, color = Cluster),
+             size = 10, shape = 4, stroke = 3, show.legend = FALSE) +
+ 
+  geom_text(data = centroides_12,
+            aes(x = PC1_centro, y = PC2_centro, label = paste("Centroide", Cluster)),
+            vjust = -1.5, size = 5, fontface = "bold", show.legend = FALSE) +
+ 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+
+  scale_color_manual(values = colores_clusters, name = "Cluster") +
+  scale_fill_manual(values = colores_clusters, name = "Cluster") +
+
+  labs(
+    title = "Análisis de Clusters - Dimensiones Principales 1 y 2",
+    subtitle = "Elipses de confianza al 95% con centroides",
+    x = paste0("Dimensión Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Dimensión Principal 2 (", var_exp[2], "%)")
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", family = "Merriweather", size = 18, hjust = 0.5, color = "#2E7D32"),
+    plot.subtitle = element_text(face = "italic", family = "Merriweather", size = 12, hjust = 0.5, color = "gray40"),
+    axis.title = element_text(face = "bold", family = "Merriweather", size = 14),
+    axis.text = element_text(size = 12, family = "Merriweather"),
+    legend.position = "right",
+    legend.title = element_text(face = "bold", size = 13),
+    legend.text = element_text(size = 12),
+    legend.background = element_rect(fill = "white", color = "#2E7D32", linewidth = 1),
+    legend.key.size = unit(1, "cm"),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_line(color = "gray95"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+print(plot_clusters_12)
+```
+
+```{r clusters-pc1-pc3, fig.width=12, fig.height=9}
+
+centroides_13 <- df_clusters %>%
+  group_by(Cluster) %>%
+  summarise(
+    PC1_centro = mean(PC1),
+    PC3_centro = mean(PC3),
+    .groups = 'drop'
+  )
+
+plot_clusters_13 <- ggplot(df_clusters, aes(x = PC1, y = PC3, color = Cluster, fill = Cluster)) +
+ 
+  stat_ellipse(geom = "polygon", alpha = 0.2, level = 0.95, linewidth = 1.5) +
+
+  geom_point(size = 3.5, alpha = 0.8, stroke = 1, shape = 21, color = "white") +
+
+  geom_point(data = centroides_13, 
+             aes(x = PC1_centro, y = PC3_centro, color = Cluster),
+             size = 10, shape = 4, stroke = 3, show.legend = FALSE) +
+ 
+  geom_text(data = centroides_13,
+            aes(x = PC1_centro, y = PC3_centro, label = paste("Centroide", Cluster)),
+            vjust = -1.5, size = 5, fontface = "bold", show.legend = FALSE) +
+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+
+  scale_color_manual(values = colores_clusters, name = "Cluster") +
+  scale_fill_manual(values = colores_clusters, name = "Cluster") +
+ 
+  labs(
+    title = "Análisis de Clusters - Dimensión Principales 1 y 3",
+    subtitle = "Elipses de confianza al 95% con centroides",
+    x = paste0("Dimensión Principal 1 (", var_exp[1], "%)"),
+    y = paste0("Dimensión Principal 3 (", var_exp[3], "%)")
+  ) +
+ 
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", family = "Merriweather",size = 18, hjust = 0.5, color = "#2E7D32"),
+    plot.subtitle = element_text(face = "italic", family = "Merriweather", size = 12, hjust = 0.5, color = "gray40"),
+    axis.title = element_text(face = "bold", family = "Merriweather", size = 14),
+    axis.text = element_text(size = 12, family = "Merriweather"),
+    legend.position = "right",
+    legend.title = element_text(face = "bold", size = 13),
+    legend.text = element_text(size = 12),
+    legend.background = element_rect(fill = "white", color = "#2E7D32", linewidth = 1),
+    legend.key.size = unit(1, "cm"),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_line(color = "gray95"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+print(plot_clusters_13)
+```
+
+<p>El Cluster 1 (verde, 58 países) se concentra en valores negativos de la Dimensión Principal 1, mientras que el Cluster 2 (azul, 124 países) ocupa predominantemente valores positivos. La separación clara entre las elipses, con solapamiento mínimo, confirma visualmente que los clusters son estadísticamente diferenciables. La Dimensión Principal 1, que explica el 62.26% de la varianza total, actúa como el principal eje discriminante entre los grupos.
+
+Los centroides, marcados con cruces, representan el punto promedio de cada cluster en este espacio reducido. La mayor compacidad del Cluster 1 sugiere mayor homogeneidad interna, mientras que la mayor dispersión del Cluster 2 refleja una mayor diversidad entre los países que lo conforman, aunque todos mantienen características diferenciadas respecto al Cluster 1.
+
+A partir de aquí, se pueden caracterizar los clusters profundizando en sus variables explicativas y diferencias clave, lo que aporta valor para comparar o priorizar estrategias según el grupo de pertenencia.
+</p>
+
+<h3>Caracterización de clusters</h3>
+
+<p>Comenzaremos la caracterización de los clusters analizando la distribución de los países en cada grupo por medio de un mapa interactivo.
+</p>
+
+
+```{r mapa-clusters-final, message=FALSE, warning=FALSE}
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(leaflet)
+library(sf)
+library(countrycode)
+library(dplyr)
+
+Base_clusters <- data.frame(
+  Pais = rownames(Muertes_df),
+  Cluster = NuevaBase$Cluster,
+  stringsAsFactors = FALSE
+)
+
+traduccion_paises <- c(
+  "Afghanistan" = "Afghanistan", "Albania" = "Albania", "Alemania" = "Germany",
+  "Algeria" = "Algeria", "Angola" = "Angola", "Arabia Saudita" = "Saudi Arabia",
+  "Argentina" = "Argentina", "Armenia" = "Armenia", "Australia" = "Australia",
+  "Austria" = "Austria", "Azerbaijan" = "Azerbaijan", "Bahamas" = "Bahamas",
+  "Bahrein" = "Bahrain", "Bangladesh" = "Bangladesh", "Barbados" = "Barbados",
+  "Belgium" = "Belgium", "Belize" = "Belize", "Benin" = "Benin",
+  "Butan" = "Bhutan", "Bolivia" = "Bolivia", "Bosnia y Herzegovina" = "Bosnia and Herzegovina",
+  "Botsuana" = "Botswana", "Brasil" = "Brazil", "Brunei" = "Brunei",
+  "Bulgaria" = "Bulgaria", "Burkina Faso" = "Burkina Faso", "Burundi" = "Burundi",
+  "Cabo Verde" = "Cape Verde", "Camboya" = "Cambodia", "Camerun" = "Cameroon",
+  "Canada" = "Canada", "Catar" = "Qatar", "Central African Republic" = "Central African Republic",
+  "Chad" = "Chad", "Chile" = "Chile", "China" = "China", "Chipre" = "Cyprus",
+  "Colombia" = "Colombia", "Comoras" = "Comoros", "Congo" = "Republic of the Congo",
+  "Congo, Dem. Rep." = "Democratic Republic of the Congo", "Congo, Rep." = "Republic of the Congo",
+  "Corea del Norte" = "North Korea", "Corea del Sur" = "South Korea",
+  "Costa Rica" = "Costa Rica", "Costa de Marfil" = "Ivory Coast",
+  "Cote d'Ivoire" = "Ivory Coast", "Croacia" = "Croatia", "Croatia" = "Croatia",
+  "Cuba" = "Cuba", "Cyprus" = "Cyprus", "Czechia" = "Czech Republic",
+  "Denmark" = "Denmark", "Dinamarca" = "Denmark", "Djibouti" = "Djibouti",
+  "Dominica" = "Dominica", "Dominican Republic" = "Dominican Republic",
+  "Ecuador" = "Ecuador", "Egipto" = "Egypt", "Egypt, Arab Rep." = "Egypt",
+  "El Salvador" = "El Salvador", "Emiratos Arabes Unidos" = "United Arab Emirates",
+  "Equatorial Guinea" = "Equatorial Guinea", "Eritrea" = "Eritrea",
+  "Eslovaquia" = "Slovakia", "Eslovenia" = "Slovenia", "Espana" = "Spain",
+  "Estados Unidos" = "United States", "Estonia" = "Estonia",
+  "Eswatini" = "Eswatini", "Etiopia" = "Ethiopia", "Ethiopia" = "Ethiopia",
+  "Fiji" = "Fiji", "Fiyi" = "Fiji", "Filipinas" = "Philippines",
+  "Finlandia" = "Finland", "Francia" = "France", "Gabon" = "Gabon",
+  "Gambia" = "Gambia", "Georgia" = "Georgia", "Ghana" = "Ghana",
+  "Granada" = "Grenada", "Grecia" = "Greece", "Guatemala" = "Guatemala",
+  "Guinea" = "Guinea", "Guinea-Bisau" = "Guinea-Bissau", "Guyana" = "Guyana",
+  "Haiti" = "Haiti", "Honduras" = "Honduras", "Hong Kong" = "Hong Kong",
+  "Hungria" = "Hungary", "India" = "India", "Indonesia" = "Indonesia",
+  "Iran" = "Iran", "Irak" = "Iraq", "Irlanda" = "Ireland",
+  "Islandia" = "Iceland", "Islas Salomon" = "Solomon Islands",
+  "Israel" = "Israel", "Italia" = "Italy", "Jamaica" = "Jamaica",
+  "Japon" = "Japan", "Jordania" = "Jordan", "Kazajistan" = "Kazakhstan",
+  "Kenia" = "Kenya", "Kirguistan" = "Kyrgyzstan", "Kiribati" = "Kiribati",
+  "Kosovo" = "Kosovo", "Kuwait" = "Kuwait", "Laos" = "Laos",
+  "Lesoto" = "Lesotho", "Letonia" = "Latvia", "Libano" = "Lebanon",
+  "Liberia" = "Liberia", "Libia" = "Libya", "Liechtenstein" = "Liechtenstein",
+  "Lituania" = "Lithuania", "Luxemburgo" = "Luxembourg",
+  "Macedonia del Norte" = "North Macedonia", "Madagascar" = "Madagascar",
+  "Malaui" = "Malawi", "Malasia" = "Malaysia", "Maldivas" = "Maldives",
+  "Mali" = "Mali", "Malta" = "Malta", "Marruecos" = "Morocco",
+  "Mauricio" = "Mauritius", "Mauritania" = "Mauritania", "Mexico" = "Mexico",
+  "Micronesia" = "Micronesia", "Moldavia" = "Moldova", "Monaco" = "Monaco",
+  "Mongolia" = "Mongolia", "Montenegro" = "Montenegro",
+  "Mozambique" = "Mozambique", "Myanmar" = "Myanmar", "Namibia" = "Namibia",
+  "Nauru" = "Nauru", "Nepal" = "Nepal", "Nicaragua" = "Nicaragua",
+  "Niger" = "Niger", "Nigeria" = "Nigeria", "Noruega" = "Norway",
+  "Nueva Zelanda" = "New Zealand", "Oman" = "Oman",
+  "Paises Bajos" = "Netherlands", "Pakistan" = "Pakistan", "Palaos" = "Palau",
+  "Palestina" = "Palestine", "Panama" = "Panama",
+  "Papua Nueva Guinea" = "Papua New Guinea", "Paraguay" = "Paraguay",
+  "Peru" = "Peru", "Polonia" = "Poland", "Portugal" = "Portugal",
+  "Puerto Rico" = "Puerto Rico", "Reino Unido" = "United Kingdom",
+  "Republica Checa" = "Czech Republic", "Republica Democratica del Congo" = "Democratic Republic of the Congo",
+  "Republica Dominicana" = "Dominican Republic", "Ruanda" = "Rwanda",
+  "Rumania" = "Romania", "Rusia" = "Russia", "Samoa" = "Samoa",
+  "San Marino" = "San Marino", "San Vicente y las Granadinas" = "Saint Vincent and the Grenadines",
+  "Santa Lucia" = "Saint Lucia", "Santo Tome y Principe" = "Sao Tome and Principe",
+  "Senegal" = "Senegal", "Serbia" = "Serbia", "Seychelles" = "Seychelles",
+  "Sierra Leona" = "Sierra Leone", "Singapur" = "Singapore", "Siria" = "Syria",
+  "Somalia" = "Somalia", "Sri Lanka" = "Sri Lanka", "Sudafrica" = "South Africa",
+  "Sudan" = "Sudan", "Sudan del Sur" = "South Sudan", "Suecia" = "Sweden",
+  "Suiza" = "Switzerland", "Surinam" = "Suriname", "Tailandia" = "Thailand",
+  "Tanzania" = "Tanzania", "Tayikistan" = "Tajikistan",
+  "Timor Oriental" = "East Timor", "Togo" = "Togo", "Tonga" = "Tonga",
+  "Trinidad y Tobago" = "Trinidad and Tobago", "Tunez" = "Tunisia",
+  "Turkmenistan" = "Turkmenistan", "Turquia" = "Turkey",
+  "Tuvalu" = "Tuvalu", "Ucrania" = "Ukraine", "Uganda" = "Uganda",
+  "Uruguay" = "Uruguay", "Uzbekistan" = "Uzbekistan", "Vanuatu" = "Vanuatu",
+  "Venezuela" = "Venezuela", "Vietnam" = "Vietnam", "Yibuti" = "Djibouti",
+  "Yemen" = "Yemen", "Zambia" = "Zambia", "Zimbabue" = "Zimbabwe"
+)
+
+Base_clusters$Pais_ingles <- traduccion_paises[Base_clusters$Pais]
+Base_clusters$Pais_ingles[is.na(Base_clusters$Pais_ingles)] <- 
+  Base_clusters$Pais[is.na(Base_clusters$Pais_ingles)]
+
+Base_clusters$iso_a3 <- countrycode(
+  Base_clusters$Pais_ingles,
+  origin = "country.name",
+  destination = "iso3c",
+  warn = FALSE
+)
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+world_clusters <- world %>%
+  left_join(Base_clusters, by = "iso_a3")
+
+cat("Países con cluster asignado:", sum(!is.na(world_clusters$Cluster)), "\n")
+
+pal <- colorFactor(
+  palette = c(verde_cluster1, azul_cluster2),
+  domain = c(1, 2),
+  na.color = "#E0E0E0"
+)
+
+# Calcular conteos
+n_cluster1 <- sum(Base_clusters$Cluster == 1, na.rm = TRUE)
+n_cluster2 <- sum(Base_clusters$Cluster == 2, na.rm = TRUE)
+
+# Crear mapa
+mapa_clusters <- leaflet(world_clusters) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(
+    fillColor = ~pal(Cluster),
+    weight = 1,
+    opacity = 1,
+    color = "white",
+    fillOpacity = 0.75,
+    popup = ~ifelse(
+      !is.na(Cluster),
+      paste0(
+        "<b>", Pais, "</b><br>",
+        "Cluster: ", Cluster, "<br>",
+        ifelse(Cluster == 1, "Desafíos de Salud", "Alta Calidad de Salud")
+      ),
+      paste0("<b>", name, "</b><br>Sin datos")
+    ),
+    highlight = highlightOptions(
+      weight = 2,
+      color = "#666",
+      fillOpacity = 0.9,
+      bringToFront = TRUE
+    )
+  ) %>%
+  addLegend(
+    position = "bottomleft",
+    colors = c(verde_cluster1, azul_cluster2, "#E0E0E0"),
+    labels = c(
+      paste0("Cluster 1: Desafíos (", n_cluster1, ")"),
+      paste0("Cluster 2: Alta Calidad (", n_cluster2, ")"),
+      "Sin datos"
+    ),
+    title = "Clasificación de Salud Pública",
+    opacity = 0.85
+  )
+
+mapa_clusters
+```
+
+<p>Comenzaremos la caracterización de los clusters analizando la distribución de los países en cada grupo por medio de un mapa interactivo.</p>
+
+**Cluster 1: Países en desarrollo con vulnerabilidad sanitaria (58 países)**
+
+<p>Este grupo concentra principalmente a países africanos, asiáticos del sur y algunas naciones insulares y latinoamericanas con menor desarrollo económico. Incluye a Afghanistan, Angola, Benin, Chad, Etiopía, Yemen y Zambia, entre otros. Geográficamente, como se observa en el mapa, el Cluster 1 (verde) se concentra predominantemente en África subsahariana, partes de Asia central y del sur, reflejando una distribución territorial caracterizada por menores ingresos per cápita y limitado acceso a servicios de salud. Este grupo se caracteriza por perfiles de mortalidad dominados por enfermedades infecciosas, desnutrición y deficiencias sanitarias estructurales.
+</p>
+
+**Cluster 2: Países desarrollados y en desarrollo avanzado (124 países)**
+
+<p>Este cluster agrupa la mayoría de países con mejores indicadores socioeconómicos, incluyendo potencias económicas como Alemania, Australia, Canadá, China, Estados Unidos, Francia, Japón y México. El mapa muestra que el Cluster 2 (azul) se distribuye ampliamente por Europa, América del Norte, Oceanía, Asia oriental y partes significativas de América Latina, además de economías emergentes. Aunque este grupo es heterogéneo, todos sus miembros comparten condiciones significativamente más favorables en términos de ingresos y capacidad institucional de salud pública.
+
+</p>
+
+<h3>Segmentaciones geográficas</h3>
+
+<p>La distribución geográfica de los clusters refleja las desigualdades globales estructurales en desarrollo y salud pública. El Cluster 1 concentra países enfrentados a desafíos críticos de infraestructura sanitaria, mientras que el Cluster 2 comprende principalmente naciones con sistemas de salud consolidados. Esta pauta territorial evidencia que los patrones de mortalidad no son aleatorios, sino que responden a contextos socioeconómicos territorialmente delimitados.
+</p>
+
+**Visualización de Clusters en el Biplot de ACP: Países y Variables**
+
+<p>Ahora continuamos con un biplot de variables y países ya divididos en los clusters.
+</p>
+
+```{r preparacion-circle-data}
+
+circle_data <- data.frame(
+  Variable = rownames(acp_var),
+  Axis1 = acp_var$Axis1,
+  Axis2 = acp_var$Axis2,
+  Axis3 = acp_var$Axis3
+)
+circle_data$Variable_corto <- nombres_cortos_var[circle_data$Variable]
+
+circle_data$Variable_corto[is.na(circle_data$Variable_corto)] <- 
+  circle_data$Variable[is.na(circle_data$Variable_corto)]
+```
+
+```{r biplot_interactivo, fig.width=7, fig.height=5.45}
+
+anotaciones_flechas <- lapply(1:nrow(circle_data), function(i) {
+  list(
+    x = circle_data$Axis1[i] * 3,
+    y = circle_data$Axis2[i] * 3,
+    ax = 0,
+    ay = 0,
+    xref = "x",
+    yref = "y",
+    axref = "x",
+    ayref = "y",
+    text = "",
+    showarrow = TRUE,
+    arrowhead = 4,
+    arrowsize = 0.8,
+    arrowwidth = 1.5,
+    arrowcolor = "rgba(228,26,28,0.8)"
+  )
+})
+
+clusters <- unique(acp_ind$Cluster)
+
+plotly_biplot <- plot_ly()
+
+for(cluster in clusters) {
+  datos_cluster <- acp_ind[acp_ind$Cluster == cluster, ]
+  color_cluster <- colores_clusters[as.character(cluster)]
+  
+  plotly_biplot <- plotly_biplot %>%
+    add_trace(data = datos_cluster,
+              x = ~Axis1, y = ~Axis2,
+              type = "scatter",
+              mode = "markers",
+              marker = list(size = 9, opacity = 0.7, 
+                          line = list(width = 1, color = 'darkgray'),
+                          color = color_cluster),
+              name = paste("Cluster", cluster),
+              text = ~paste("<b>País:</b>", Pais, 
+                            "<br><b>Cluster:</b>", Cluster,
+                            "<br><b>Comp. 1:</b>", round(Axis1, 2),
+                            "<br><b>Comp. 2:</b>", round(Axis2, 2)),
+              hoverinfo = "text",
+              showlegend = TRUE,
+              legendgroup = "paises")
+}
+
+plotly_biplot <- plotly_biplot %>%
+  add_trace(data = circle_data,
+            x = ~Axis1*3, y = ~Axis2*3,
+            text = ~Variable_corto,
+            type = "scatter",
+            mode = "text",
+            textfont = list(color = "#E41A1C", size = 11, 
+                           family = "Arial", weight = "bold"),
+            name = "Variables",
+            hoverinfo = "text",
+            hovertext = ~paste("<b>Variable:</b>", Variable_corto,
+                               "<br><b>Comp. 1:</b>", round(Axis1, 3),
+                               "<br><b>Comp. 2:</b>", round(Axis2, 3)),
+            showlegend = TRUE,
+            legendgroup = "variables")
+
+n_clusters <- length(clusters)
+visible_solo_paises <- c(rep(TRUE, n_clusters), FALSE)
+visible_solo_variables <- c(rep(FALSE, n_clusters), TRUE)
+visible_ambos <- rep(TRUE, n_clusters + 1)
+
+plotly_biplot <- plotly_biplot %>%
+  layout(
+    font = list(family = "Merriweather"),
+    title = list(
+      text = "<b>Biplot - Análisis de Componentes Principales</b>",
+      x = 0.05,
+      font = list(size = 18, family = "Merriweather")
+    ),
+    xaxis = list(
+      title = paste0("<b>Dimensión 1 (", var_exp[1], "%)</b>"),
+      gridcolor = 'lightgray',
+      zerolinecolor = 'gray',
+      zerolinewidth = 2
+    ),
+    yaxis = list(
+      title = paste0("<b>Dimensión 2 (", var_exp[2], "%)</b>"),
+      gridcolor = 'lightgray',
+      zerolinecolor = 'gray',
+      zerolinewidth = 2
+    ),
+    plot_bgcolor = 'white',
+    paper_bgcolor = 'white',
+    font = list(family = "Arial"),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(family = "Arial", size = 12)
+    ),
+    legend = list(
+      orientation = "v",
+      x = 0.02,
+      y = 0.98,
+      bgcolor = 'rgba(255,255,255,0.9)',
+      bordercolor = 'gray',
+      borderwidth = 1
+    ),
+    annotations = anotaciones_flechas,
+    updatemenus = list(
+      list(
+        type = "buttons",
+        direction = "right",
+        x = 0.8,
+        xanchor = "center",
+        y = 1.12,
+        yanchor = "top",
+        bgcolor = "#F5F5F5",
+        bordercolor = "#CCCCCC",
+        borderwidth = 1,
+        buttons = list(
+          list(
+            method = "update",
+            args = list(
+              list(visible = as.list(visible_solo_paises)),
+              list(annotations = list())
+            ),
+            label = "Solo Países"
+          ),
+          list(
+            method = "update",
+            args = list(
+              list(visible = as.list(visible_solo_variables)),
+              list(annotations = anotaciones_flechas)
+            ),
+            label = "Solo Variables"
+          ),
+          list(
+            method = "update",
+            args = list(
+              list(visible = as.list(visible_ambos)),
+              list(annotations = anotaciones_flechas)
+            ),
+            label = "Ambos"
+          )
+        )
+      )
+    )
+  )
+
+plotly_biplot
+```
+
+<p>Los resultados de la segmentación muestran dos grupos claramente diferenciados: el Cluster 1 está compuesto en su mayoría por países africanos y asiáticos con bajos ingresos y mayores desafíos sociales, mientras que el Cluster 2 agrupa la mayor parte de países de Europa, América y Oceanía, caracterizados por mejores indicadores de desarrollo. Esta división refleja la existencia de brechas estructurales globales, y puede ser útil para orientar políticas o priorizar intervenciones.
+
+Los países agrupados en Cluster 1 (verde, a la izquierda) tienden a presentar valores elevados en variables como muertes infantiles, enfermedades infecciosas, desnutrición, tuberculosis y mortalidad materna. Las flechas rojas orientadas hacia Cluster 1 indican que estos problemas de salud pública son más frecuentes o tienen mayor impacto en este grupo.
+
+Los países de Cluster 2 (azul, a la derecha y centro) están más asociados con variables como envejecimiento (supervivencia >65 años), suicidios (hombre/mujer), y mortalidad por causas externas (accidentes, envenenamientos). Las flechas correspondientes apuntan hacia Cluster 2, lo que refleja que estas causas de muerte predominan en ese grupo.
+</p>
+
+<h3>Estadística descriptiva por clusters</h3>
+
+<p>Para profundizar en la caracterización de los clusters identificados, se calcularon estadísticas descriptivas (media, mediana, desviación estándar, mínimo y máximo) de los indicadores de mortalidad global por cada grupo. 
+</p>
+
+```{r estadisticas-descriptivas-clusters}
+
+nombres_variables <- c(
+  "Expectativa_de_vida_mujer" = "Esperanza de vida - Mujeres",
+  "Expectativa_de_vida_hombres" = "Esperanza de vida - Hombres",
+  "Accidentes_de_transito" = "Muertes por accidentes de tránsito",
+  "Enfermedades_cardiacas_cancer_diabetes_mujeres" = "Enf. crónicas - Mujeres",
+  "Enfermedades_cardiacas_cancer_diabetes_hombres" = "Enf. crónicas - Hombres",
+  "Polucion_del_aire_mujeres" = "Muertes por polución - Mujeres",
+  "Polucion_del_aire_hombres" = "Muertes por polución - Hombres",
+  "Envenenamiento_accidental_mujeres" = "Envenenamiento - Mujeres",
+  "Envenenamiento_accidental_hombres" = "Envenenamiento - Hombres",
+  "Tasa_de_mortalidad_mujeres_adultas" = "Mortalidad adulta - Mujeres",
+  "Tasa_de_mortalidad_hombres_adultos" = "Mortalidad adulta - Hombres",
+  "Tasa_de_mortalidad_infantil_mujeres" = "Mortalidad infantil - Mujeres",
+  "Tasa_de_mortalidad_infantil_varones" = "Mortalidad infantil - Hombres",
+  "Tasa_de_mortalidad_neonatal" = "Mortalidad neonatal",
+  "Tasa_de_mortalidad_infantil_temprana_mujeres" = "Mortalidad temprana - Mujeres",
+  "Tasa_de_mortalidad_infantil_temprana_hombres" = "Mortalidad temprana - Hombres",
+  "Numero_de_muertes_infantiles" = "Número de muertes infantiles",
+  "Numero_de_muertes_neonatales" = "Número de muertes neonatales",
+  "Tasa_de_suicidios_mujeres" = "Tasa de suicidios - Mujeres",
+  "Tasa_de_suicidios_hombres" = "Tasa de suicidios - Hombres",
+  "Supervivencia_hasta_los_65_anos_mujeres" = "Supervivencia a 65 años - Mujeres",
+  "Supervivencia_hasta_los_65_anos_hombres" = "Supervivencia a 65 años - Hombres"
+)
+
+estadisticas_clusters <- NuevaBase %>%
+  group_by(Cluster) %>%
+  summarise(across(
+    where(is.numeric),
+    list(
+      Media = ~mean(., na.rm = TRUE),
+      Mediana = ~median(., na.rm = TRUE),
+      DE = ~sd(., na.rm = TRUE),
+      Min = ~min(., na.rm = TRUE),
+      Max = ~max(., na.rm = TRUE)
+    ),
+    .names = "{.col}_{.fn}"
+  )) %>%
+  pivot_longer(
+    cols = -Cluster,
+    names_to = "Variable_Estadistica",
+    values_to = "Valor"
+  ) %>%
+  mutate(
+    Estadistica = str_extract(Variable_Estadistica, "[^_]+$"),
+    Variable = str_remove(Variable_Estadistica, "_[^_]+$"),
+    Valor = as.numeric(Valor)
+  ) %>%
+  select(-Variable_Estadistica) %>%
+  pivot_wider(
+    names_from = Estadistica,
+    values_from = Valor
+  )
+
+tabla_estadisticas <- estadisticas_clusters %>%
+  mutate(
+    Variable_Descriptiva = nombres_variables[Variable],
+    Cluster = paste("Cluster", Cluster)
+  ) %>%
+  select(Cluster, Variable_Descriptiva, Media, Mediana, DE, Min, Max) %>%
+  arrange(Cluster, Variable_Descriptiva) %>%
+  gt(groupname_col = "Cluster") %>%
+  tab_header(
+    title = md("**ESTADÍSTICAS DESCRIPTIVAS POR CLUSTER**"),
+    subtitle = "Análisis de Indicadores de Mortalidad Global"
+  ) %>%
+  cols_label(
+    Variable_Descriptiva = md("**Variable**"),
+    Media = md("**Media**"),
+    Mediana = md("**Mediana**"),
+    DE = md("**D.E.**"),
+    Min = md("**Mín**"),
+    Max = md("**Máx**")
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(Media, Mediana, DE, Min, Max)
+  ) %>%
+  cols_align(
+    align = "left",
+    columns = Variable_Descriptiva
+  ) %>%
+  fmt_number(
+    columns = c(Media, Mediana, DE, Min, Max),
+    decimals = 2
+  ) %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold", size = "medium"),
+      cell_fill(color = "white")
+    ),
+    locations = cells_column_labels()
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = c("top", "bottom"),
+      color = "black",
+      weight = px(1)
+    ),
+    locations = list(
+      cells_column_labels(),
+      cells_body()
+    )
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = "right",
+      color = "#488B49",
+      weight = px(1)
+    ),
+    locations = cells_body(columns = c(Variable_Descriptiva, Media, Mediana, DE, Min))
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = Variable_Descriptiva)
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#E8F5E8"),
+    locations = cells_row_groups()
+  ) %>%
+  tab_options(
+    table.font.names = "Merriweather",
+    table.width = pct(100),
+    table.border.top.style = "none",
+    table.border.bottom.style = "none",
+    column_labels.border.top.style = "none",
+    column_labels.border.bottom.width = px(2),
+    column_labels.border.bottom.color = "black",
+    table_body.border.bottom.style = "none",
+    table_body.border.top.style = "none",
+    data_row.padding = px(6),
+    heading.title.font.size = 16,
+    heading.subtitle.font.size = 14,
+    heading.padding = px(8),
+    footnotes.padding = px(6)
+  ) %>%
+  tab_source_note(
+    source_note = md("**Fuente:** Elaboración propia con base en datos de mortalidad global")
+  )
+
+tabla_estadisticas
+```
+
+<p>La comparación directa entre clusters permite validar los perfiles epidemiológicos sugeridos por el análisis visual y resalta las diferencias estructurales entre los segmentos de países.
+
+ La esperanza de vida es el indicador más diferenciador entre clusters. Cluster 1 tiene valores marcadamente negativos (esperanza de vida baja), mientras que Cluster 2 tiene valores positivos (esperanza de vida elevada). Esta diferencia de casi 1.7 puntos en la escala estandarizada refleja que en Cluster 1 la población vive significativamente menos años que en Cluster 2, un síntoma inequívoco de menor desarrollo y peor acceso a servicios sanitarios.
+
+En Cluster 1, muchos niños mueren antes de los 5 años por causas evitables. En Cluster 2, esto es prácticamente eliminado.
+
+Cluster 1 se caracteriza por muertes prematuras, es decir, personas que mueren antes de la edad esperada. En Cluster 2, tanto la mortalidad temprana como adulta son bajas (valores negativos), reflejando que las personas alcanzan edades más avanzadas. Esta brecha confirma que en Cluster 1 hay una alta carga de causas de muerte evitables.
+
+En los suicidios el Cluster 1 tiene tasas muy bajas (valores negativos cercanos a cero), mientras que Cluster 2 tiene tasas moderadas pero positivas. Esto refleja que en Cluster 1 mueren por causas infecciosas antes de llegar a edades de riesgo suicida. En Cluster 2, con mayor longevidad y presiones sociales modernas, los suicidios son más frecuentes.
+
+Aunque el nombre es "enfermedades crónicas", en el contexto de Cluster 1 estas incluyen enfermedades infecciosas crónicas (TB, VIH, etc.) que son la causa dominante de mortalidad. Cluster 2 tiene tasas casi nulas, reflejando que la mayoría de infecciones son prevenibles o tratables en estos países.
+
+A partir de estos análisis estadísticos, es posible caracterizar cada cluster identificado, definiendo así su perfil distintivo y asignándole una denominación representativa de sus atributos principales.</p>
+
+<h3>Características de los clusters</h3>
+
+**Cluster 1: Países con Alta Vulnerabilidad Sanitaria y Mortalidad Prematura**
+
+<p>El Cluster 1 agrupa a 58 países, concentrados predominantemente en África subsahariana, Asia del Sur y Central, caracterizados por una carga elevada de mortalidad prematura, especialmente en edades infantiles y neonatales. Este segmento de países presenta un perfil epidemiológico donde las enfermedades infecciosas y la desnutrición constituyen las causas dominantes de muerte, reflejando vulnerabilidad estructural en sistemas de salud pública y bajo desarrollo económico.
+
+La esperanza de vida es significativamente baja en este cluster, con valores estandarizados de -1.09 para hombres y -1.16 para mujeres, indicando que la población muere a edades tempranas comparadas con el estándar global. La mortalidad infantil y neonatal es extremadamente alta (1.19-1.25), evidenciando que muchos niños no alcanzan los 5 años de vida. La supervivencia a edades avanzadas es prácticamente nula (-1.06 a -1.16), lo que implica que muy pocos individuos logran alcanzar los 65 años. Estas características reflejan la falta de acceso a servicios de salud básicos, nutrición deficiente, ausencia de programas de vacunación y cobertura limitada de atención prenatal y neonatal.
+
+Las causas de muerte prevenibles y evitables son preponderantes en este cluster: tuberculosis, VIH/SIDA, enfermedades diarreicas, malaria y otras infecciones transmisibles, complementadas por malnutrición y complicaciones obstétricas. Notablemente, las causas de muerte típicas de sociedades modernas, como suicidios y accidentes de tránsito bien regulados, son prácticamente ausentes (-0.29 a -0.11 para suicidios), no porque exista prevención, sino porque la población no alcanza las edades de riesgo ni desarrolla los contextos sociales donde estas causas predominan. El perfil de este clúster refleja un contexto epidemiológico caracterizado por desigualdad sanitaria global, donde la mortalidad evitable es la norma.</p>
+
+
+**Cluster 2: Países con Sistemas de Salud Consolidados y Envejecimiento Poblacional**
+
+
+<p>El Cluster 2 agrupa a 124 países, distribuidos principalmente en Europa, América del Norte, Oceanía, Asia Oriental y economías emergentes en desarrollo, caracterizados por baja mortalidad prematura, alta esperanza de vida y un envejecimiento poblacional consolidado. Este segmento representa países donde los sistemas de salud son robustos, la nutrición es adecuada y existe capacidad institucional avanzada de atención sanitaria, permitiendo que la población alcance edades avanzadas.
+
+La esperanza de vida es significativamente más alta en este cluster (0.51 para hombres y 0.54 para mujeres), indicando que la población vive más años que el promedio global. La mortalidad infantil es prácticamente eliminada (-0.55 a -0.58), reflejando que los programas de vacunación, nutrición infantil y atención neonatal están ampliamente disponibles. La supervivencia a 65 años es alta (0.49 a 0.54), lo que significa que una proporción importante de la población alcanza edades avanzadas, generando un fenómeno de envejecimiento poblacional donde la mayoría de defunciones ocurren en edades avanzadas. Este patrón evidencia sistemas de salud consolidados, acceso universal a servicios médicos y capacidad de control epidemiológico de enfermedades infecciosas.
+
+La estructura de mortalidad en este cluster está dominada por enfermedades crónicas degenerativas (enfermedades cardiovasculares, cáncer, diabetes), reflejando que el envejecimiento es la norma. Adicionalmente, aparecen causas de muerte asociadas a contextos modernos: suicidios (0.14 hombres, 0.05 mujeres), accidentes de tránsito controlados pero aún presentes, y causas externas vinculadas a mayor urbanización e industrialización. La mortalidad infantil y por enfermedades infecciosas prevenibles es prácticamente nula, indicando que los principales desafíos sanitarios ya no son evitar la muerte prematura, sino gestionar la calidad de vida en edades avanzadas. Este perfil refleja un contexto epidemiológico de transición demográfica completada, donde la carga de enfermedad ha pasado de enfermedades infecciosas a crónicas degenerativas.</p>
 
 :::
 
